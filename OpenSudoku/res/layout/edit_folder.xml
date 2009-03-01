@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	<TextView
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:text="Enter folder name"
+	     />
+	<EditText
+	    android:id="@+id/folder_name"
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	    />
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent">
+	    <Button
+		    android:id="@+id/button_save"
+		    android:layout_width="0dip" 
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    android:text="Save" 
+			/> 
+	    <Button
+		    android:id="@+id/button_cancel"
+		    android:layout_width="0dip" 
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    android:text="Cancel" 
+			/> 
+	</LinearLayout>
+	
+</LinearLayout>
