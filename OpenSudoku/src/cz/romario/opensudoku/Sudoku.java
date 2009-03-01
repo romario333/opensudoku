@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 public class Sudoku  implements Parcelable {
 	private SudokuCell[][] cells;
@@ -79,12 +80,12 @@ public class Sudoku  implements Parcelable {
 	
 	// constructor for Parcelable
 	private Sudoku(Parcel in) {
-		// TODO: ach jo, blba serizalizace, proc nefunguje?
-		for (int x=0; x<SUDOKU_SIZE; x++)
-		{
-			for (int y=0; y<SUDOKU_SIZE; y++)
-			{
-				cells[x][y] = in.readParcelable(SudokuCell.class.getClassLoader());
+		
+		cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
+		for (int row=0; row<SUDOKU_SIZE; row++) {
+			Parcelable[] rowData = (Parcelable[])in.readParcelableArray(SudokuCell.class.getClassLoader());
+			for (int col=0; col < rowData.length; col++) {
+				cells[row][col] = (SudokuCell)rowData[col];
 			}
 		}
 		initSudoku();
@@ -132,16 +133,12 @@ public class Sudoku  implements Parcelable {
 		return 0;
 	}
 
+	// TODO: k cemu jsou ty flags??
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		for (int x=0; x<SUDOKU_SIZE; x++)
-		{
-			for (int y=0; y<SUDOKU_SIZE; y++)
-			{
-				dest.writeParcelable(cells[x][y], flags);
-			}
+		for (SudokuCell[] cols : cells) {
+			dest.writeParcelableArray(cols, flags);
 		}
-		
 	}
 	
 	

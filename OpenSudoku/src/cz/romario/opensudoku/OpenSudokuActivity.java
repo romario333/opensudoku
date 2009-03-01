@@ -14,8 +14,10 @@ public class OpenSudokuActivity extends Activity {
         setContentView(R.layout.main);
         
         if (savedInstanceState != null) {
-        	Sudoku sudoku = savedInstanceState.getParcelable("sudoku");
-        	Log.d("ROMAK", String.format("sudoku: %s", sudoku));
+        	
+        	//SudokuCell cell = savedInstanceState.getParcelable("cell");
+        	Sudoku s = savedInstanceState.getParcelable("s");
+        	Log.d("ROMAK", String.format("sudoku: %s", s));
         }
     }
     
@@ -24,6 +26,7 @@ public class OpenSudokuActivity extends Activity {
     	// TODO Auto-generated method stub
     	super.onSaveInstanceState(outState);
     	
-    	outState.putParcelable("game", Sudoku.CreateDebugGame());
+    	Sudoku s = Sudoku.CreateDebugGame();
+    	outState.putParcelable("s", s);
     }
 }

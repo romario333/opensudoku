@@ -30,15 +30,18 @@ public class PlaySudokuActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sudoku);
         
-        sudoku = Sudoku.CreateDebugGame();
+        if (savedInstanceState != null) {
+        	sudoku = (Sudoku)savedInstanceState.getParcelable("sudoku_board");
+        } else {
+        	// TODO: by id
+            sudoku = Sudoku.CreateDebugGame();
+        }
         
         sudokuBoard = (SudokuBoard)findViewById(R.id.sudoku_board);
         sudokuBoard.setSudoku(sudoku);
         
         sudokuBoard.setOnCellSelectedListener(sudoBoardCellSelected);
         
-        //TextView pokus = (TextView)findViewById(R.id.textpokus);
-        //createSudoku();
         
         // TODO: temp verze dialogu
         // TODO: .setIcon
@@ -63,6 +66,13 @@ public class PlaySudokuActivity extends Activity {
             }
         })
        .create(); 
+    }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    	// TODO Auto-generated method stub
+    	super.onSaveInstanceState(outState);
+    	outState.putParcelable("sudoku_board", sudokuBoard.getSudoku());
     }
     
     @Override

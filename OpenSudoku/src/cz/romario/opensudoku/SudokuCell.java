@@ -21,7 +21,7 @@ public class SudokuCell implements Parcelable {
 	private int value;
 	private String notes;
 	private Boolean editable;
-	private Boolean invalid; // TODO: serializovat
+	private Boolean invalid;
 
 
 	public SudokuCell() {
@@ -42,7 +42,7 @@ public class SudokuCell implements Parcelable {
 		value = in.readInt();
 		notes = in.readString();
 		editable = (Boolean)in.readValue(null);
-		invalid = false; // TODO:
+		invalid = (Boolean)in.readValue(null);
 	}
 
 	
@@ -119,5 +119,6 @@ public class SudokuCell implements Parcelable {
 		dest.writeInt(value);
 		dest.writeString(notes);
 		dest.writeValue(editable);
+		dest.writeValue(invalid);
 	}
 }
