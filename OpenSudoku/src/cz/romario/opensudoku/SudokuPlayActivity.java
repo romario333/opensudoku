@@ -158,7 +158,9 @@ public class SudokuPlayActivity extends Activity{
     protected void onPause() {
     	// TODO Auto-generated method stub
     	super.onPause();
-    	wakeLock.release();
+    	if (wakeLock.isHeld()) {
+    		wakeLock.release();
+    	}
     }
     
     private TimerTask timerTask = new TimerTask() {
