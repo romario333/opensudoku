@@ -87,7 +87,7 @@ public class SudokuGame implements Parcelable {
 		this.cells = cells;
 		this.validate();
 	}
-
+	
 	public SudokuCellCollection getCells() {
 		return cells;
 	}
@@ -102,6 +102,11 @@ public class SudokuGame implements Parcelable {
 	
 	public void validate() {
 		cells.validate();
+	}
+	
+	public boolean isCompleted() {
+		validate();
+		return cells.isCompleted();
 	}
 	
 	// constructor for Parcelable

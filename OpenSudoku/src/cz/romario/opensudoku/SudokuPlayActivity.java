@@ -5,13 +5,16 @@ import java.text.NumberFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,9 +26,12 @@ import cz.romario.opensudoku.db.SudokuDatabase;
 
 public class SudokuPlayActivity extends Activity{
 	
+	private static final String TAG = "SudokuPlayActivity";
+	
 	public static final String EXTRAS_SUDOKU_ID = "sudoku_id";
 	
 	private static final int DIALOG_SELECT_NUMBER = 1;
+	private static final int DIALOG_WELL_DONE = 2;
 	
 	private static final int TIMER_UPDATE_TIME = 1;
 	
@@ -37,6 +43,8 @@ public class SudokuPlayActivity extends Activity{
 	// TODO: je tohle OK, precist si znovu ten clanek o leakovani pameti
 	private Dialog selectNumberDialog;
 	
+	PowerManager.WakeLock wakeLock;
+	
 	private long gameStartTime;
 	private TextView timeLabel;
 	private NumberFormat timeFormat = new DecimalFormat("00");
@@ -45,20 +53,23 @@ public class SudokuPlayActivity extends Activity{
 	private Handler timerHandler = new Handler() {
 		public void handleMessage(Message msg) {
             if (msg.what == TIMER_UPDATE_TIME) {
-            	long gameEndTime = System.currentTimeMillis();
-            	long time = gameEndTime - gameStartTime + sudokuGame.getTime().getTime();
-            	
-    	    	long totalSeconds = time / 1000;
-    	    	long minutes = totalSeconds / 60;
-    	    	long seconds = totalSeconds - (minutes * 60);
-    	    	timeLabel.setText(String.format("%s:%s", 
-    	    			timeFormat.format(minutes), 
-    	    			timeFormat.format(seconds) ));
-    	    	// TODO: jak moc se podepise na spotrebe, udelat test
+            	updateTimeLabel();
             }
         }
 
 	};
+	
+	private void updateTimeLabel() {
+    	long gameEndTime = System.currentTimeMillis();
+    	long time = gameEndTime - gameStartTime + sudokuGame.getTime().getTime();
+    	
+    	long totalSeconds = time / 1000;
+    	long minutes = totalSeconds / 60;
+    	long seconds = totalSeconds - (minutes * 60);
+    	timeLabel.setText(String.format("%s:%s", 
+    			timeFormat.format(minutes), 
+    			timeFormat.format(seconds) ));
+	}
 
 	private OnClickListener buttonLeaveClickListener = new OnClickListener() {
 
@@ -95,6 +106,10 @@ public class SudokuPlayActivity extends Activity{
         
     	setTitle(sudokuGame.getName());
 
+    	PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+    	// TODO
+    	wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
+    	wakeLock.acquire(5 * 60 * 1000);
         
         sudokuBoard = (SudokuBoard)findViewById(R.id.sudoku_board);
         sudokuBoard.setCells(sudokuGame.getCells());
@@ -127,9 +142,23 @@ public class SudokuPlayActivity extends Activity{
        .create(); 
         
         
-        // TODO: budu ho muset stopovat az pujde do pozadi?
-        timer = new Timer(false);
-        timer.schedule(timerTask, 0, 1000);
+        if (sudokuGame.getState() == SudokuGame.GAME_STATE_NOT_STARTED) {
+        	sudokuGame.setState(SudokuGame.GAME_STATE_PLAYING);
+        }
+        
+        updateTimeLabel();
+        if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+	        // TODO: budu ho muset stopovat az pujde do pozadi?
+	        timer = new Timer(false);
+	        timer.schedule(timerTask, 0, 1000);
+        }
+    }
+    
+    @Override
+    protected void onPause() {
+    	// TODO Auto-generated method stub
+    	super.onPause();
+    	wakeLock.release();
     }
     
     private TimerTask timerTask = new TimerTask() {
@@ -160,7 +189,17 @@ public class SudokuPlayActivity extends Activity{
     protected Dialog onCreateDialog(int id) {
     	switch (id){
     	case DIALOG_SELECT_NUMBER:
-            return selectNumberDialog; 
+            return selectNumberDialog;
+    	case DIALOG_WELL_DONE:
+            return new AlertDialog.Builder(SudokuPlayActivity.this)
+            .setIcon(android.R.drawable.ic_dialog_info)
+            .setTitle("Well Done!")
+            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    /* User clicked OK so do some stuff */
+                }
+            })
+            .create();
     	}
     	return null;
     }
@@ -204,8 +243,13 @@ public class SudokuPlayActivity extends Activity{
 					selectedCell.setValue(selectedNumber);
 				}
 				
+        		if (sudokuGame.isCompleted()) {
+        			showDialog(DIALOG_WELL_DONE);
+        			sudokuGame.setState(SudokuGame.GAME_STATE_COMPLETED);
+        			sudokuBoard.setReadOnly(true);
+        			timer.cancel();
+        		}
 				
-				sudokuGame.validate();
 				sudokuBoard.postInvalidate();
 			}
 			selectNumberDialog.dismiss();

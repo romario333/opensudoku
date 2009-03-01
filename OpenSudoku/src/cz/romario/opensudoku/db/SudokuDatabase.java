@@ -139,27 +139,34 @@ public class SudokuDatabase {
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
         Cursor c = qb.query(db, null, null, null, null, null, null);
         
-        if (!c.moveToFirst())
-        	return null;
+        SudokuGame s = null;
+        try {
+        	if (c.moveToFirst()) {
+            	int id = c.getInt(c.getColumnIndex(SudokuColumns._ID));
+            	Date created = new Date(c.getLong(c.getColumnIndex(SudokuColumns.CREATED)));
+            	String data = c.getString(c.getColumnIndex(SudokuColumns.DATA));
+            	Date lastPlayed = new Date(c.getLong(c.getColumnIndex(SudokuColumns.LAST_PLAYED)));
+            	String name = c.getString(c.getColumnIndex(SudokuColumns.NAME));
+            	int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
+            	Date time = new Date(c.getLong(c.getColumnIndex(SudokuColumns.TIME)));
+            	
+            	s = new SudokuGame();
+            	s.setId(id);
+            	s.setCreated(created);
+            	s.setCells(SudokuCellCollection.deserialize(data));
+            	s.setLastPlayed(lastPlayed);
+            	s.setName(name);
+            	s.setState(state);
+            	s.setTime(time);
+        	}
+        } finally {
+        	if (c != null) {
+	        	c.close();
+        	}
+        }
         
-    	int id = c.getInt(c.getColumnIndex(SudokuColumns._ID));
-    	Date created = new Date(c.getLong(c.getColumnIndex(SudokuColumns.CREATED)));
-    	String data = c.getString(c.getColumnIndex(SudokuColumns.DATA));
-    	Date lastPlayed = new Date(c.getLong(c.getColumnIndex(SudokuColumns.LAST_PLAYED)));
-    	String name = c.getString(c.getColumnIndex(SudokuColumns.NAME));
-    	int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
-    	Date time = new Date(c.getLong(c.getColumnIndex(SudokuColumns.TIME)));
-    	
-    	SudokuGame s = new SudokuGame();
-    	s.setId(id);
-    	s.setCreated(created);
-    	s.setCells(SudokuCellCollection.deserialize(data));
-    	s.setLastPlayed(lastPlayed);
-    	s.setName(name);
-    	s.setState(state);
-    	s.setTime(time);
-    	
-    	return s;
+        return s;
+        
     }
     
     public long insertSudoku(long folderID, String name, SudokuCellCollection sudoku) {

@@ -76,6 +76,20 @@ public class SudokuCellCollection  implements Parcelable {
 		}
 	}
 	
+	public boolean isCompleted() {
+		for (int x=0; x<SUDOKU_SIZE; x++)
+		{
+			for (int y=0; y<SUDOKU_SIZE; y++)
+			{
+				SudokuCell cell = cells[x][y]; 
+				if (cell.getValue() == 0 || cell.getInvalid()) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
 	// constructor for Parcelable
 	private SudokuCellCollection(Parcel in) {
 		
