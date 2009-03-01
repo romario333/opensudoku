@@ -1,6 +1,6 @@
 package cz.romario.opensudoku;
 
-import com.google.android.maps.GeoPoint;
+import java.io.Serializable;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,15 +13,19 @@ import android.os.Parcelable;
  * @author romario
  *
  */
-public class SudokuCell implements Parcelable {
+public class SudokuCell implements Parcelable, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4469146085003371681L;
 	private SudokuSector sector;
 	private SudokuRow row;
 	private SudokuColumn column;
 	
 	private int value;
-	private String notes;
-	private Boolean editable;
-	private Boolean invalid;
+	private String notes = "";
+	private Boolean editable = false;
+	private Boolean invalid = false;
 
 
 	public SudokuCell() {
@@ -88,6 +92,10 @@ public class SudokuCell implements Parcelable {
 
 	public Boolean getEditable() {
 		return editable;
+	}
+	
+	public void setEditable(Boolean editable) {
+		this.editable = editable;
 	}
 	
 	public void setInvalid(Boolean invalid) {

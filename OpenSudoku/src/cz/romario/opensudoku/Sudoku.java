@@ -1,15 +1,13 @@
 package cz.romario.opensudoku;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 public class Sudoku  implements Parcelable {
+	// Cell's data.
 	private SudokuCell[][] cells;
 	
+	// Derived arrays, contains references to the cells array.
 	private SudokuCellGroup[] sectors;
 	private SudokuCellGroup[] rows;
 	private SudokuCellGroup[] columns;
@@ -47,7 +45,7 @@ public class Sudoku  implements Parcelable {
 	}
 	
 	// TODO: private .ctor
-	public Sudoku(SudokuCell[][] cells)
+	private Sudoku(SudokuCell[][] cells)
 	{
 		this.cells = cells;
 		initSudoku();
@@ -90,7 +88,7 @@ public class Sudoku  implements Parcelable {
 		}
 		initSudoku();
 	}
-	
+
 	private void initSudoku() {
 		rows = new SudokuCellGroup[SUDOKU_SIZE];
 		columns = new SudokuCellGroup[SUDOKU_SIZE];
@@ -141,6 +139,71 @@ public class Sudoku  implements Parcelable {
 		}
 	}
 	
+	// TODO: najit nejakou standardni serializaci / deserializaci
+	public String serialize() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("version: 1\n");
+		
+		for (int x=0; x<SUDOKU_SIZE; x++)
+		{
+			for (int y=0; y<SUDOKU_SIZE; y++)
+			{
+				SudokuCell cell = cells[x][y];
+				sb.append(cell.getValue()).append("|");
+				sb.append(cell.getNotes()).append("|"); // TODO: escape
+				sb.append(cell.getEditable() ? "1" : "0").append("|");
+				sb.append(cell.getInvalid() ? "1" : "0").append("\n");
+			}
+		}
+		
+		return sb.toString();
+	}
 	
+	public static Sudoku deserialize(String data) {
+		return new Sudoku(data);
+	}
+	
+	// TODO: .ctory rozesety vsude po classe, fuj
+	private Sudoku(String data) {
+		cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
 
+		String[] lines = data.split("\n");
+		if (lines.length == 0) {
+			// TODO: nevim jestli je dobry napad cpat cela data do exception
+			throw new IllegalArgumentException(String.format("Cannot deserialize Sudoku: %s", data));
+		}
+		
+		if (!lines[0].equals("version: 1")) {
+			throw new IllegalArgumentException(String.format("Unknown version of data: %s", data));
+		}
+
+		int pos=1;
+		for (int x=0; x<SUDOKU_SIZE; x++)
+		{
+			for (int y=0; y<SUDOKU_SIZE; y++)
+			{
+				String line = lines[pos++];
+				String[] parts = line.split("\\|");
+				
+				if (parts.length != 4) {
+					throw new IllegalArgumentException(String.format("Illegal item: %s", line));
+				}
+				
+				int value = Integer.parseInt(parts[0]);
+				String note = parts[1];
+				boolean editable = parts[2].equals("1");
+				boolean invalid = parts[3].equals("1");
+				
+				SudokuCell cell = new SudokuCell();
+				cell.setValue(value);
+				cell.setNotes(note);
+				cell.setEditable(editable);
+				cell.setInvalid(invalid);
+				
+				cells[x][y] = cell;
+			}
+		}
+		
+		initSudoku();
+	}
 }
