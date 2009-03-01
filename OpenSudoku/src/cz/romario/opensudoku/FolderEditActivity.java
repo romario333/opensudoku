@@ -12,9 +12,9 @@ import cz.romario.opensudoku.db.SudokuDatabase;
 
 public class FolderEditActivity extends Activity {
 
-	private static final String TAG = "EditFolderActivity";
+	private static final String TAG = "FolderEditActivity";
 	
-	public static final String EXTRAS_FOLDER_ID_KEY = "folder_id";
+	public static final String EXTRAS_FOLDER_ID = "folder_id";
 	
 	// The different distinct states the activity can be run in.
     private static final int STATE_EDIT = 0;
@@ -24,11 +24,10 @@ public class FolderEditActivity extends Activity {
     private long folderID;
     
     private SudokuDatabase sudokuDB;
-    private TextView nameTextView;
+    private TextView folderNameText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
 		Intent intent = getIntent();
@@ -36,10 +35,10 @@ public class FolderEditActivity extends Activity {
         if (Intent.ACTION_EDIT.equals(action)) {
             // Requested to edit: set that state, and the data being edited.
             state = STATE_EDIT;
-            if (intent.hasExtra(EXTRAS_FOLDER_ID_KEY)) {
-	            folderID = intent.getLongExtra(EXTRAS_FOLDER_ID_KEY, 0);
+            if (intent.hasExtra(EXTRAS_FOLDER_ID)) {
+	            folderID = intent.getLongExtra(EXTRAS_FOLDER_ID, 0);
             } else {
-            	throw new IllegalArgumentException(String.format("Cannot find extra with key '%s'.", EXTRAS_FOLDER_ID_KEY));
+            	throw new IllegalArgumentException(String.format("Cannot find extra with key '%s'.", EXTRAS_FOLDER_ID));
             }
         } else if (Intent.ACTION_INSERT.equals(action)) {
         	state = STATE_INSERT;
@@ -53,11 +52,11 @@ public class FolderEditActivity extends Activity {
         
         sudokuDB = new SudokuDatabase(this);
         
-		setContentView(R.layout.edit_folder);
+		setContentView(R.layout.folder_edit);
 
 		Button buttonSave = (Button)findViewById(R.id.button_save);
 		Button buttonCancel = (Button)findViewById(R.id.button_cancel);
-		nameTextView = (TextView)findViewById(R.id.folder_name);
+		folderNameText = (TextView)findViewById(R.id.folder_name);
 		
 		buttonSave.setOnClickListener(buttonSaveClickListener);
 		buttonCancel.setOnClickListener(buttonCancelClickListener);
@@ -67,7 +66,7 @@ public class FolderEditActivity extends Activity {
 
 		@Override
 		public void onClick(View v) {
-			String name = nameTextView.getText().toString();
+			String name = folderNameText.getText().toString();
 			
 			switch (state) {
 			case STATE_EDIT:

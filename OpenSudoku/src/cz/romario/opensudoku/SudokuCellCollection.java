@@ -3,7 +3,7 @@ package cz.romario.opensudoku;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Sudoku  implements Parcelable {
+public class SudokuCellCollection  implements Parcelable {
 	// Cell's data.
 	private SudokuCell[][] cells;
 	
@@ -14,8 +14,8 @@ public class Sudoku  implements Parcelable {
 	
 	public static final int SUDOKU_SIZE = 9;
 	
-	public static Sudoku CreateDebugGame() {
-		return new Sudoku(new SudokuCell[][] {
+	public static SudokuCellCollection CreateDebugGame() {
+		return new SudokuCellCollection(new SudokuCell[][] {
 			{ new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(6), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(9),},
 			{ new SudokuCell(), new SudokuCell(4), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(3),},
 			{ new SudokuCell(5), new SudokuCell(6), new SudokuCell(), new SudokuCell(), new SudokuCell(8), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(),},
@@ -28,7 +28,7 @@ public class Sudoku  implements Parcelable {
 		});
 	}
 	
-	public static Sudoku CreateEmpty()
+	public static SudokuCellCollection CreateEmpty()
 	{
 		SudokuCell[][] cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
 		
@@ -41,11 +41,11 @@ public class Sudoku  implements Parcelable {
 			}
 		}
 		
-		return new Sudoku(cells);
+		return new SudokuCellCollection(cells);
 	}
 	
 	// TODO: private .ctor
-	private Sudoku(SudokuCell[][] cells)
+	private SudokuCellCollection(SudokuCell[][] cells)
 	{
 		this.cells = cells;
 		initSudoku();
@@ -77,7 +77,7 @@ public class Sudoku  implements Parcelable {
 	}
 	
 	// constructor for Parcelable
-	private Sudoku(Parcel in) {
+	private SudokuCellCollection(Parcel in) {
 		
 		cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
 		for (int row=0; row<SUDOKU_SIZE; row++) {
@@ -115,13 +115,13 @@ public class Sudoku  implements Parcelable {
 	
 	// TODO: Parcelable bych nemel ukladat do databaze, mozna bych se mel uchylit k jinemu
 	// druhu serializace (asi do xml)
-	public static final Parcelable.Creator<Sudoku> CREATOR = new Parcelable.Creator<Sudoku>() {
-		public Sudoku createFromParcel(Parcel in) {
-		    return new Sudoku(in);
+	public static final Parcelable.Creator<SudokuCellCollection> CREATOR = new Parcelable.Creator<SudokuCellCollection>() {
+		public SudokuCellCollection createFromParcel(Parcel in) {
+		    return new SudokuCellCollection(in);
 		}
 		
-		public Sudoku[] newArray(int size) {
-		    return new Sudoku[size];
+		public SudokuCellCollection[] newArray(int size) {
+		    return new SudokuCellCollection[size];
 		}
 	};
 	
@@ -159,12 +159,12 @@ public class Sudoku  implements Parcelable {
 		return sb.toString();
 	}
 	
-	public static Sudoku deserialize(String data) {
-		return new Sudoku(data);
+	public static SudokuCellCollection deserialize(String data) {
+		return new SudokuCellCollection(data);
 	}
 	
 	// TODO: .ctory rozesety vsude po classe, fuj
-	private Sudoku(String data) {
+	private SudokuCellCollection(String data) {
 		cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
 
 		String[] lines = data.split("\n");
@@ -205,5 +205,39 @@ public class Sudoku  implements Parcelable {
 		}
 		
 		initSudoku();
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+
+		for (int x=0; x<SUDOKU_SIZE; x++)
+		{
+			for (int y=0; y<SUDOKU_SIZE; y++)
+			{
+				sb.append(cells[x][y].getValue());
+			}
+			sb.append("\n");
+		}
+		sb.deleteCharAt(sb.length()-1);
+		return sb.toString();
+	}
+	
+	// TODO: temporary
+	public void updateFromString(String data, boolean setEditable) {
+		String[] lines = data.split("\n");
+		
+		for (int x=0; x<SUDOKU_SIZE; x++)
+		{
+			for (int y=0; y<SUDOKU_SIZE; y++)
+			{
+				// omg, neco mi urcite unika
+				int value = Integer.parseInt(new Character(lines[x].charAt(y)).toString());
+				cells[x][y].setValue(value);
+				if (setEditable && value != 0) {
+					cells[x][y].setEditable(false);
+				}
+			}
+		}
 	}
 }

@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 
 public class SudokuCellGroup {
-	private SudokuCell[] cells = new SudokuCell[Sudoku.SUDOKU_SIZE];
+	private SudokuCell[] cells = new SudokuCell[SudokuCellCollection.SUDOKU_SIZE];
 	private int pos = 0;
 	
 	public void addCell(SudokuCell cell) {

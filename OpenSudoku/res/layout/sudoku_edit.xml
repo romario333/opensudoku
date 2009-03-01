@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	<TextView
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:text="Name"
+	     />
+	<EditText
+	    android:id="@+id/sudoku_name"
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:singleLine="true"
+	    />
+	<TextView
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:text="Data"
+	     />
+	<EditText
+	    android:id="@+id/sudoku_data"
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:lines="9" 
+	    />
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent">
+	    <Button
+		    android:id="@+id/button_save"
+		    android:layout_width="0dip" 
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    android:text="Save" 
+			/> 
+	    <Button
+		    android:id="@+id/button_cancel"
+		    android:layout_width="0dip" 
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    android:text="Cancel" 
+			/> 
+	</LinearLayout>
+	
+</LinearLayout>

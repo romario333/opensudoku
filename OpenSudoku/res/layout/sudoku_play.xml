@@ -8,4 +8,16 @@
 		android:id="@+id/sudoku_board"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent" />
+	<TextView android:id="@+id/time_label"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal"
+	    android:text="0:00"
+	     />
+	<Button android:id="@+id/button_leave"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal"
+	    android:text="Leave game"
+	     />
 </LinearLayout>

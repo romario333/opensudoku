@@ -17,15 +17,15 @@ public class OpenSudokuActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        Sudoku sudoku = Sudoku.CreateDebugGame();
+        SudokuCellCollection sudoku = SudokuCellCollection.CreateDebugGame();
         String data = sudoku.serialize();
-        Sudoku nove = Sudoku.deserialize(data);
+        SudokuCellCollection nove = SudokuCellCollection.deserialize(data);
 		
         
         if (savedInstanceState != null) {
         	
         	//SudokuCell cell = savedInstanceState.getParcelable("cell");
-        	Sudoku s = savedInstanceState.getParcelable("s");
+        	SudokuCellCollection s = savedInstanceState.getParcelable("s");
         	Log.d("ROMAK", String.format("sudoku: %s", s));
         }
     }
@@ -35,7 +35,7 @@ public class OpenSudokuActivity extends Activity {
     	// TODO Auto-generated method stub
     	super.onSaveInstanceState(outState);
     	
-    	Sudoku s = Sudoku.CreateDebugGame();
+    	SudokuCellCollection s = SudokuCellCollection.CreateDebugGame();
     	outState.putParcelable("s", s);
     }
 }

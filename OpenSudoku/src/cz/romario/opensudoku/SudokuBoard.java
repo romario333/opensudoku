@@ -24,8 +24,9 @@ public class SudokuBoard extends View {
 	private Paint selectedPaint;
 	
 	private SudokuCell selectedCell = null;
+	public boolean readonly = false;
 	
-	private Sudoku sudoku;
+	private SudokuCellCollection cells;
 	
 	private OnCellSelectedListener onCellSelectedListener;
 	
@@ -41,13 +42,21 @@ public class SudokuBoard extends View {
 		initWidget();
 	}
 	
-	public void setSudoku(Sudoku sudoku) {
-		this.sudoku = sudoku;
+	public void setCells(SudokuCellCollection cells) {
+		this.cells = cells;
 		this.invalidate();
 	}
 
-	public Sudoku getSudoku() {
-		return sudoku;
+	public SudokuCellCollection getCells() {
+		return cells;
+	}
+	
+	public void setReadOnly(boolean readonly) {
+		this.readonly = readonly;
+	}
+	
+	public boolean getReadOnly() {
+		return readonly;
 	}
 	
 	public void setOnCellSelectedListener(OnCellSelectedListener l) {
@@ -107,11 +116,11 @@ public class SudokuBoard extends View {
 		int height = getMeasuredHeight();
 
 		// draw cells
-		if (sudoku != null) {
+		if (cells != null) {
 			float numberAscent = numberPaint.ascent();
 			for (int x=0; x<9; x++) {
 				for (int y=0; y<9; y++) {
-					SudokuCell cell = sudoku.getCell(x, y);
+					SudokuCell cell = cells.getCell(x, y);
 					
 					int cellLeft = x * cellWidth;
 					int cellTop = y * cellHeight;
@@ -184,21 +193,23 @@ public class SudokuBoard extends View {
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		// TODO: overit si, ze je tohle ok
-		int x = (int)event.getX();
-		int y = (int)event.getY();
 		
-		selectedCell = getCellAtPoint(x, y);
-		
-		if (selectedCell != null && onCellSelectedListener != null) {
-			Boolean res = onCellSelectedListener.onCellSelected(selectedCell);
-			if (!res) {
-				selectedCell = null;
+		if (!readonly) {
+			// TODO: overit si, ze je tohle ok
+			int x = (int)event.getX();
+			int y = (int)event.getY();
+			
+			selectedCell = getCellAtPoint(x, y);
+			
+			if (selectedCell != null && onCellSelectedListener != null) {
+				Boolean res = onCellSelectedListener.onCellSelected(selectedCell);
+				if (!res) {
+					selectedCell = null;
+				}
 			}
+			
+			invalidate();
 		}
-		
-		invalidate(); // TODO: au, tohle bude bolet
-		
 		return true;
 	}
 	
@@ -213,7 +224,7 @@ public class SudokuBoard extends View {
 		int ycol = y / cellHeight;
 		
 		if(xcol >= 0 && ycol >= 0 && xcol < 9 && ycol < 9) {
-			return sudoku.getCell(xcol, ycol);
+			return cells.getCell(xcol, ycol);
 		} else {
 			return null;
 		}

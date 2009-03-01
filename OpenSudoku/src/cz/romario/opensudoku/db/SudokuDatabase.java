@@ -1,26 +1,27 @@
 package cz.romario.opensudoku.db;
 
-import android.content.ContentUris;
+import java.util.Date;
+
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.net.Uri;
-import android.text.TextUtils;
 import android.util.Log;
 import cz.romario.opensudoku.Const;
-import cz.romario.opensudoku.Sudoku;
+import cz.romario.opensudoku.SudokuCellCollection;
+import cz.romario.opensudoku.SudokuGame;
 
 public class SudokuDatabase {
 	private static final String DATABASE_NAME = "sudoku"; // TODO: debug
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 3;
     
     private static final String SUDOKU_TABLE_NAME = "sudoku";
     private static final String FOLDER_TABLE_NAME = "folder";
+    
+    private static final String[] sudokuListProjection;
     
 	/**
      * This class helps open, create, and upgrade the database file.
@@ -35,6 +36,7 @@ public class SudokuDatabase {
         public void onCreate(SQLiteDatabase db) {
             db.execSQL("CREATE TABLE " + SUDOKU_TABLE_NAME + " ("
                     + SudokuColumns._ID + " INTEGER PRIMARY KEY,"
+                    + SudokuColumns.FOLDER_ID + " INTEGER,"
                     + SudokuColumns.NAME + " TEXT,"
                     + SudokuColumns.CREATED + " INTEGER,"
                     + SudokuColumns.STATE + " INTEGER,"
@@ -116,26 +118,96 @@ public class SudokuDatabase {
     }
     
     public Cursor getSudokuList(long folderID) {
-    	// setTables("foo LEFT OUTER JOIN bar ON (foo.id = bar.foo_id)")
-    	
-    	// TODO: neselectit vsechno, DATA by byla zbytecne brut
-    	return null;
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        qb.setTables(SUDOKU_TABLE_NAME);
+        //qb.setProjectionMap(sPlacesProjectionMap);
+        qb.appendWhere(SudokuColumns.FOLDER_ID + "=" + folderID);
+        
+        // Get the database and run the query
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        return qb.query(db, sudokuListProjection, null, null, null, null, "created DESC");
     }
     
-    public Sudoku getSudoku(long sudokuID) {
-    	return null;
+    public SudokuGame getSudoku(long sudokuID) {
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        qb.setTables(SUDOKU_TABLE_NAME);
+        qb.appendWhere(SudokuColumns._ID + "=" + sudokuID);
+        
+        // Get the database and run the query
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        Cursor c = qb.query(db, null, null, null, null, null, null);
+        
+        if (!c.moveToFirst())
+        	return null;
+        
+    	int id = c.getInt(c.getColumnIndex(SudokuColumns._ID));
+    	Date created = new Date(c.getLong(c.getColumnIndex(SudokuColumns.CREATED)));
+    	String data = c.getString(c.getColumnIndex(SudokuColumns.DATA));
+    	Date lastPlayed = new Date(c.getLong(c.getColumnIndex(SudokuColumns.LAST_PLAYED)));
+    	String name = c.getString(c.getColumnIndex(SudokuColumns.NAME));
+    	int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
+    	Date time = new Date(c.getLong(c.getColumnIndex(SudokuColumns.TIME)));
+    	
+    	SudokuGame s = new SudokuGame();
+    	s.setId(id);
+    	s.setCreated(created);
+    	s.setCells(SudokuCellCollection.deserialize(data));
+    	s.setLastPlayed(lastPlayed);
+    	s.setName(name);
+    	s.setState(state);
+    	s.setTime(time);
+    	
+    	return s;
     }
     
-    public void insertSudoku(long folderID, Sudoku sudoku) {
+    public long insertSudoku(long folderID, String name, SudokuCellCollection sudoku) {
+        Long created = Long.valueOf(System.currentTimeMillis());
+
+        ContentValues values = new ContentValues();
+        values.put(SudokuColumns.CREATED, created);
+        // TODO: auto-generate name if not set
+        values.put(SudokuColumns.NAME, name);
+        values.put(SudokuColumns.TIME, 0);
+        values.put(SudokuColumns.STATE, SudokuGame.GAME_STATE_NOT_STARTED); // TODO: enum
+        values.put(SudokuColumns.FOLDER_ID, folderID);
+        values.put(SudokuColumns.DATA, sudoku.serialize());
+
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        long rowId = db.insert(SUDOKU_TABLE_NAME, SudokuColumns.NAME, values);
+        if (rowId > 0) {
+            return rowId;
+        }
+
+        throw new SQLException(String.format("Failed to insert sudoku '%s'.", name));
+    }
+    
+    public void updateSudoku(SudokuGame sudoku) {
+        ContentValues values = new ContentValues();
+        values.put(SudokuColumns.NAME, sudoku.getName());
+        values.put(SudokuColumns.DATA, sudoku.getCells().serialize());
+        values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
+        values.put(SudokuColumns.STATE, sudoku.getState());
+        values.put(SudokuColumns.TIME, sudoku.getTime().getTime());
+        
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        db.update(SUDOKU_TABLE_NAME, values, SudokuColumns._ID + "=" + sudoku.getId(), null);
+    }
+    
+    public void deleteSudoku(SudokuCellCollection sudoku) {
     	
     }
     
-    public void updateSudoku(Sudoku sudoku) {
-    	
-    }
-    
-    public void deleteSudoku(Sudoku sudoku) {
-    	
+    static {
+    	sudokuListProjection = new String[] {
+    		SudokuColumns._ID,
+    		SudokuColumns.NAME,
+    		SudokuColumns.CREATED,
+    		SudokuColumns.STATE,
+    		SudokuColumns.TIME,
+    		SudokuColumns.LAST_PLAYED
+    	};
     }
 
 }

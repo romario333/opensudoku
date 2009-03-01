@@ -6,16 +6,30 @@
     <application android:icon="@drawable/opensudoku_v2" android:label="@string/app_name">
         <activity android:name=".OpenSudokuActivity"
                   android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
-        <activity android:name=".PlaySudokuActivity"
+        <activity android:name=".SudokuListActivity"
+                  android:label="@string/app_name">
+        </activity>
+        <activity android:name=".SudokuDetailActivity"
+                  android:label="@string/app_name">
+        </activity>
+        <activity android:name=".SudokuEditActivity"
+                  android:label="@string/app_name">
+	        <intent-filter>
+                <action android:name="android.intent.action.INSERT" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+	        </intent-filter>
+        </activity>
+        <activity android:name=".SudokuPlayActivity"
                   android:label="@string/app_name">
         </activity>
         <activity android:name=".FolderListActivity"
                   android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".FolderEditActivity"
                   android:label="@string/app_name">

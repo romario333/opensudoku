@@ -1,51 +1,110 @@
 package cz.romario.opensudoku;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 import cz.romario.opensudoku.SudokuBoard.OnCellSelectedListener;
+import cz.romario.opensudoku.db.SudokuDatabase;
 
-public class PlaySudokuActivity extends Activity {
+public class SudokuPlayActivity extends Activity{
+	
+	public static final String EXTRAS_SUDOKU_ID = "sudoku_id";
 	
 	private static final int DIALOG_SELECT_NUMBER = 1;
 	
-	private Sudoku sudoku;
+	private static final int TIMER_UPDATE_TIME = 1;
+	
+	private long sudokuGameID;
+	private SudokuGame sudokuGame;
 	
 	private SudokuBoard sudokuBoard;
 	private SudokuCell selectedCell;
 	// TODO: je tohle OK, precist si znovu ten clanek o leakovani pameti
 	private Dialog selectNumberDialog;
+	
+	private long gameStartTime;
+	private TextView timeLabel;
+	private NumberFormat timeFormat = new DecimalFormat("00");
+	
+	private Timer timer;
+	private Handler timerHandler = new Handler() {
+		public void handleMessage(Message msg) {
+            if (msg.what == TIMER_UPDATE_TIME) {
+            	long gameEndTime = System.currentTimeMillis();
+            	long time = gameEndTime - gameStartTime + sudokuGame.getTime().getTime();
+            	
+    	    	long totalSeconds = time / 1000;
+    	    	long minutes = totalSeconds / 60;
+    	    	long seconds = totalSeconds - (minutes * 60);
+    	    	timeLabel.setText(String.format("%s:%s", 
+    	    			timeFormat.format(minutes), 
+    	    			timeFormat.format(seconds) ));
+    	    	// TODO: jak moc se podepise na spotrebe, udelat test
+            }
+        }
 
+	};
+
+	private OnClickListener buttonLeaveClickListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			updateSudokuGameTime();
+			SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
+			sudokuDB.updateSudoku(sudokuGame);
+			finish();
+		}
+		
+	};
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sudoku);
+        setContentView(R.layout.sudoku_play);
+        
+        Button buttonLeave = (Button) findViewById(R.id.button_leave);
+        buttonLeave.setOnClickListener(buttonLeaveClickListener );
+        
+        gameStartTime = System.currentTimeMillis();
+        timeLabel = (TextView)findViewById(R.id.time_label);
         
         if (savedInstanceState != null) {
-        	sudoku = (Sudoku)savedInstanceState.getParcelable("sudoku_board");
+        	sudokuGame = (SudokuGame)savedInstanceState.getParcelable("sudoku_game");
         } else {
         	// TODO: by id
-            sudoku = Sudoku.CreateDebugGame();
+        	sudokuGameID = getIntent().getLongExtra(EXTRAS_SUDOKU_ID, 0);
+        	
+        	SudokuDatabase sudokuDB = new SudokuDatabase(this);
+        	sudokuGame = sudokuDB.getSudoku(sudokuGameID);
         }
         
+    	setTitle(sudokuGame.getName());
+
+        
         sudokuBoard = (SudokuBoard)findViewById(R.id.sudoku_board);
-        sudokuBoard.setSudoku(sudoku);
+        sudokuBoard.setCells(sudokuGame.getCells());
         
         sudokuBoard.setOnCellSelectedListener(sudoBoardCellSelected);
         
         
         // TODO: temp verze dialogu
         // TODO: .setIcon
-        selectNumberDialog = new AlertDialog.Builder(PlaySudokuActivity.this)
+        selectNumberDialog = new AlertDialog.Builder(SudokuPlayActivity.this)
         .setTitle("Select number")
         .setView(CreateSelectNumberView())
         .setPositiveButton("Clear", new DialogInterface.OnClickListener() {
@@ -54,7 +113,7 @@ public class PlaySudokuActivity extends Activity {
             	if (selectedCell != null) {
             		// TODO: do fce
             		selectedCell.setValue(0);
-            		sudoku.validate();
+            		sudokuGame.validate();
             		sudokuBoard.postInvalidate();
             	}
             }
@@ -66,13 +125,35 @@ public class PlaySudokuActivity extends Activity {
             }
         })
        .create(); 
+        
+        
+        // TODO: budu ho muset stopovat az pujde do pozadi?
+        timer = new Timer(false);
+        timer.schedule(timerTask, 0, 1000);
     }
+    
+    private TimerTask timerTask = new TimerTask() {
+
+		@Override
+		public void run() {
+			// TODO: musim resit thread-safety?
+			timerHandler.sendEmptyMessage(TIMER_UPDATE_TIME);
+		}
+    	
+    };
     
     @Override
     protected void onSaveInstanceState(Bundle outState) {
     	// TODO Auto-generated method stub
     	super.onSaveInstanceState(outState);
-    	outState.putParcelable("sudoku_board", sudokuBoard.getSudoku());
+    	updateSudokuGameTime();
+    	outState.putParcelable("sudoku_game", sudokuGame);
+    }
+    
+    private void updateSudokuGameTime() {
+    	long gameEndTime = System.currentTimeMillis(); 
+    	long time = gameEndTime - gameStartTime;
+    	sudokuGame.addTime(time);
     }
     
     @Override
@@ -124,7 +205,7 @@ public class PlaySudokuActivity extends Activity {
 				}
 				
 				
-				sudoku.validate();
+				sudokuGame.validate();
 				sudokuBoard.postInvalidate();
 			}
 			selectNumberDialog.dismiss();
@@ -144,75 +225,4 @@ public class PlaySudokuActivity extends Activity {
 		}
     	
     };
-    
-    
-    
-    
-    // TODO: asi ho budu cpat do nejakyho kontejneru
-//    private void createSudoku() {
-//    	TableLayout sudokuTable = (TableLayout)findViewById(R.id.sudoku_table);
-//    	
-//    	for (int x=0; x<3; x++) {
-//    		TableRow row = new TableRow(this);
-//    		row.setBackgroundColor(Color.YELLOW);
-//
-//    		for (int y=0; y<3; y++) {
-//	    		row.addView(createSector());
-//    		}
-//    		
-//    		sudokuTable.addView(row, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-//    		
-//    	}
-//    	
-//    }
-//    
-//    private View createSector() {
-//    	TextView cell = new TextView(this);
-//    	cell.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-//    	cell.setBackgroundColor(Color.BLUE);
-//    	cell.setText("haha");
-//    	return cell;
-//
-////    	LinearLayout sector = new LinearLayout(this); 
-//////    	sector.setLayoutParams(new LinearLayout.LayoutParams(
-//////    			LayoutParams.WRAP_CONTENT,
-//////    			LayoutParams.WRAP_CONTENT));
-////    	sector.setBackgroundColor(Color.RED);
-////    	TextView cell = new TextView(this);
-////    	cell.setText("haha");
-////    	sector.addView(cell, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-//
-//    	
-////    	TableLayout sector = new TableLayout(this);
-////    	sector.setLayoutParams(new TableLayout.LayoutParams(
-////    			LayoutParams.FILL_PARENT,
-////    			LayoutParams.FILL_PARENT));
-////    	sector.setBackgroundColor(Color.RED);
-////    			
-////    	TextView cell = new TextView(this);
-////    	cell.setText("haha");
-////    	sector.addView(cell);
-//
-//    	
-////    	for (int x=0; x<3; x++) {
-////    		TableRow row = new TableRow(this);
-////    		
-////    		for (int y=0; y<3; y++) {
-////	    		TextView cell = new TextView(this);
-////		    	cell.setLayoutParams(new LayoutParams(
-////		    			LayoutParams.FILL_PARENT,
-////		    			LayoutParams.FILL_PARENT));
-////
-////
-////	    		cell.setText("5");
-////	    		row.addView(cell);
-////    		}
-////    		
-////    		sector.addView(row);
-////    	}
-//    	
-////    	return sector;
-//    }
-	
-
 }

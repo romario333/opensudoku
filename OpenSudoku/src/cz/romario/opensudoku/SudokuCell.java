@@ -13,14 +13,10 @@ import android.os.Parcelable;
  * @author romario
  *
  */
-public class SudokuCell implements Parcelable, Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4469146085003371681L;
-	private SudokuSector sector;
-	private SudokuRow row;
-	private SudokuColumn column;
+public class SudokuCell implements Parcelable {
+	private SudokuCellGroup sector;
+	private SudokuCellGroup row;
+	private SudokuCellGroup column;
 	
 	private int value;
 	private String notes = "";
@@ -50,27 +46,27 @@ public class SudokuCell implements Parcelable, Serializable {
 	}
 
 	
-	public SudokuSector getSector() {
+	public SudokuCellGroup getSector() {
 		return sector;
 	}
 	
-	protected void setSector(SudokuSector sector) {
+	protected void setSector(SudokuCellGroup sector) {
 		this.sector = sector;
 	}
 
-	public SudokuRow getRow() {
+	public SudokuCellGroup getRow() {
 		return row;
 	}
 
-	protected void setRow(SudokuRow row) {
+	protected void setRow(SudokuCellGroup row) {
 		this.row = row;
 	}
 	
-	public SudokuColumn getColumn() {
+	public SudokuCellGroup getColumn() {
 		return column;
 	}
 	
-	protected void setColumn(SudokuColumn column) {
+	protected void setColumn(SudokuCellGroup column) {
 		this.column = column;
 	}
 
