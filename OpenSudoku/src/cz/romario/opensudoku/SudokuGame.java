@@ -16,7 +16,7 @@ public class SudokuGame implements Parcelable {
 	private String name = "";
 	private Date created;
 	private int state;
-	private Date time;
+	private long time;
 	private Date lastPlayed;
 	
 	private SudokuCellCollection cells;
@@ -54,7 +54,7 @@ public class SudokuGame implements Parcelable {
 	 * Sets time of play in seconds.
 	 * @param time
 	 */
-	public void setTime(Date time) {
+	public void setTime(long time) {
 		this.time = time;
 	}
 
@@ -62,18 +62,9 @@ public class SudokuGame implements Parcelable {
 	 * Gets time of play in seconds.
 	 * @return
 	 */
-	public Date getTime() {
+	public long getTime() {
 		return time;
 	}
-	/**
-	 * Add given count of milliseconds to time.
-	 * @param milliseconds
-	 */
-	public void addTime(long milliseconds) {
-		// TODO: to ze je Time Date mi myslim neprinasi vubec zadnou vyhodu, spis naopak
-		this.time = new Date(time.getTime() + milliseconds);
-	}
-	
 
 	public void setLastPlayed(Date lastPlayed) {
 		this.lastPlayed = lastPlayed;
@@ -115,7 +106,7 @@ public class SudokuGame implements Parcelable {
 		name = in.readString();
 		created = new Date(in.readLong());
 		state = in.readInt();
-		time = new Date(in.readLong());
+		time = in.readLong();
 		lastPlayed = new Date(in.readLong());
 		
 		cells = (SudokuCellCollection) in.readParcelable(SudokuCellCollection.class.getClassLoader());
@@ -143,7 +134,7 @@ public class SudokuGame implements Parcelable {
 		dest.writeString(name);
 		dest.writeLong(created.getTime());
 		dest.writeInt(state);
-		dest.writeLong(time.getTime());
+		dest.writeLong(time);
 		dest.writeLong(lastPlayed.getTime());
 		// TODO: zas ty flags co nevim k cemu jsou
 		dest.writeParcelable(cells, flags);

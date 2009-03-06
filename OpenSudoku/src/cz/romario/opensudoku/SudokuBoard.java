@@ -191,10 +191,13 @@ public class SudokuBoard extends View {
 		selectedPaint.setAlpha(100);
 	}
 	
+	
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		
 		if (!readonly) {
+			
 			// TODO: overit si, ze je tohle ok
 			int x = (int)event.getX();
 			int y = (int)event.getY();

@@ -2,9 +2,7 @@ package cz.romario.opensudoku;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Timer;
-import java.util.TimerTask;
-
+import java.util.Formatter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -41,41 +39,24 @@ public class SudokuPlayActivity extends Activity{
 	private SudokuBoard sudokuBoard;
 	private SudokuCell selectedCell;
 	// TODO: je tohle OK, precist si znovu ten clanek o leakovani pameti
+	private TextView timeLabel;
 	private Dialog selectNumberDialog;
 	
-	PowerManager.WakeLock wakeLock;
 	
-	private long gameStartTime;
-	private TextView timeLabel;
-	private NumberFormat timeFormat = new DecimalFormat("00");
+	private StringBuilder timeText;
+	private Formatter timeFormatter;
 	
-	private Timer timer;
-	private Handler timerHandler = new Handler() {
-		public void handleMessage(Message msg) {
-            if (msg.what == TIMER_UPDATE_TIME) {
-            	updateTimeLabel();
-            }
-        }
+	private GameTimer gameTimer;
+	
+	//PowerManager.WakeLock wakeLock;
 
-	};
 	
-	private void updateTimeLabel() {
-    	long gameEndTime = System.currentTimeMillis();
-    	long time = gameEndTime - gameStartTime + sudokuGame.getTime().getTime();
-    	
-    	long totalSeconds = time / 1000;
-    	long minutes = totalSeconds / 60;
-    	long seconds = totalSeconds - (minutes * 60);
-    	timeLabel.setText(String.format("%s:%s", 
-    			timeFormat.format(minutes), 
-    			timeFormat.format(seconds) ));
-	}
 
 	private OnClickListener buttonLeaveClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
-			updateSudokuGameTime();
+			sudokuGame.setTime(gameTimer.getTime());
 			SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
 			sudokuDB.updateSudoku(sudokuGame);
 			finish();
@@ -83,33 +64,48 @@ public class SudokuPlayActivity extends Activity{
 		
 	};
 	
-    @Override
+    
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sudoku_play);
         
         Button buttonLeave = (Button) findViewById(R.id.button_leave);
         buttonLeave.setOnClickListener(buttonLeaveClickListener );
-        
-        gameStartTime = System.currentTimeMillis();
+
         timeLabel = (TextView)findViewById(R.id.time_label);
+        timeText = new StringBuilder(5);
+        timeFormatter = new Formatter(timeText);
+        gameTimer = new GameTimer();
+        
         
         if (savedInstanceState != null) {
         	sudokuGame = (SudokuGame)savedInstanceState.getParcelable("sudoku_game");
+        	gameTimer.restoreState(savedInstanceState); // TODO: mel bych asi sladit se sudokuGame
+        	
         } else {
         	// TODO: by id
         	sudokuGameID = getIntent().getLongExtra(EXTRAS_SUDOKU_ID, 0);
         	
         	SudokuDatabase sudokuDB = new SudokuDatabase(this);
         	sudokuGame = sudokuDB.getSudoku(sudokuGameID);
+        	
+        }
+        
+        if (sudokuGame.getState() == SudokuGame.GAME_STATE_NOT_STARTED) {
+        	sudokuGame.setState(SudokuGame.GAME_STATE_PLAYING);
+        }
+        
+        if (sudokuGame.getState() == SudokuGame.GAME_STATE_COMPLETED) {
+        	updateTimeLabel(sudokuGame.getTime());
         }
         
     	setTitle(sudokuGame.getName());
 
-    	PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+    	//PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
     	// TODO
-    	wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
-    	wakeLock.acquire(5 * 60 * 1000);
+    	//wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
+    	//wakeLock.acquire(5 * 60 * 1000);
         
         sudokuBoard = (SudokuBoard)findViewById(R.id.sudoku_board);
         sudokuBoard.setCells(sudokuGame.getCells());
@@ -125,7 +121,7 @@ public class SudokuPlayActivity extends Activity{
         .setPositiveButton("Clear", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 /* User clicked No so do some stuff */
-            	if (selectedCell != null) {
+            	if (selectedCell != null && selectedCell.getEditable()) {
             		// TODO: do fce
             		selectedCell.setValue(0);
             		sudokuGame.validate();
@@ -142,49 +138,43 @@ public class SudokuPlayActivity extends Activity{
        .create(); 
         
         
-        if (sudokuGame.getState() == SudokuGame.GAME_STATE_NOT_STARTED) {
-        	sudokuGame.setState(SudokuGame.GAME_STATE_PLAYING);
-        }
         
-        updateTimeLabel();
-        if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-	        // TODO: budu ho muset stopovat az pujde do pozadi?
-	        timer = new Timer(false);
-	        timer.schedule(timerTask, 0, 1000);
-        }
+        //updateTimeLabel();
     }
     
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			gameTimer.start();
+		}
+	}
+	
     @Override
     protected void onPause() {
     	// TODO Auto-generated method stub
     	super.onPause();
-    	if (wakeLock.isHeld()) {
-    		wakeLock.release();
-    	}
+    	//if (wakeLock.isHeld()) {
+    	//	wakeLock.release();
+    	//}
+		if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			gameTimer.stop();
+		}
     }
     
-    private TimerTask timerTask = new TimerTask() {
-
-		@Override
-		public void run() {
-			// TODO: musim resit thread-safety?
-			timerHandler.sendEmptyMessage(TIMER_UPDATE_TIME);
-		}
-    	
-    };
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+    	// TODO Auto-generated method stub
+    	super.onWindowFocusChanged(hasFocus);
+    }
     
     @Override
     protected void onSaveInstanceState(Bundle outState) {
     	// TODO Auto-generated method stub
     	super.onSaveInstanceState(outState);
-    	updateSudokuGameTime();
     	outState.putParcelable("sudoku_game", sudokuGame);
-    }
-    
-    private void updateSudokuGameTime() {
-    	long gameEndTime = System.currentTimeMillis(); 
-    	long time = gameEndTime - gameStartTime;
-    	sudokuGame.addTime(time);
     }
     
     @Override
@@ -249,7 +239,6 @@ public class SudokuPlayActivity extends Activity{
         			showDialog(DIALOG_WELL_DONE);
         			sudokuGame.setState(SudokuGame.GAME_STATE_COMPLETED);
         			sudokuBoard.setReadOnly(true);
-        			timer.cancel();
         		}
 				
 				sudokuBoard.postInvalidate();
@@ -271,4 +260,42 @@ public class SudokuPlayActivity extends Activity{
 		}
     	
     };
+    
+	/**
+     * Update the status line to the current game state.
+     */
+	void updateStatus() {
+		// Use StringBuilders and a Formatter to avoid allocating new
+		// String objects every time -- this function is called often!
+		
+		long time = gameTimer.getTime();
+		updateTimeLabel(time);
+	}
+	
+	void updateTimeLabel(long time) {
+		timeText.setLength(0);
+		timeFormatter.format("%02d:%02d", time / 60000, time / 1000 % 60);
+		timeLabel.setText(timeText);
+	}
+    
+    
+	// This class implements the game clock.  All it does is update the
+    // status each tick.
+	private final class GameTimer extends Timer {
+		
+		GameTimer() {
+    		// Tick every 0.25 s.
+    		super(250);
+    	}
+		
+    	@Override
+		protected boolean step(int count, long time) {
+    		updateStatus();
+            
+            // Run until explicitly stopped.
+            return false;
+        }
+        
+	}
+    
 }

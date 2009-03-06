@@ -94,11 +94,20 @@ public class SudokuDatabase {
         values.put(FolderColumns.CREATED, created);
         values.put(FolderColumns.NAME, name);
 
-        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        long rowId = db.insert(FOLDER_TABLE_NAME, FolderColumns.FOLDER_ID, values);
+        SQLiteDatabase db = null;
+        long rowId;
+        try {
+	        db = mOpenHelper.getWritableDatabase();
+	        rowId = db.insert(FOLDER_TABLE_NAME, FolderColumns.FOLDER_ID, values);
+        } finally {
+        	// TODO: mozna nemusim delat
+        	if (db != null) db.close();
+        }
+
         if (rowId > 0) {
             return rowId;
         }
+        
 
         throw new SQLException(String.format("Failed to insert folder '%s'.", name));
     }
@@ -107,14 +116,25 @@ public class SudokuDatabase {
         ContentValues values = new ContentValues();
         values.put(FolderColumns.NAME, name);
 
-        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        db.update(FOLDER_TABLE_NAME, values, FolderColumns._ID + "=" + folderID, null);
+        SQLiteDatabase db = null;
+        try {
+	        db = mOpenHelper.getWritableDatabase();
+	        db.update(FOLDER_TABLE_NAME, values, FolderColumns._ID + "=" + folderID, null);
+        } finally {
+        	if (db != null) db.close();
+        }
     }
     
     public void deleteFolder(long folderID) {
     	// TODO: kontrola, ze v nem nejsou zadna sudoku
-    	SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        db.delete(FOLDER_TABLE_NAME, FolderColumns._ID + "=" + folderID, null);
+    	SQLiteDatabase db = null;
+    	try {
+	    	db = mOpenHelper.getWritableDatabase();
+	        db.delete(FOLDER_TABLE_NAME, FolderColumns._ID + "=" + folderID, null);
+	    } finally {
+	    	if (db != null) db.close();
+	    }
+
     }
     
     public Cursor getSudokuList(long folderID) {
@@ -136,11 +156,14 @@ public class SudokuDatabase {
         qb.appendWhere(SudokuColumns._ID + "=" + sudokuID);
         
         // Get the database and run the query
-        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        Cursor c = qb.query(db, null, null, null, null, null, null);
         
+        SQLiteDatabase db = null;
+        Cursor c = null;
         SudokuGame s = null;
         try {
+            db = mOpenHelper.getReadableDatabase();
+            c = qb.query(db, null, null, null, null, null, null);
+        	
         	if (c.moveToFirst()) {
             	int id = c.getInt(c.getColumnIndex(SudokuColumns._ID));
             	Date created = new Date(c.getLong(c.getColumnIndex(SudokuColumns.CREATED)));
@@ -148,7 +171,7 @@ public class SudokuDatabase {
             	Date lastPlayed = new Date(c.getLong(c.getColumnIndex(SudokuColumns.LAST_PLAYED)));
             	String name = c.getString(c.getColumnIndex(SudokuColumns.NAME));
             	int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
-            	Date time = new Date(c.getLong(c.getColumnIndex(SudokuColumns.TIME)));
+            	long time = c.getLong(c.getColumnIndex(SudokuColumns.TIME));
             	
             	s = new SudokuGame();
             	s.setId(id);
@@ -162,6 +185,10 @@ public class SudokuDatabase {
         } finally {
         	if (c != null) {
 	        	c.close();
+        	}
+        	
+        	if (db != null) {
+        		db.close();
         	}
         }
         
@@ -196,7 +223,7 @@ public class SudokuDatabase {
         values.put(SudokuColumns.DATA, sudoku.getCells().serialize());
         values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
         values.put(SudokuColumns.STATE, sudoku.getState());
-        values.put(SudokuColumns.TIME, sudoku.getTime().getTime());
+        values.put(SudokuColumns.TIME, sudoku.getTime());
         
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         db.update(SUDOKU_TABLE_NAME, values, SudokuColumns._ID + "=" + sudoku.getId(), null);
