@@ -19,7 +19,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
-import cz.romario.opensudoku.SudokuBoard.OnCellSelectedListener;
+import cz.romario.opensudoku.SudokuBoardView.OnCellSelectedListener;
 import cz.romario.opensudoku.db.SudokuDatabase;
 
 public class SudokuPlayActivity extends Activity{
@@ -36,7 +36,7 @@ public class SudokuPlayActivity extends Activity{
 	private long sudokuGameID;
 	private SudokuGame sudokuGame;
 	
-	private SudokuBoard sudokuBoard;
+	private SudokuBoardView sudokuBoard;
 	private SudokuCell selectedCell;
 	// TODO: je tohle OK, precist si znovu ten clanek o leakovani pameti
 	private TextView timeLabel;
@@ -106,7 +106,7 @@ public class SudokuPlayActivity extends Activity{
     	//wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
     	//wakeLock.acquire(5 * 60 * 1000);
         
-        sudokuBoard = (SudokuBoard)findViewById(R.id.sudoku_board);
+        sudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
         sudokuBoard.setCells(sudokuGame.getCells());
         
         sudokuBoard.setOnCellSelectedListener(sudoBoardCellSelected);

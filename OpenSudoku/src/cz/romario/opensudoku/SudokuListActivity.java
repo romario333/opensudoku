@@ -87,7 +87,7 @@ public class SudokuListActivity extends ListActivity{
         try {
              info = (AdapterView.AdapterContextMenuInfo) menuInfo;
         } catch (ClassCastException e) {
-            Log.e(Const.TAG, "bad menuInfo", e);
+            Log.e(TAG, "bad menuInfo", e);
             return;
         }
 
@@ -112,7 +112,7 @@ public class SudokuListActivity extends ListActivity{
         try {
              info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         } catch (ClassCastException e) {
-            Log.e(Const.TAG, "bad menuInfo", e);
+            Log.e(TAG, "bad menuInfo", e);
             return false;
         }
 

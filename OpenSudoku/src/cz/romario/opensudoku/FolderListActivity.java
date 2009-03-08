@@ -26,6 +26,8 @@ public class FolderListActivity extends ListActivity {
     
     /** The index of the name column in cursor */
     private static final int COLUMN_INDEX_NAME = 1;
+    
+    private static final String TAG = "FolderListActivity";
 
 	
 	@Override
@@ -79,7 +81,7 @@ public class FolderListActivity extends ListActivity {
         try {
              info = (AdapterView.AdapterContextMenuInfo) menuInfo;
         } catch (ClassCastException e) {
-            Log.e(Const.TAG, "bad menuInfo", e);
+            Log.e(TAG, "bad menuInfo", e);
             return;
         }
 
@@ -103,7 +105,7 @@ public class FolderListActivity extends ListActivity {
         try {
              info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         } catch (ClassCastException e) {
-            Log.e(Const.TAG, "bad menuInfo", e);
+            Log.e(TAG, "bad menuInfo", e);
             return false;
         }
 

@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
-import cz.romario.opensudoku.Const;
 import cz.romario.opensudoku.SudokuCellCollection;
 import cz.romario.opensudoku.SudokuGame;
 
@@ -22,6 +21,8 @@ public class SudokuDatabase {
     private static final String FOLDER_TABLE_NAME = "folder";
     
     private static final String[] sudokuListProjection;
+    
+    private static final String TAG = "SudokuDatabase";
     
 	/**
      * This class helps open, create, and upgrade the database file.
@@ -58,7 +59,7 @@ public class SudokuDatabase {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(Const.TAG, "Upgrading database from version " + oldVersion + " to "
+            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS " + SUDOKU_TABLE_NAME);
             db.execSQL("DROP TABLE IF EXISTS " + FOLDER_TABLE_NAME);

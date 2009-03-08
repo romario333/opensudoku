@@ -11,7 +11,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class SudokuBoard extends View {
+public class SudokuBoardView extends View {
 
 	private int cellWidth;
 	private int cellHeight;
@@ -32,13 +32,13 @@ public class SudokuBoard extends View {
 	
 	private OnCellSelectedListener onCellSelectedListener;
 	
-	public SudokuBoard(Context context) {
+	public SudokuBoardView(Context context) {
 		super(context);
 		
 		initWidget();
 	}
 	
-	public SudokuBoard(Context context, AttributeSet attrs) {
+	public SudokuBoardView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
 		initWidget();

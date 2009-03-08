@@ -26,7 +26,7 @@ public class SudokuDetailActivity extends Activity {
     	SudokuDatabase sudokuDB = new SudokuDatabase(this);
     	SudokuGame sudokuGame = sudokuDB.getSudoku(sudokuGameID);
     	
-        SudokuBoard sudokuBoard = (SudokuBoard)findViewById(R.id.sudoku_board);
+        SudokuBoardView sudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
         sudokuBoard.setCells(sudokuGame.getCells());
         sudokuBoard.setReadOnly(true);
         
