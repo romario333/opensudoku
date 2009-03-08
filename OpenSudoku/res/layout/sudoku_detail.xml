@@ -12,7 +12,7 @@
 	     />
 	<!--  TODO: neco jako width: 60% -->
 	<!--  TODO: pri weight=1 zasekne eclipse -->
-	<cz.romario.opensudoku.SudokuBoardView
+	<cz.romario.opensudoku.gui.SudokuBoardView
 		android:id="@+id/sudoku_board"
 	    android:layout_width="200dip"
 	    android:layout_height="200dip"

@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center_horizontal">
-	<cz.romario.opensudoku.SudokuBoardView
+	<cz.romario.opensudoku.gui.SudokuBoardView
 		android:id="@+id/sudoku_board"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent" />

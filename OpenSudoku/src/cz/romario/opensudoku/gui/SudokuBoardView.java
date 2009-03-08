@@ -1,7 +1,10 @@
-package cz.romario.opensudoku;
+package cz.romario.opensudoku.gui;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
+
+import cz.romario.opensudoku.game.SudokuCell;
+import cz.romario.opensudoku.game.SudokuCellCollection;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -212,7 +215,7 @@ public class SudokuBoardView extends View {
 		readonlyPaint.setColor(Color.LTGRAY);
 
 		touchedPaint = new Paint();
-		touchedPaint.setColor(Color.rgb(100, 100, 255));
+		touchedPaint.setColor(Color.rgb(100, 255, 100));
 		touchedPaint.setAlpha(100);
 		
 		selectedPaint = new Paint();

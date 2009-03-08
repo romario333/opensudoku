@@ -1,6 +1,8 @@
-package cz.romario.opensudoku;
+package cz.romario.opensudoku.gui;
 
 import cz.romario.opensudoku.db.SudokuDatabase;
+import cz.romario.opensudoku.game.SudokuCellCollection;
+import cz.romario.opensudoku.game.SudokuGame;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package cz.romario.opensudoku;
+package cz.romario.opensudoku.gui;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -19,8 +19,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
-import cz.romario.opensudoku.SudokuBoardView.OnCellSelectedListener;
 import cz.romario.opensudoku.db.SudokuDatabase;
+import cz.romario.opensudoku.game.SudokuCell;
+import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.gui.SudokuBoardView.OnCellSelectedListener;
 
 public class SudokuPlayActivity extends Activity{
 	

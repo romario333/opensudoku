@@ -10,8 +10,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
-import cz.romario.opensudoku.SudokuCellCollection;
-import cz.romario.opensudoku.SudokuGame;
+import cz.romario.opensudoku.game.SudokuCellCollection;
+import cz.romario.opensudoku.game.SudokuGame;
 
 public class SudokuDatabase {
 	private static final String DATABASE_NAME = "sudoku"; // TODO: debug

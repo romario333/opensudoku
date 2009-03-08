@@ -1,4 +1,4 @@
-package cz.romario.opensudoku;
+package cz.romario.opensudoku.gui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,6 +8,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import cz.romario.opensudoku.db.SudokuDatabase;
+import cz.romario.opensudoku.game.SudokuGame;
 
 public class SudokuDetailActivity extends Activity {
 

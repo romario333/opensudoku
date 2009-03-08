@@ -1,4 +1,4 @@
-package cz.romario.opensudoku;
+package cz.romario.opensudoku.gui;
 
 import android.app.Activity;
 import android.content.Intent;

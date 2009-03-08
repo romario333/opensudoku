@@ -1,4 +1,4 @@
-package cz.romario.opensudoku;
+package cz.romario.opensudoku.gui;
 
 import android.os.Bundle;
 import android.os.Handler;

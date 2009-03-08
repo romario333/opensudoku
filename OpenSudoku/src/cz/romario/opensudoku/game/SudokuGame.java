@@ -1,6 +1,7 @@
-package cz.romario.opensudoku;
+package cz.romario.opensudoku.game;
 
 import java.util.Date;
+
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -1,4 +1,4 @@
-package cz.romario.opensudoku;
+package cz.romario.opensudoku.game;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,7 +7,8 @@ public class SudokuCellCollection  implements Parcelable {
 	// Cell's data.
 	private SudokuCell[][] cells;
 	
-	// Derived arrays, contains references to the cells array.
+	// Helper arrays, contains references to the groups of cells, which should containt unique
+	// numbers.
 	private SudokuCellGroup[] sectors;
 	private SudokuCellGroup[] rows;
 	private SudokuCellGroup[] columns;

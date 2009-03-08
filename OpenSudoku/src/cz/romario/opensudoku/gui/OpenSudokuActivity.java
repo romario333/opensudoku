@@ -1,8 +1,10 @@
-package cz.romario.opensudoku;
+package cz.romario.opensudoku.gui;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+
+import cz.romario.opensudoku.game.SudokuCellCollection;
 
 import android.app.Activity;
 import android.os.Bundle;
