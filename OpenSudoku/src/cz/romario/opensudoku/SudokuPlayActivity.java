@@ -84,12 +84,11 @@ public class SudokuPlayActivity extends Activity{
         	gameTimer.restoreState(savedInstanceState); // TODO: mel bych asi sladit se sudokuGame
         	
         } else {
-        	// TODO: by id
-        	sudokuGameID = getIntent().getLongExtra(EXTRAS_SUDOKU_ID, 0);
         	
+        	sudokuGameID = getIntent().getLongExtra(EXTRAS_SUDOKU_ID, 0);
         	SudokuDatabase sudokuDB = new SudokuDatabase(this);
         	sudokuGame = sudokuDB.getSudoku(sudokuGameID);
-        	
+        	gameTimer.setTime(sudokuGame.getTime());
         }
         
         if (sudokuGame.getState() == SudokuGame.GAME_STATE_NOT_STARTED) {
@@ -284,8 +283,7 @@ public class SudokuPlayActivity extends Activity{
 	private final class GameTimer extends Timer {
 		
 		GameTimer() {
-    		// Tick every 0.25 s.
-    		super(250);
+    		super(1000);
     	}
 		
     	@Override

@@ -43,6 +43,7 @@ public class FolderListActivity extends ListActivity {
         Cursor cursor = sudokuDB.getFolderList();
         startManagingCursor(cursor);
         
+        
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.folder_list_item, 
         		cursor, new String[] { FolderColumns.NAME }, 
         		new int[] { R.id.name });

@@ -21,8 +21,10 @@ public class SudokuBoard extends View {
 	private int numberLeft;
 	private int numberTop;
 	private Paint readonlyPaint;
+	private Paint touchedPaint;
 	private Paint selectedPaint;
 	
+	private SudokuCell touchedCell = null;
 	private SudokuCell selectedCell = null;
 	public boolean readonly = false;
 	
@@ -117,6 +119,10 @@ public class SudokuBoard extends View {
 
 		// draw cells
 		if (cells != null) {
+			
+			int touchedCellLeft = -1;
+			int touchedCellTop = -1;
+			
 			float numberAscent = numberPaint.ascent();
 			for (int x=0; x<9; x++) {
 				for (int y=0; y<9; y++) {
@@ -150,8 +156,27 @@ public class SudokuBoard extends View {
 								cellLeft + cellWidth, cellTop + cellHeight,
 								selectedPaint);
 					}
+					
+					if (cell == touchedCell) {
+						touchedCellLeft = cellLeft;
+						touchedCellTop = cellTop;
+					}
 				}
 			}
+			
+			// visually highlight cell under the finger (to cope with touch screen
+			// imprecision)
+			if (touchedCellLeft != -1) {
+				canvas.drawRect(
+						touchedCellLeft, 0,
+						touchedCellLeft + cellWidth, height,
+						touchedPaint);
+				canvas.drawRect(
+						0, touchedCellTop,
+						width, touchedCellTop + cellHeight,
+						touchedPaint);
+			}
+
 		}
 		
 		// draw vertical lines
@@ -185,6 +210,10 @@ public class SudokuBoard extends View {
 		
 		readonlyPaint = new Paint();
 		readonlyPaint.setColor(Color.LTGRAY);
+
+		touchedPaint = new Paint();
+		touchedPaint.setColor(Color.rgb(100, 100, 255));
+		touchedPaint.setAlpha(100);
 		
 		selectedPaint = new Paint();
 		selectedPaint.setColor(Color.YELLOW);
@@ -197,22 +226,33 @@ public class SudokuBoard extends View {
 	public boolean onTouchEvent(MotionEvent event) {
 		
 		if (!readonly) {
-			
-			// TODO: overit si, ze je tohle ok
+			// TODO: potrebuju podporovat zarizeni s touch displayem s vetsi presnosti nez 1px?
 			int x = (int)event.getX();
 			int y = (int)event.getY();
 			
-			selectedCell = getCellAtPoint(x, y);
-			
-			if (selectedCell != null && onCellSelectedListener != null) {
-				Boolean res = onCellSelectedListener.onCellSelected(selectedCell);
-				if (!res) {
-					selectedCell = null;
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+			case MotionEvent.ACTION_MOVE:
+				touchedCell = getCellAtPoint(x, y);
+				break;
+			case MotionEvent.ACTION_UP:
+				touchedCell = null;
+				selectedCell = getCellAtPoint(x, y);
+				
+				if (selectedCell != null && onCellSelectedListener != null) {
+					Boolean res = onCellSelectedListener.onCellSelected(selectedCell);
+					if (!res) {
+						selectedCell = null;
+					}
 				}
+				break;
+			case MotionEvent.ACTION_CANCEL:
+				touchedCell = null;
+				break;
 			}
-			
 			invalidate();
 		}
+		
 		return true;
 	}
 	
