@@ -14,6 +14,12 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+/**
+ *  Sudoku board widget.
+ *  
+ * @author romario
+ *
+ */
 public class SudokuBoardView extends View {
 
 	private int cellWidth;

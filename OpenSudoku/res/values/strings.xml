@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Hello World, OpenSudokuActivity</string>
     <string name="app_name">OpenSudoku</string>
+    <string name="select_number">Select number</string>
 </resources>
