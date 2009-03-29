@@ -19,6 +19,7 @@ public class OpenSudokuActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        // TODO: nejakej bordel, dat pryc
         SudokuCellCollection sudoku = SudokuCellCollection.CreateDebugGame();
         String data = sudoku.serialize();
         SudokuCellCollection nove = SudokuCellCollection.deserialize(data);

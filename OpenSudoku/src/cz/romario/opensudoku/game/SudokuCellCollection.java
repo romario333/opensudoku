@@ -7,7 +7,7 @@ public class SudokuCellCollection  implements Parcelable {
 	// Cell's data.
 	private SudokuCell[][] cells;
 	
-	// Helper arrays, contains references to the groups of cells, which should containt unique
+	// Helper arrays, contains references to the groups of cells, which should contain unique
 	// numbers.
 	private SudokuCellGroup[] sectors;
 	private SudokuCellGroup[] rows;
@@ -154,74 +154,6 @@ public class SudokuCellCollection  implements Parcelable {
 		}
 	}
 	
-	// TODO: najit nejakou standardni serializaci / deserializaci
-	public String serialize() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("version: 1\n");
-		
-		for (int x=0; x<SUDOKU_SIZE; x++)
-		{
-			for (int y=0; y<SUDOKU_SIZE; y++)
-			{
-				SudokuCell cell = cells[x][y];
-				sb.append(cell.getValue()).append("|");
-				sb.append(cell.getNotes()).append("|"); // TODO: escape
-				sb.append(cell.getEditable() ? "1" : "0").append("|");
-				sb.append(cell.getInvalid() ? "1" : "0").append("\n");
-			}
-		}
-		
-		return sb.toString();
-	}
-	
-	public static SudokuCellCollection deserialize(String data) {
-		return new SudokuCellCollection(data);
-	}
-	
-	// TODO: .ctory rozesety vsude po classe, fuj
-	private SudokuCellCollection(String data) {
-		cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
-
-		String[] lines = data.split("\n");
-		if (lines.length == 0) {
-			// TODO: nevim jestli je dobry napad cpat cela data do exception
-			throw new IllegalArgumentException(String.format("Cannot deserialize Sudoku: %s", data));
-		}
-		
-		if (!lines[0].equals("version: 1")) {
-			throw new IllegalArgumentException(String.format("Unknown version of data: %s", data));
-		}
-
-		int pos=1;
-		for (int x=0; x<SUDOKU_SIZE; x++)
-		{
-			for (int y=0; y<SUDOKU_SIZE; y++)
-			{
-				String line = lines[pos++];
-				String[] parts = line.split("\\|");
-				
-				if (parts.length != 4) {
-					throw new IllegalArgumentException(String.format("Illegal item: %s", line));
-				}
-				
-				int value = Integer.parseInt(parts[0]);
-				String note = parts[1];
-				boolean editable = parts[2].equals("1");
-				boolean invalid = parts[3].equals("1");
-				
-				SudokuCell cell = new SudokuCell();
-				cell.setValue(value);
-				cell.setNotes(note);
-				cell.setEditable(editable);
-				cell.setInvalid(invalid);
-				
-				cells[x][y] = cell;
-			}
-		}
-		
-		initSudoku();
-	}
-	
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
@@ -254,5 +186,76 @@ public class SudokuCellCollection  implements Parcelable {
 				}
 			}
 		}
+	}
+	
+	// TODO: find some standard way of serialization
+	/**
+	 * Creates instance of sudoku collection from String, which was earlier created
+	 * by writeToString method.
+	 */
+	public static SudokuCellCollection deserialize(String data) {
+		SudokuCell[][] cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
+
+        String[] lines = data.split("\n");
+        if (lines.length == 0) {
+            throw new IllegalArgumentException("Cannot deserialize Sudoku, data corrupted.");
+        }
+        
+        if (!lines[0].equals("version: 1")) {
+            throw new IllegalArgumentException(String.format("Unknown version of data: %s", lines[0]));
+        }
+
+        int pos=1;
+        for (int x=0; x<SUDOKU_SIZE; x++)
+        {
+                for (int y=0; y<SUDOKU_SIZE; y++)
+                {
+                        String line = lines[pos++];
+                        String[] parts = line.split("\\|");
+                        
+                        if (parts.length != 4) {
+                                throw new IllegalArgumentException(String.format("Illegal item: %s", line));
+                        }
+                        
+                        int value = Integer.parseInt(parts[0]);
+                        String note = parts[1];
+                        boolean editable = parts[2].equals("1");
+                        boolean invalid = parts[3].equals("1");
+                        
+                        SudokuCell cell = new SudokuCell();
+                        cell.setValue(value);
+                        cell.setNotes(note);
+                        cell.setEditable(editable);
+                        cell.setInvalid(invalid);
+                        
+                        cells[x][y] = cell;
+                }
+        }
+        
+        return new SudokuCellCollection(cells);
+	}
+	
+	/**
+	 * Writes collection to String. You can later recreate the object instance
+	 * by calling createFromString method.
+	 * @return
+	 */
+	public String serialize() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("version: 1\n");
+        
+        for (int x=0; x<SUDOKU_SIZE; x++)
+        {
+                for (int y=0; y<SUDOKU_SIZE; y++)
+                {
+                        SudokuCell cell = cells[x][y];
+                        sb.append(cell.getValue()).append("|");
+                        sb.append(cell.getNotes()).append("|"); 
+                        sb.append(cell.getEditable() ? "1" : "0").append("|");
+                        sb.append(cell.getInvalid() ? "1" : "0").append("\n");
+                }
+        }
+        
+        return sb.toString();
 	}
 }
