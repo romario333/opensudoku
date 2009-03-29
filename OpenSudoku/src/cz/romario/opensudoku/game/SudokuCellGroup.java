@@ -18,11 +18,23 @@ public class SudokuCellGroup {
 		pos++;
 	}
 	
-	public void validate() {
-		// TODO: asi bude pomale
+
+	/**
+	 * Validates numbers in given sudoku group - numbers must be unique. Cells with invalid
+	 * numbers are marked (see SudokuCell.getInvalid).
+	 * 
+	 * Method expects that cell's invalid properties has been set to false 
+	 * (SudokuCellCollection.validate does this).
+	 * 
+	 * @return True if validation is successful.
+	 */
+	public boolean validate() {
+		// TODO: quick and dirty implementation
+		boolean valid = true;
+		
+		// count number of occurences of numbers in group
 		Map<Integer, List<SudokuCell>> cellsByValue = 
 			new HashMap<Integer, List<SudokuCell>>();
-		
 		for (int i=0; i<cells.length; i++) {
 			int value = cells[i].getValue();
 			
@@ -32,13 +44,17 @@ public class SudokuCellGroup {
 			cellsByValue.get(value).add(cells[i]);
 		}
 		
+		// if some number is in group more than once, mark cells holding this number as invalid.
 		for (Entry<Integer, List<SudokuCell>> cellsForValue : cellsByValue.entrySet()) {
 			if (cellsForValue.getValue() != null && cellsForValue.getValue().size() > 1) {
 				for (SudokuCell cell : cellsForValue.getValue()) {
 					cell.setInvalid(true);
+					valid = false;
 				}
 			}
 		}
+	
+		return valid;
 	}
 	
 

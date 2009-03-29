@@ -29,60 +29,93 @@ public class SudokuCellCollection  implements Parcelable {
 		});
 	}
 	
+	/**
+	 * Creates empty sudoku.
+	 * @return
+	 */
 	public static SudokuCellCollection CreateEmpty()
 	{
 		SudokuCell[][] cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
 		
-		for (int x=0; x<SUDOKU_SIZE; x++)
+		for (int r=0; r<SUDOKU_SIZE; r++)
 		{
 			
-			for (int y=0; y<SUDOKU_SIZE; y++)
+			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				cells[x][y] = new SudokuCell();
+				cells[r][c] = new SudokuCell();
 			}
 		}
 		
 		return new SudokuCellCollection(cells);
 	}
-	
-	// TODO: private .ctor
+
+	/**
+	 * Wraps given array in this object.
+	 * @param cells
+	 */
 	private SudokuCellCollection(SudokuCell[][] cells)
 	{
+		
 		this.cells = cells;
-		initSudoku();
+		initCollection();
 	}
 	
-	public SudokuCell getCell(int x, int y) {
+	/**
+	 * Gets cell at given position.
+	 * @param rowIndex
+	 * @param colIndex
+	 * @return
+	 */
+	public SudokuCell getCell(int rowIndex, int colIndex) {
 		// TODO: assert
-		return cells[x][y];
+		return cells[rowIndex][colIndex];
 	}
 	
-	public void validate() {
-		for (int x=0; x<SUDOKU_SIZE; x++)
+	/**
+	 * Validates numbers in collection according to the sudoku rules. Cells with invalid
+	 * values are marked - you can use getInvalid method of cell to find out whether cell
+	 * contains valid value.
+	 * 
+	 * @return True if validation is successful. 
+	 */
+	public boolean validate() {
+		boolean valid = true;
+		
+		// first set all cells as valid
+		for (int r=0; r<SUDOKU_SIZE; r++)
 		{
-			for (int y=0; y<SUDOKU_SIZE; y++)
+			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				cells[x][y].setInvalid(false);
+				cells[r][c].setInvalid(false);
 			}
 		}
 		
+		// run validation in groups
 		for (SudokuCellGroup row : rows) {
-			row.validate();
+			if (!row.validate()) {
+				valid = false;
+			}
 		}
 		for (SudokuCellGroup column : columns) {
-			column.validate();
+			if (!column.validate()) {
+				valid = false;
+			}
 		}
 		for (SudokuCellGroup sector : sectors) {
-			sector.validate();
+			if (!sector.validate()) {
+				valid = false;
+			}
 		}
+		
+		return valid;
 	}
 	
 	public boolean isCompleted() {
-		for (int x=0; x<SUDOKU_SIZE; x++)
+		for (int r=0; r<SUDOKU_SIZE; r++)
 		{
-			for (int y=0; y<SUDOKU_SIZE; y++)
+			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				SudokuCell cell = cells[x][y]; 
+				SudokuCell cell = cells[r][c]; 
 				if (cell.getValue() == 0 || cell.getInvalid()) {
 					return false;
 				}
@@ -90,21 +123,13 @@ public class SudokuCellCollection  implements Parcelable {
 		}
 		return true;
 	}
-	
-	// constructor for Parcelable
-	private SudokuCellCollection(Parcel in) {
-		
-		cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
-		for (int row=0; row<SUDOKU_SIZE; row++) {
-			Parcelable[] rowData = (Parcelable[])in.readParcelableArray(SudokuCell.class.getClassLoader());
-			for (int col=0; col < rowData.length; col++) {
-				cells[row][col] = (SudokuCell)rowData[col];
-			}
-		}
-		initSudoku();
-	}
 
-	private void initSudoku() {
+	/**
+	 * Initializes collection, initialization has two steps:
+	 * 1) Groups of cells which must contain unique numbers are created.
+	 * 2) Row and column index for each cell is set.
+	 */
+	private void initCollection() {
 		rows = new SudokuCellGroup[SUDOKU_SIZE];
 		columns = new SudokuCellGroup[SUDOKU_SIZE];
 		sectors = new SudokuCellGroup[SUDOKU_SIZE];
@@ -115,18 +140,37 @@ public class SudokuCellCollection  implements Parcelable {
 			sectors[i] = new SudokuCellGroup();
 		}
 		
-		for (int x=0; x<SUDOKU_SIZE; x++)
+		for (int r=0; r<SUDOKU_SIZE; r++)
 		{
-			for (int y=0; y<SUDOKU_SIZE; y++)
+			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				rows[y].addCell(cells[x][y]);
-				columns[x].addCell(cells[x][y]);
-				// TODO: tohle nevim, v debugu tam jsou podezrely hodnoty
-				sectors[((y/3) * 3) + (x/3)].addCell(cells[x][y]);
+				SudokuCell cell = cells[r][c];
+				
+				cell.rowIndex = r;
+				cell.columnIndex = c;
+				
+				rows[c].addCell(cell);
+				columns[r].addCell(cell);
+				sectors[((c/3) * 3) + (r/3)].addCell(cell);
 			}
 		}
 	}
-	
+
+	/**
+	 * Contructor because of Parcelable support.
+	 * @param in
+	 */
+	private SudokuCellCollection(Parcel in) {
+		
+		cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
+		for (int row=0; row<SUDOKU_SIZE; row++) {
+			Parcelable[] rowData = (Parcelable[])in.readParcelableArray(SudokuCell.class.getClassLoader());
+			for (int col=0; col < rowData.length; col++) {
+				cells[row][col] = (SudokuCell)rowData[col];
+			}
+		}
+		initCollection();
+	}
 	
 	// TODO: Parcelable bych nemel ukladat do databaze, mozna bych se mel uchylit k jinemu
 	// druhu serializace (asi do xml)
@@ -158,11 +202,11 @@ public class SudokuCellCollection  implements Parcelable {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 
-		for (int x=0; x<SUDOKU_SIZE; x++)
+		for (int r=0; r<SUDOKU_SIZE; r++)
 		{
-			for (int y=0; y<SUDOKU_SIZE; y++)
+			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				sb.append(cells[x][y].getValue());
+				sb.append(cells[r][c].getValue());
 			}
 			sb.append("\n");
 		}
@@ -174,15 +218,15 @@ public class SudokuCellCollection  implements Parcelable {
 	public void updateFromString(String data, boolean setEditable) {
 		String[] lines = data.split("\n");
 		
-		for (int x=0; x<SUDOKU_SIZE; x++)
+		for (int r=0; r<SUDOKU_SIZE; r++)
 		{
-			for (int y=0; y<SUDOKU_SIZE; y++)
+			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
 				// omg, neco mi urcite unika
-				int value = Integer.parseInt(new Character(lines[x].charAt(y)).toString());
-				cells[x][y].setValue(value);
+				int value = Integer.parseInt(new Character(lines[r].charAt(c)).toString());
+				cells[r][c].setValue(value);
 				if (setEditable && value != 0) {
-					cells[x][y].setEditable(false);
+					cells[r][c].setEditable(false);
 				}
 			}
 		}
@@ -206,9 +250,9 @@ public class SudokuCellCollection  implements Parcelable {
         }
 
         int pos=1;
-        for (int x=0; x<SUDOKU_SIZE; x++)
+        for (int r=0; r<SUDOKU_SIZE; r++)
         {
-                for (int y=0; y<SUDOKU_SIZE; y++)
+                for (int c=0; c<SUDOKU_SIZE; c++)
                 {
                         String line = lines[pos++];
                         String[] parts = line.split("\\|");
@@ -228,7 +272,7 @@ public class SudokuCellCollection  implements Parcelable {
                         cell.setEditable(editable);
                         cell.setInvalid(invalid);
                         
-                        cells[x][y] = cell;
+                        cells[r][c] = cell;
                 }
         }
         
@@ -244,11 +288,11 @@ public class SudokuCellCollection  implements Parcelable {
 		StringBuffer sb = new StringBuffer();
 		sb.append("version: 1\n");
         
-        for (int x=0; x<SUDOKU_SIZE; x++)
+        for (int r=0; r<SUDOKU_SIZE; r++)
         {
-                for (int y=0; y<SUDOKU_SIZE; y++)
+                for (int c=0; c<SUDOKU_SIZE; c++)
                 {
-                        SudokuCell cell = cells[x][y];
+                        SudokuCell cell = cells[r][c];
                         sb.append(cell.getValue()).append("|");
                         sb.append(cell.getNotes()).append("|"); 
                         sb.append(cell.getEditable() ? "1" : "0").append("|");

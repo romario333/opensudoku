@@ -15,7 +15,7 @@ import android.widget.TextView;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
-import cz.romario.opensudoku.gui.SudokuBoardView.OnCellSelectedListener;
+import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 
 public class SudokuPlayActivity extends Activity{
 	
@@ -31,7 +31,6 @@ public class SudokuPlayActivity extends Activity{
 	private SudokuGame sudokuGame;
 	
 	private SudokuBoardView sudokuBoard;
-	private SudokuCell selectedCell;
 	private TextView timeLabel;
 	
 	private StringBuilder timeText;
@@ -47,7 +46,7 @@ public class SudokuPlayActivity extends Activity{
         setContentView(R.layout.sudoku_play);
         
         Button buttonLeave = (Button) findViewById(R.id.button_leave);
-        buttonLeave.setOnClickListener(buttonLeaveClickListener );
+        buttonLeave.setOnClickListener(buttonLeaveClickListener);
         sudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
         timeLabel = (TextView)findViewById(R.id.time_label);
         timeText = new StringBuilder(5);
@@ -84,7 +83,7 @@ public class SudokuPlayActivity extends Activity{
         
         sudokuBoard.setCells(sudokuGame.getCells());
         
-        sudokuBoard.setOnCellSelectedListener(sudoBoardCellSelected);
+        sudokuBoard.setOnCellTapListener(cellTapListener);
     }	
 	
 	private OnClickListener buttonLeaveClickListener = new OnClickListener() {
@@ -145,11 +144,10 @@ public class SudokuPlayActivity extends Activity{
     }
     
     
-    private OnCellSelectedListener sudoBoardCellSelected = new OnCellSelectedListener() {
+    private OnCellTapListener cellTapListener = new OnCellTapListener() {
 
 		@Override
-		public boolean onCellSelected(SudokuCell cell) {
-			selectedCell = cell;
+		public boolean onCellTap(SudokuCell cell) {
 			if (cell != null && cell.getEditable()) {
 				Intent i = new Intent(SudokuPlayActivity.this, SelectNumberActivity.class);
 				startActivityForResult(i, REQUEST_SELECT_NUMBER);
@@ -161,11 +159,11 @@ public class SudokuPlayActivity extends Activity{
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	// TODO Auto-generated method stub
     	super.onActivityResult(requestCode, resultCode, data);
 
     	switch (requestCode) {
     	case REQUEST_SELECT_NUMBER:
+    		SudokuCell selectedCell = sudokuBoard.getSelectedCell();
     		if (resultCode == RESULT_OK && selectedCell != null) {
 	    		int selectedNumber = data.getIntExtra(SelectNumberActivity.EXTRAS_SELECTED_NUMBER, -1);
 	    		if (selectedNumber != -1) {

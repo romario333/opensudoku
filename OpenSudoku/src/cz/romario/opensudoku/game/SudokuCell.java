@@ -23,6 +23,15 @@ public class SudokuCell implements Parcelable {
 	private String notes = "";
 	private Boolean editable = false;
 	private Boolean invalid = false;
+	
+	/**
+	 * Cell's row index within SudokuCellCollection.
+	 */
+	public int rowIndex = -1;
+	/**
+	 * Cell's column index withing SudokuCellColection.
+	 */
+	public int columnIndex = -1;
 
 
 	public SudokuCell() {

@@ -10,7 +10,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -33,17 +35,16 @@ public class SudokuBoardView extends View {
 	private Paint touchedPaint;
 	private Paint selectedPaint;
 	
-	private SudokuCell touchedCell = null;
-	private SudokuCell selectedCell = null;
+	private SudokuCell touchedCell;
+	private SudokuCell selectedCell;
 	public boolean readonly = false;
 	
 	private SudokuCellCollection cells;
 	
-	private OnCellSelectedListener onCellSelectedListener;
+	private OnCellTapListener onCellTapListener;
 	
 	public SudokuBoardView(Context context) {
 		super(context);
-		
 		initWidget();
 	}
 	
@@ -62,6 +63,10 @@ public class SudokuBoardView extends View {
 		return cells;
 	}
 	
+	public SudokuCell getSelectedCell() {
+		return selectedCell;
+	}
+	
 	public void setReadOnly(boolean readonly) {
 		this.readonly = readonly;
 	}
@@ -70,10 +75,35 @@ public class SudokuBoardView extends View {
 		return readonly;
 	}
 	
-	public void setOnCellSelectedListener(OnCellSelectedListener l) {
-		onCellSelectedListener = l;
+	public void setOnCellTapListener(OnCellTapListener l) {
+		onCellTapListener = l;
 	}
 	
+	private void initWidget() {
+		// TODO: debug
+		setFocusable(true);
+		setFocusableInTouchMode(true);
+		
+		setBackgroundColor(Color.WHITE);
+		
+		linePaint = new Paint();
+		linePaint.setColor(Color.BLACK);
+		
+		numberPaint = new Paint();
+		numberPaint.setColor(Color.BLACK);
+		numberPaint.setAntiAlias(true);
+		
+		readonlyPaint = new Paint();
+		readonlyPaint.setColor(Color.LTGRAY);
+
+		touchedPaint = new Paint();
+		touchedPaint.setColor(Color.rgb(100, 255, 100));
+		touchedPaint.setAlpha(100);
+		
+		selectedPaint = new Paint();
+		selectedPaint.setColor(Color.YELLOW);
+		selectedPaint.setAlpha(100);
+	}
 	
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -127,18 +157,16 @@ public class SudokuBoardView extends View {
 		int height = getMeasuredHeight();
 
 		// draw cells
+		int cellLeft, cellTop;
 		if (cells != null) {
 			
-			int touchedCellLeft = -1;
-			int touchedCellTop = -1;
-			
 			float numberAscent = numberPaint.ascent();
-			for (int x=0; x<9; x++) {
-				for (int y=0; y<9; y++) {
-					SudokuCell cell = cells.getCell(x, y);
+			for (int row=0; row<9; row++) {
+				for (int col=0; col<9; col++) {
+					SudokuCell cell = cells.getCell(row, col);
 					
-					int cellLeft = x * cellWidth;
-					int cellTop = y * cellHeight;
+					cellLeft = col * cellWidth;
+					cellTop = row * cellHeight;
 
 					// draw read-only field background
 					if (!cell.getEditable()) {
@@ -157,32 +185,31 @@ public class SudokuBoardView extends View {
 								cellTop + numberTop - numberAscent, 
 								numberPaint);
 					}
-					
-					// draw highlighted cell
-					if (cell == selectedCell) {
-						canvas.drawRect(
-								cellLeft, cellTop, 
-								cellLeft + cellWidth, cellTop + cellHeight,
-								selectedPaint);
-					}
-					
-					if (cell == touchedCell) {
-						touchedCellLeft = cellLeft;
-						touchedCellTop = cellTop;
-					}
 				}
+			}
+
+			// highlight selected cell
+			if (selectedCell != null) {
+				cellLeft = selectedCell.columnIndex * cellWidth;
+				cellTop = selectedCell.rowIndex * cellHeight;
+				canvas.drawRect(
+						cellLeft, cellTop, 
+						cellLeft + cellWidth, cellTop + cellHeight,
+						selectedPaint);
 			}
 			
 			// visually highlight cell under the finger (to cope with touch screen
 			// imprecision)
-			if (touchedCellLeft != -1) {
+			if (touchedCell != null) {
+				cellLeft = touchedCell.columnIndex * cellWidth;
+				cellTop = touchedCell.rowIndex * cellHeight;
 				canvas.drawRect(
-						touchedCellLeft, 0,
-						touchedCellLeft + cellWidth, height,
+						cellLeft, 0,
+						cellLeft + cellWidth, height,
 						touchedPaint);
 				canvas.drawRect(
-						0, touchedCellTop,
-						width, touchedCellTop + cellHeight,
+						0, cellTop,
+						width, cellTop + cellHeight,
 						touchedPaint);
 			}
 
@@ -207,35 +234,10 @@ public class SudokuBoardView extends View {
 		}
 	}
 	
-	private void initWidget() {
-		setBackgroundColor(Color.WHITE);
-		
-		linePaint = new Paint();
-		linePaint.setColor(Color.BLACK);
-		
-		numberPaint = new Paint();
-		numberPaint.setColor(Color.BLACK);
-		numberPaint.setAntiAlias(true);
-		
-		readonlyPaint = new Paint();
-		readonlyPaint.setColor(Color.LTGRAY);
-
-		touchedPaint = new Paint();
-		touchedPaint.setColor(Color.rgb(100, 255, 100));
-		touchedPaint.setAlpha(100);
-		
-		selectedPaint = new Paint();
-		selectedPaint.setColor(Color.YELLOW);
-		selectedPaint.setAlpha(100);
-	}
-	
-	
-	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		
 		if (!readonly) {
-			// TODO: potrebuju podporovat zarizeni s touch displayem s vetsi presnosti nez 1px?
 			int x = (int)event.getX();
 			int y = (int)event.getY();
 			
@@ -248,8 +250,8 @@ public class SudokuBoardView extends View {
 				touchedCell = null;
 				selectedCell = getCellAtPoint(x, y);
 				
-				if (selectedCell != null && onCellSelectedListener != null) {
-					Boolean res = onCellSelectedListener.onCellSelected(selectedCell);
+				if (selectedCell != null && onCellTapListener != null) {
+					Boolean res = onCellTapListener.onCellTap(selectedCell);
 					if (!res) {
 						selectedCell = null;
 					}
@@ -265,27 +267,93 @@ public class SudokuBoardView extends View {
 		return true;
 	}
 	
+	@Override
+	public boolean onTrackballEvent(MotionEvent event) {
+    	// Actually, just let these come through as D-pad events.
+    	return false;
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch (keyCode) {
+			case KeyEvent.KEYCODE_DPAD_UP:
+				return moveCellSelection(0, -1);
+			case KeyEvent.KEYCODE_DPAD_RIGHT:
+				return moveCellSelection(1, 0);
+			case KeyEvent.KEYCODE_DPAD_DOWN:
+				return moveCellSelection(0, 1);
+			case KeyEvent.KEYCODE_DPAD_LEFT:
+				return moveCellSelection(-1, 0);
+			case KeyEvent.KEYCODE_0:
+			case KeyEvent.KEYCODE_SPACE:
+			case KeyEvent.KEYCODE_DEL:
+				// TODO: Clear value
+				return true;
+		}
+		
+		if (keyCode <= KeyEvent.KEYCODE_1 && keyCode <= KeyEvent.KEYCODE_9) {
+			// TODO: enter value
+			return true;
+		}
+		
+		
+		return false;
+	}
+	
+	/**
+	 * Moves selected by vx cells right and vy cells down. vx and vy can be negative. Returns true,
+	 * if new cell is selected.
+	 * 
+	 * @param vx Horizontal offset, by which move selected cell.
+	 * @param vy Vertical offset, by which move selected cell.
+	 */
+	private boolean moveCellSelection(int vx, int vy) {
+		int newRow = 0;
+		int newCol = 0;
+		
+		if (selectedCell != null) {
+			newRow = selectedCell.rowIndex + vy;
+			newCol = selectedCell.columnIndex + vx;
+		}
+		
+		if(newCol >= 0 && newCol < SudokuCellCollection.SUDOKU_SIZE 
+				&& newRow >= 0 && newRow < SudokuCellCollection.SUDOKU_SIZE) {
+			selectedCell = cells.getCell(newRow, newCol);
+			postInvalidate();
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Get cell at given screen coordinates. Returns null if no cell is found.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	private SudokuCell getCellAtPoint(int x, int y) {
-//		int xcol = 0;
-//		while (x > (xcol * cellWidth)) {
-//			xcol++;
-//		}
+		// TODO: this is not nice, col/row vs x/y
 		
-		// TODO: zamyslet se, bude vzdy presne?
-		int xcol = x / cellWidth;
-		int ycol = y / cellHeight;
+		int row = y / cellHeight;
+		int col = x / cellWidth;
 		
-		if(xcol >= 0 && ycol >= 0 && xcol < 9 && ycol < 9) {
-			return cells.getCell(xcol, ycol);
+		if(col >= 0 && col < SudokuCellCollection.SUDOKU_SIZE 
+				&& row >= 0 && row < SudokuCellCollection.SUDOKU_SIZE) {
+			return cells.getCell(row, col);
 		} else {
 			return null;
 		}
-		
 	}
 	
-	public interface OnCellSelectedListener
+	public interface OnCellTapListener
 	{
-		boolean onCellSelected(SudokuCell cell);
+		/**
+		 * Called when a cell is tapped (by finger).
+		 * @param cell
+		 * @return
+		 */
+		boolean onCellTap(SudokuCell cell);
 	}
 
 
