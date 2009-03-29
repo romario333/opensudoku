@@ -1,8 +1,17 @@
 package cz.romario.opensudoku.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * Collection of sudoku cells. This class in fact represents one sudoku board (9x9).
+ * 
+ * @author romario
+ *
+ */
 public class SudokuCellCollection  implements Parcelable {
 	// Cell's data.
 	private SudokuCell[][] cells;
@@ -12,6 +21,8 @@ public class SudokuCellCollection  implements Parcelable {
 	private SudokuCellGroup[] sectors;
 	private SudokuCellGroup[] rows;
 	private SudokuCellGroup[] columns;
+	
+	private List<OnChangeListener> onChangeListeners = new ArrayList<OnChangeListener>();
 	
 	public static final int SUDOKU_SIZE = 9;
 	
@@ -106,7 +117,7 @@ public class SudokuCellCollection  implements Parcelable {
 				valid = false;
 			}
 		}
-		
+
 		return valid;
 	}
 	
@@ -122,6 +133,42 @@ public class SudokuCellCollection  implements Parcelable {
 			}
 		}
 		return true;
+	}
+	
+	public void setValue(SudokuCell cell, int value) {
+		setValue(cell.getRowIndex(), cell.getColumnIndex(), value);
+	}
+	
+	public void setValue(int rowIndex, int columnIndex, int value) {
+		SudokuCell cell = getCell(rowIndex, columnIndex);
+		if (cell != null) {
+			cell.setValue(value);
+		}
+		onChange();
+	}
+	
+	// TODO: check that this is ok with Observer pattern and do some performance testing
+	// TODO: it seems that generally in android there can be just one listener at a time, why?
+	/** 
+	 * Registers listener, which will be called, when collection is changed.
+	 * Listener will be called synchronously.
+	 * @param l
+	 */
+	public void addOnChangeListener(OnChangeListener l) {
+		onChangeListeners.add(l);
+	}
+	
+	public void removeOnChangeListener(OnChangeListener l) {
+		onChangeListeners.remove(l);
+	}
+	
+	/**
+	 * Fires OnChange event.
+	 */
+	protected void onChange() {
+		for (OnChangeListener l : onChangeListeners) {
+			l.onChange();
+		}
 	}
 
 	/**
@@ -146,12 +193,11 @@ public class SudokuCellCollection  implements Parcelable {
 			{
 				SudokuCell cell = cells[r][c];
 				
-				cell.rowIndex = r;
-				cell.columnIndex = c;
-				
-				rows[c].addCell(cell);
-				columns[r].addCell(cell);
-				sectors[((c/3) * 3) + (r/3)].addCell(cell);
+				cell.initCollection(r, c,
+						sectors[((c/3) * 3) + (r/3)],
+						rows[c],
+						columns[r]
+						);
 			}
 		}
 	}
@@ -302,4 +348,10 @@ public class SudokuCellCollection  implements Parcelable {
         
         return sb.toString();
 	}
+	
+	public interface OnChangeListener
+	{
+		boolean onChange();
+	}
+
 }

@@ -190,8 +190,8 @@ public class SudokuBoardView extends View {
 
 			// highlight selected cell
 			if (selectedCell != null) {
-				cellLeft = selectedCell.columnIndex * cellWidth;
-				cellTop = selectedCell.rowIndex * cellHeight;
+				cellLeft = selectedCell.getColumnIndex() * cellWidth;
+				cellTop = selectedCell.getRowIndex() * cellHeight;
 				canvas.drawRect(
 						cellLeft, cellTop, 
 						cellLeft + cellWidth, cellTop + cellHeight,
@@ -201,8 +201,8 @@ public class SudokuBoardView extends View {
 			// visually highlight cell under the finger (to cope with touch screen
 			// imprecision)
 			if (touchedCell != null) {
-				cellLeft = touchedCell.columnIndex * cellWidth;
-				cellTop = touchedCell.rowIndex * cellHeight;
+				cellLeft = touchedCell.getColumnIndex() * cellWidth;
+				cellTop = touchedCell.getRowIndex() * cellHeight;
 				canvas.drawRect(
 						cellLeft, 0,
 						cellLeft + cellWidth, height,
@@ -287,15 +287,19 @@ public class SudokuBoardView extends View {
 			case KeyEvent.KEYCODE_0:
 			case KeyEvent.KEYCODE_SPACE:
 			case KeyEvent.KEYCODE_DEL:
-				// TODO: Clear value
+				// clear value in selected cell
+				if (selectedCell != null) {
+					cells.setValue(selectedCell, 0);
+				}
 				return true;
 		}
 		
 		if (keyCode <= KeyEvent.KEYCODE_1 && keyCode <= KeyEvent.KEYCODE_9) {
-			// TODO: enter value
+			// enter request number in cell
+			int selectedNumber = keyCode - KeyEvent.KEYCODE_0;
+			cells.setValue(selectedCell, selectedNumber);
 			return true;
 		}
-		
 		
 		return false;
 	}
@@ -312,8 +316,8 @@ public class SudokuBoardView extends View {
 		int newCol = 0;
 		
 		if (selectedCell != null) {
-			newRow = selectedCell.rowIndex + vy;
-			newCol = selectedCell.columnIndex + vx;
+			newRow = selectedCell.getRowIndex() + vy;
+			newCol = selectedCell.getColumnIndex() + vx;
 		}
 		
 		if(newCol >= 0 && newCol < SudokuCellCollection.SUDOKU_SIZE 
@@ -322,6 +326,7 @@ public class SudokuBoardView extends View {
 			postInvalidate();
 			return true;
 		}
+		
 		
 		return false;
 	}

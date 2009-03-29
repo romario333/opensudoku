@@ -15,6 +15,7 @@ import android.widget.TextView;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.game.SudokuCellCollection.OnChangeListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 
 public class SudokuPlayActivity extends Activity{
@@ -25,7 +26,8 @@ public class SudokuPlayActivity extends Activity{
 	
 	private static final int REQUEST_SELECT_NUMBER = 1;
 	
-	private static final int DIALOG_WELL_DONE = 1;
+	private static final int DIALOG_SELECT_NUMBER = 1;
+	private static final int DIALOG_WELL_DONE = 2;
 	
 	private long sudokuGameID;
 	private SudokuGame sudokuGame;
@@ -37,7 +39,7 @@ public class SudokuPlayActivity extends Activity{
 	private Formatter timeFormatter;
 	
 	private GameTimer gameTimer;
-	
+
 	//PowerManager.WakeLock wakeLock;
 
 	@Override
@@ -82,8 +84,9 @@ public class SudokuPlayActivity extends Activity{
     	//wakeLock.acquire(5 * 60 * 1000);
         
         sudokuBoard.setCells(sudokuGame.getCells());
-        
         sudokuBoard.setOnCellTapListener(cellTapListener);
+        
+		sudokuGame.getCells().addOnChangeListener(cellsOnChangeListener);
     }	
 	
 	private OnClickListener buttonLeaveClickListener = new OnClickListener() {
@@ -169,23 +172,32 @@ public class SudokuPlayActivity extends Activity{
 	    		if (selectedNumber != -1) {
 	                // set cell number selected by user
 	    			if (selectedCell.getEditable()) {
-	                	selectedCell.setValue(selectedNumber);
+	    				sudokuGame.getCells().setValue(selectedCell, selectedNumber);
 	                }
-	                
-	                // check whether is game completed, if so, finish the game
-	    			if (sudokuGame.isCompleted()) {
-                        showDialog(DIALOG_WELL_DONE);
-                        sudokuGame.setState(SudokuGame.GAME_STATE_COMPLETED);
-                        sudokuBoard.setReadOnly(true);
-	                }
-	                    
-	                // update board view
-	    			sudokuBoard.postInvalidate();
 	    		}
     		}
     		break;
     	}
     }
+    
+	private OnChangeListener cellsOnChangeListener = new OnChangeListener() {
+		@Override
+		public boolean onChange() {
+			sudokuGame.validate();
+			
+            // check whether game is completed, if so, finish the game
+			if (sudokuGame.isCompleted()) {
+                showDialog(DIALOG_WELL_DONE);
+                sudokuGame.setState(SudokuGame.GAME_STATE_COMPLETED);
+                sudokuBoard.setReadOnly(true);
+            }
+                
+            // update board view
+			sudokuBoard.postInvalidate();
+			return true;
+		}
+	};
+
     
 	/**
      * Update the status line to the current game state.

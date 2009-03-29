@@ -96,8 +96,12 @@ public class SudokuGame implements Parcelable {
 		cells.validate();
 	}
 	
+	/**
+	 * Returns true, if puzzle is solved. In order to know actual state, you have to
+	 * call validate first. 
+	 * @return
+	 */
 	public boolean isCompleted() {
-		validate();
 		return cells.isCompleted();
 	}
 	

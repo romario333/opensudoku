@@ -22,10 +22,11 @@ import android.widget.LinearLayout.LayoutParams;
  * Activity retuns integer value of selected number (if user presses Clear button,
  * 0 is returned).
  * 
+ * TODO: Ok, tohle nefunguje dobre, cinnost pod timhle je zastavena, takze nefunguje spravne napr. timer.
+ * 
  * @author romario
  *
  */
-// TODO: rename na activity
 public class SelectNumberActivity extends Activity {
 
 	public static final String EXTRAS_SELECTED_NUMBER = "sel_number";

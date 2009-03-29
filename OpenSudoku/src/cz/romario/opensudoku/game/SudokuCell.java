@@ -15,6 +15,9 @@ import android.os.Parcelable;
  *
  */
 public class SudokuCell implements Parcelable {
+	// if cell is included in collection, here are some information about cell's position
+	private int rowIndex = -1;
+	private int columnIndex = -1;
 	private SudokuCellGroup sector;
 	private SudokuCellGroup row;
 	private SudokuCellGroup column;
@@ -24,14 +27,42 @@ public class SudokuCell implements Parcelable {
 	private Boolean editable = false;
 	private Boolean invalid = false;
 	
+	
 	/**
-	 * Cell's row index within SudokuCellCollection.
+	 * Gets cell's row index within SudokuCellCollection.
+	 * @return
 	 */
-	public int rowIndex = -1;
+	public int getRowIndex() {
+		return rowIndex;
+	}
+	
 	/**
-	 * Cell's column index withing SudokuCellColection.
+	 * Gets cell's column index within SudokuCellColection.
+	 * @return
 	 */
-	public int columnIndex = -1;
+	public int getColumnIndex() {
+		return columnIndex;
+	}
+	
+	/**
+	 * Called when SudokuCell is added to collection. 
+	 * @param rowIndex Cell's row index within collection.
+	 * @param colIndex Cell's column index within collection.
+	 * @param sector Reference to sector group in which cell is included.
+	 * @param row Reference to row group in which cell is included.
+	 * @param column Reference to column group in which cell is included. 
+	 */
+	protected void initCollection(int rowIndex, int colIndex, SudokuCellGroup sector, SudokuCellGroup row, SudokuCellGroup column) {
+		this.rowIndex = rowIndex;
+		this.columnIndex = colIndex;
+		this.sector = sector;
+		this.row = row;
+		this.column = column;
+		
+		sector.addCell(this);
+		row.addCell(this);
+		column.addCell(this);
+	}
 
 
 	public SudokuCell() {
@@ -47,39 +78,18 @@ public class SudokuCell implements Parcelable {
 		invalid = false;
 	}
 	
-	// constructor for Parcelable
-	private SudokuCell(Parcel in) {
-		value = in.readInt();
-		notes = in.readString();
-		editable = (Boolean)in.readValue(null);
-		invalid = (Boolean)in.readValue(null);
-	}
-
-	
 	public SudokuCellGroup getSector() {
 		return sector;
 	}
 	
-	protected void setSector(SudokuCellGroup sector) {
-		this.sector = sector;
-	}
-
 	public SudokuCellGroup getRow() {
 		return row;
 	}
 
-	protected void setRow(SudokuCellGroup row) {
-		this.row = row;
-	}
-	
 	public SudokuCellGroup getColumn() {
 		return column;
 	}
 	
-	protected void setColumn(SudokuCellGroup column) {
-		this.column = column;
-	}
-
 	public void setValue(int value) {
 		this.value = value;
 	}
@@ -112,6 +122,14 @@ public class SudokuCell implements Parcelable {
 		return invalid;
 	}
 	
+	// constructor for Parcelable
+	private SudokuCell(Parcel in) {
+		value = in.readInt();
+		notes = in.readString();
+		editable = (Boolean)in.readValue(null);
+		invalid = (Boolean)in.readValue(null);
+	}
+
 	public static final Parcelable.Creator<SudokuCell> CREATOR = new Parcelable.Creator<SudokuCell>() {
 		public SudokuCell createFromParcel(Parcel in) {
 		    return new SudokuCell(in);
