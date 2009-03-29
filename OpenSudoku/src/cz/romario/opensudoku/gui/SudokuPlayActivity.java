@@ -18,6 +18,7 @@ import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.SudokuCellCollection.OnChangeListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 
+//TODO: vyresit proc tuhne, kdyz vytahnu klavesnici
 public class SudokuPlayActivity extends Activity{
 	
 	private static final String TAG = "SudokuPlayActivity";

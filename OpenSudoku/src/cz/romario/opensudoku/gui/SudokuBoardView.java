@@ -294,7 +294,7 @@ public class SudokuBoardView extends View {
 				return true;
 		}
 		
-		if (keyCode <= KeyEvent.KEYCODE_1 && keyCode <= KeyEvent.KEYCODE_9) {
+		if (keyCode >= KeyEvent.KEYCODE_1 && keyCode <= KeyEvent.KEYCODE_9) {
 			// enter request number in cell
 			int selectedNumber = keyCode - KeyEvent.KEYCODE_0;
 			cells.setValue(selectedCell, selectedNumber);
