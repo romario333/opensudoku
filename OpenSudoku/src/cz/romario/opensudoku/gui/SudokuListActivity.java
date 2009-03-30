@@ -1,7 +1,8 @@
 package cz.romario.opensudoku.gui;
 
-import cz.romario.opensudoku.db.FolderColumns;
-import cz.romario.opensudoku.db.SudokuDatabase;
+import java.util.Date;
+import java.util.Formatter;
+
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -16,6 +17,13 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+import android.widget.SimpleCursorAdapter.ViewBinder;
+import cz.romario.opensudoku.db.FolderColumns;
+import cz.romario.opensudoku.db.SudokuColumns;
+import cz.romario.opensudoku.db.SudokuDatabase;
+import cz.romario.opensudoku.game.SudokuCellCollection;
+import cz.romario.opensudoku.game.SudokuGame;
 
 public class SudokuListActivity extends ListActivity{
 
@@ -25,6 +33,10 @@ public class SudokuListActivity extends ListActivity{
 	
 	public static final String EXTRAS_FOLDER_ID = "folder_id";
 	private static final String TAG = "SudokuListActivity";
+	
+	private StringBuilder timeText;
+	private Formatter timeFormatter;
+	
 	
 	private long folderID;
 	
@@ -52,10 +64,54 @@ public class SudokuListActivity extends ListActivity{
         Cursor cursor = sudokuDB.getSudokuList(folderID);
         startManagingCursor(cursor);
         
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.folder_list_item, 
-        		cursor, new String[] { FolderColumns.NAME }, 
-        		new int[] { R.id.name });
+        timeText = new StringBuilder(5);
+        timeFormatter = new Formatter(timeText);
+        
+        // TODO: nasty
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.sudoku_list_item, 
+        		cursor, new String[] { SudokuColumns.STATE, SudokuColumns.DATA }, 
+        		new int[] { R.id.detail_label, R.id.sudoku_board });
+        
+		adapter.setViewBinder(new ViewBinder() {
+			@Override
+			public boolean setViewValue(View view, Cursor c,
+					int columnIndex) {
+				
+            	if (view.getId() == R.id.detail_label) {
+                	int state = c.getInt(columnIndex);
+                	long time = c.getLong(c.getColumnIndex(SudokuColumns.TIME));
+    				
+                	String detail = null;
+                	switch (state) {
+                	case SudokuGame.GAME_STATE_COMPLETED:
+                		detail = String.format("Solved (%s)", getTime(time));
+                		break;
+                	case SudokuGame.GAME_STATE_NOT_STARTED:
+                		detail = "Unsolved";
+                		break;
+                	case SudokuGame.GAME_STATE_PLAYING:
+                		detail = String.format("Unsolved (%s)", getTime(time));
+                		break;
+                	}
+                	((TextView)view).setText(detail);
+            	} else {
+    				String data = c.getString(columnIndex);
+    				SudokuCellCollection cells = SudokuCellCollection.deserialize(data);
+    				SudokuBoardView board = (SudokuBoardView)view;
+    				board.setReadOnly(true);
+    				((SudokuBoardView)view).setCells(cells);
+            	}
+				return true;
+			}
+		});
+        
         setListAdapter(adapter);
+	}
+	
+	private String getTime(long time) {
+		timeText.setLength(0);
+		timeFormatter.format("%02d:%02d", time / 60000, time / 1000 % 60);
+		return timeText.toString();
 	}
 	
 	@Override

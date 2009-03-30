@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal">
+	<!--  TODO: neco jako width: 60% -->
+	<!--  TODO: pri weight=1 zasekne eclipse -->
+	<TextView
+	    android:id="@+id/detail_label"
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:text="hura" 
+		android:gravity="left"
+	    />
+	<cz.romario.opensudoku.gui.SudokuBoardView
+		android:id="@+id/sudoku_board"
+	    android:layout_width="110dip"
+	    android:layout_height="110dip"
+	     />
+</LinearLayout>

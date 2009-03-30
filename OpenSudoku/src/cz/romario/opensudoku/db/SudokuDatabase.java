@@ -14,58 +14,16 @@ import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 
 public class SudokuDatabase {
-	private static final String DATABASE_NAME = "sudoku"; // TODO: debug
-    public static final int DATABASE_VERSION = 3;
+	public static final String DATABASE_NAME = "sudoku"; // TODO: debug
+    public static final int DATABASE_VERSION = 6;
     
-    private static final String SUDOKU_TABLE_NAME = "sudoku";
-    private static final String FOLDER_TABLE_NAME = "folder";
+    public static final String SUDOKU_TABLE_NAME = "sudoku";
+    public static final String FOLDER_TABLE_NAME = "folder";
     
     private static final String[] sudokuListProjection;
     
     private static final String TAG = "SudokuDatabase";
     
-	/**
-     * This class helps open, create, and upgrade the database file.
-     */
-    private static class DatabaseHelper extends SQLiteOpenHelper {
-
-        DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + SUDOKU_TABLE_NAME + " ("
-                    + SudokuColumns._ID + " INTEGER PRIMARY KEY,"
-                    + SudokuColumns.FOLDER_ID + " INTEGER,"
-                    + SudokuColumns.NAME + " TEXT,"
-                    + SudokuColumns.CREATED + " INTEGER,"
-                    + SudokuColumns.STATE + " INTEGER,"
-                    + SudokuColumns.TIME + " INTEGER,"
-                    + SudokuColumns.LAST_PLAYED + " INTEGER,"
-                    + SudokuColumns.DATA + " Text"
-                    + ");");
-            
-            db.execSQL("CREATE TABLE " + FOLDER_TABLE_NAME + " ("
-                    + FolderColumns._ID + " INTEGER PRIMARY KEY,"
-                    + SudokuColumns.CREATED + " INTEGER,"
-                    + FolderColumns.NAME + " TEXT,"
-                    + FolderColumns.FOLDER_ID + " INTEGER"
-                    + ");");
-            
-            // TODO: insert root folder
-            
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-                    + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS " + SUDOKU_TABLE_NAME);
-            db.execSQL("DROP TABLE IF EXISTS " + FOLDER_TABLE_NAME);
-            onCreate(db);
-        }
-    }
 
     private DatabaseHelper mOpenHelper;
     
@@ -241,6 +199,7 @@ public class SudokuDatabase {
     		SudokuColumns.CREATED,
     		SudokuColumns.STATE,
     		SudokuColumns.TIME,
+    		SudokuColumns.DATA,
     		SudokuColumns.LAST_PLAYED
     	};
     }

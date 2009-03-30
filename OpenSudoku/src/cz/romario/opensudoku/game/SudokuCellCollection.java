@@ -60,6 +60,11 @@ public class SudokuCellCollection  implements Parcelable {
 		return new SudokuCellCollection(cells);
 	}
 
+	// TODO: SudokuCellCollection should be collection, implement Enumerable or something like that
+	public SudokuCell[][] getCells() {
+		return cells;
+	}
+	
 	/**
 	 * Wraps given array in this object.
 	 * @param cells
