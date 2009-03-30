@@ -2,6 +2,7 @@ package cz.romario.opensudoku.game;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -325,34 +326,28 @@ public class SudokuCellCollection  implements Parcelable {
         if (!lines[0].equals("version: 1")) {
             throw new IllegalArgumentException(String.format("Unknown version of data: %s", lines[0]));
         }
-
-        int pos=1;
-        for (int r=0; r<SUDOKU_SIZE; r++)
-        {
-                for (int c=0; c<SUDOKU_SIZE; c++)
-                {
-                        String line = lines[pos++];
-                        String[] parts = line.split("\\|");
-                        
-                        if (parts.length != 4) {
-                                throw new IllegalArgumentException(String.format("Illegal item: %s", line));
-                        }
-                        
-                        int value = Integer.parseInt(parts[0]);
-                        String note = parts[1];
-                        boolean editable = parts[2].equals("1");
-                        boolean invalid = parts[3].equals("1");
-                        
-                        SudokuCell cell = new SudokuCell();
-                        cell.setValue(value);
-                        cell.setNotes(note);
-                        cell.setEditable(editable);
-                        cell.setInvalid(invalid);
-                        
-                        cells[r][c] = cell;
-                }
-        }
         
+        StringTokenizer tokenizer = new StringTokenizer(lines[1], "|");
+        int r = 0, c = 0;
+        while (tokenizer.hasMoreTokens() && r < 9) {
+            SudokuCell cell = new SudokuCell();
+            cell.setValue(Integer.parseInt(tokenizer.nextToken()));
+            String note = tokenizer.nextToken(); 
+            if (!note.equals("-")) {
+            	cell.setNotes(note);
+            }
+            cell.setEditable(tokenizer.nextToken().equals("1"));
+            cell.setInvalid(tokenizer.nextToken().equals("1"));
+            
+            cells[r][c] = cell;
+            c++;
+            
+            if (c == 9) {
+            	r++;
+            	c = 0;
+            }
+        }
+
         return new SudokuCellCollection(cells);
 	}
 	
@@ -371,9 +366,13 @@ public class SudokuCellCollection  implements Parcelable {
                 {
                         SudokuCell cell = cells[r][c];
                         sb.append(cell.getValue()).append("|");
-                        sb.append(cell.getNotes()).append("|"); 
+                        if (cell.getNotes() == null || cell.getNotes().equals("")) {
+                        	sb.append("-").append("|");
+                        } else {
+                        	sb.append(cell.getNotes()).append("|");
+                        }
                         sb.append(cell.getEditable() ? "1" : "0").append("|");
-                        sb.append(cell.getInvalid() ? "1" : "0").append("\n");
+                        sb.append(cell.getInvalid() ? "1" : "0").append("|");
                 }
         }
         

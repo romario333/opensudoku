@@ -96,6 +96,7 @@ public class SudokuListActivity extends ListActivity{
                 	((TextView)view).setText(detail);
             	} else {
     				String data = c.getString(columnIndex);
+    				// TODO: porad by slo jeste zrychlit, nemusim volat initCollection, cist poznamky
     				SudokuCellCollection cells = SudokuCellCollection.deserialize(data);
     				SudokuBoardView board = (SudokuBoardView)view;
     				board.setReadOnly(true);

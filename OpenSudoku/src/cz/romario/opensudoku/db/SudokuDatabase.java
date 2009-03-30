@@ -15,7 +15,7 @@ import cz.romario.opensudoku.game.SudokuGame;
 
 public class SudokuDatabase {
 	public static final String DATABASE_NAME = "sudoku"; // TODO: debug
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 8;
     
     public static final String SUDOKU_TABLE_NAME = "sudoku";
     public static final String FOLDER_TABLE_NAME = "folder";
