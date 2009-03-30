@@ -135,16 +135,29 @@ public class SudokuCellCollection  implements Parcelable {
 		return true;
 	}
 	
+	/** 
+	 * Sets value in given cell.
+	 * @param cell
+	 * @param value
+	 */
 	public void setValue(SudokuCell cell, int value) {
-		setValue(cell.getRowIndex(), cell.getColumnIndex(), value);
-	}
-	
-	public void setValue(int rowIndex, int columnIndex, int value) {
-		SudokuCell cell = getCell(rowIndex, columnIndex);
-		if (cell != null) {
+		// TODO: check whether is cell editable or not
+		if (cell != null && cell.getEditable()) {
 			cell.setValue(value);
 		}
 		onChange();
+	}
+	
+	
+	/**
+	 * Sets value in cell given by its row and column index.
+	 * @param rowIndex
+	 * @param columnIndex
+	 * @param value
+	 */
+	public void setValue(int rowIndex, int columnIndex, int value) {
+		SudokuCell cell = getCell(rowIndex, columnIndex);
+		setValue(cell, value);
 	}
 	
 	// TODO: check that this is ok with Observer pattern and do some performance testing

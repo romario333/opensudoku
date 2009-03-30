@@ -16,6 +16,7 @@ import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.SudokuCellCollection.OnChangeListener;
+import cz.romario.opensudoku.gui.SelectNumberDialog.OnNumberSelectListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 
 /*
@@ -43,6 +44,7 @@ public class SudokuPlayActivity extends Activity{
 	private long sudokuGameID;
 	private SudokuGame sudokuGame;
 	
+	private SelectNumberDialog selectNumberDialog;
 	private SudokuBoardView sudokuBoard;
 	private TextView timeLabel;
 	
@@ -61,6 +63,8 @@ public class SudokuPlayActivity extends Activity{
         Button buttonLeave = (Button) findViewById(R.id.button_leave);
         buttonLeave.setOnClickListener(buttonLeaveClickListener);
         sudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
+        selectNumberDialog = new SelectNumberDialog(this);
+        selectNumberDialog.setOnNumberSelectListener(onNumberSelectListener);
         timeLabel = (TextView)findViewById(R.id.time_label);
         timeText = new StringBuilder(5);
         timeFormatter = new Formatter(timeText);
@@ -113,7 +117,6 @@ public class SudokuPlayActivity extends Activity{
 			sudokuDB.updateSudoku(sudokuGame);
 			finish();
 		}
-		
 	};
     
 	@Override
@@ -153,6 +156,8 @@ public class SudokuPlayActivity extends Activity{
     @Override
     protected Dialog onCreateDialog(int id) {
     	switch (id){
+    	case DIALOG_SELECT_NUMBER:
+    		return selectNumberDialog.getDialog();
     	case DIALOG_WELL_DONE:
             return new AlertDialog.Builder(SudokuPlayActivity.this)
             .setIcon(android.R.drawable.ic_dialog_info)
@@ -173,34 +178,31 @@ public class SudokuPlayActivity extends Activity{
 		@Override
 		public boolean onCellTap(SudokuCell cell) {
 			if (cell != null && cell.getEditable()) {
-				Intent i = new Intent(SudokuPlayActivity.this, SelectNumberActivity.class);
-				startActivityForResult(i, REQUEST_SELECT_NUMBER);
+				showDialog(DIALOG_SELECT_NUMBER);
 			}
 			return true;
 		}
     	
     };
     
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	super.onActivityResult(requestCode, resultCode, data);
-
-    	switch (requestCode) {
-    	case REQUEST_SELECT_NUMBER:
+	/**
+	 * Occurs when number is selected in SelectNumberDialog.
+	 */
+    private OnNumberSelectListener onNumberSelectListener = new OnNumberSelectListener() {
+		@Override
+		public boolean onNumberSelect(int number) {
     		SudokuCell selectedCell = sudokuBoard.getSelectedCell();
-    		if (resultCode == RESULT_OK && selectedCell != null) {
-	    		int selectedNumber = data.getIntExtra(SelectNumberActivity.EXTRAS_SELECTED_NUMBER, -1);
-	    		if (selectedNumber != -1) {
-	                // set cell number selected by user
-	    			if (selectedCell.getEditable()) {
-	    				sudokuGame.getCells().setValue(selectedCell, selectedNumber);
-	                }
-	    		}
+    		if (number != -1) {
+                // set cell number selected by user
+				sudokuGame.getCells().setValue(selectedCell, number);
     		}
-    		break;
-    	}
-    }
+			return true;
+		}
+	};
     
+	/**
+	 * Occurs when any value in sudoku's cells changes.
+	 */
 	private OnChangeListener cellsOnChangeListener = new OnChangeListener() {
 		@Override
 		public boolean onChange() {
@@ -244,7 +246,7 @@ public class SudokuPlayActivity extends Activity{
 	private final class GameTimer extends Timer {
 		
 		GameTimer() {
-    		super(5000);
+    		super(1000);
     	}
 		
     	@Override
