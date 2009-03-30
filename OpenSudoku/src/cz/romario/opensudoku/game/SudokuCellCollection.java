@@ -160,6 +160,19 @@ public class SudokuCellCollection  implements Parcelable {
 		setValue(cell, value);
 	}
 	
+	/**
+	 * Sets note for given cell from array of numbers and fires change event. 
+	 * @param cell
+	 * @param numbers
+	 */
+	public void setNoteNumbers(SudokuCell cell, Integer[] numbers) {
+		if (cell != null) {
+			cell.setNoteNumbers(numbers);
+			onChange();
+		}
+	}
+	
+	
 	// TODO: check that this is ok with Observer pattern and do some performance testing
 	// TODO: it seems that generally in android there can be just one listener at a time, why?
 	/** 
@@ -178,7 +191,7 @@ public class SudokuCellCollection  implements Parcelable {
 	/**
 	 * Fires OnChange event.
 	 */
-	protected void onChange() {
+	private void onChange() {
 		for (OnChangeListener l : onChangeListeners) {
 			l.onChange();
 		}

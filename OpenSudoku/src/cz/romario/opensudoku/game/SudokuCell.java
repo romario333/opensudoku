@@ -98,12 +98,49 @@ public class SudokuCell implements Parcelable {
 		return value;
 	}
 
+	// TODO: note by byl hezci nazev
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
 
 	public String getNotes() {
 		return notes;
+	}
+	
+	public boolean hasNote() {
+		return notes != null && notes != "";
+	}
+
+	/**
+	 * Returns content of note as array of numbers.
+	 * @return
+	 */
+	public Integer[] getNoteNumbers() {
+		String note = getNotes();
+		if (note == null || note.equals(""))
+			return null;
+		
+		String[] numberStrings = note.split(",");
+		Integer[] numbers = new Integer[numberStrings.length];
+		for (int i=0; i<numberStrings.length; i++) {
+			numbers[i] = Integer.parseInt(numberStrings[i]);
+		}
+		
+		return numbers;
+	}
+	
+	/**
+	 * Creates content of note from array of numbers.
+	 * @param numbers
+	 */
+	public void setNoteNumbers(Integer[] numbers) {
+		StringBuffer sb = new StringBuffer();
+		
+		for (Integer number : numbers) {
+			sb.append(number).append(",");
+		}
+		
+		setNotes(sb.toString());
 	}
 
 	public Boolean getEditable() {

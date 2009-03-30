@@ -29,6 +29,7 @@ public class SudokuBoardView extends View {
 	
 	private Paint linePaint;
 	private Paint numberPaint;
+	private Paint notePaint;
 	private int numberLeft;
 	private int numberTop;
 	private Paint readonlyPaint;
@@ -92,6 +93,10 @@ public class SudokuBoardView extends View {
 		numberPaint = new Paint();
 		numberPaint.setColor(Color.BLACK);
 		numberPaint.setAntiAlias(true);
+
+		notePaint = new Paint();
+		notePaint.setColor(Color.BLACK);
+		notePaint.setAntiAlias(true);
 		
 		readonlyPaint = new Paint();
 		readonlyPaint.setColor(Color.LTGRAY);
@@ -144,6 +149,7 @@ public class SudokuBoardView extends View {
         setMeasuredDimension(cellWidth * 9 + 1, cellHeight * 9 + 1);
         
         numberPaint.setTextSize(cellHeight * 0.75f);
+        notePaint.setTextSize(cellHeight / 3f);
         // compute offsets in each cell to center the rendered number
         numberLeft = (int) ((cellWidth - numberPaint.measureText("9")) / 2);
         numberTop = (int) ((cellHeight - numberPaint.getTextSize()) / 2);
@@ -155,12 +161,15 @@ public class SudokuBoardView extends View {
 		
 		int width = getMeasuredWidth();
 		int height = getMeasuredHeight();
-
+		
 		// draw cells
 		int cellLeft, cellTop;
 		if (cells != null) {
 			
+			// TODO: why?
 			float numberAscent = numberPaint.ascent();
+			float noteAscent = notePaint.ascent();
+			float noteWidth = cellWidth / 3f;
 			for (int row=0; row<9; row++) {
 				for (int col=0; col<9; col++) {
 					SudokuCell cell = cells.getCell(row, col);
@@ -184,7 +193,29 @@ public class SudokuBoardView extends View {
 								cellLeft + numberLeft, 
 								cellTop + numberTop - numberAscent, 
 								numberPaint);
+					} else {
+						
+						// TODO: this is ugly temporary version
+						if (cell.hasNote()) {
+							Integer[] numbers = cell.getNoteNumbers();
+							int r = 0, c = 0;
+							if (numbers != null) {
+								for (Integer number : numbers) {
+									if (c == 3) {
+										r++;
+										c = 0;
+									}
+									
+									canvas.drawText(number.toString(), cellLeft + c*noteWidth + 2, cellTop - noteAscent + r*noteWidth - 1, notePaint);
+									
+									c++;
+								}
+							}
+						}
 					}
+					
+					
+						
 				}
 			}
 

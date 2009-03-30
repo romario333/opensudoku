@@ -12,6 +12,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
+/**
+ * Wrapper around dialog, which allows user to select the number from 0 to 9
+ * by finger.
+ * 
+ * @author romario
+ *
+ */
 public class SelectNumberDialog {
 	private Context context;
 	private Dialog dialog;
