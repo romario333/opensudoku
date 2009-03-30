@@ -100,6 +100,7 @@ public class SudokuListActivity extends ListActivity{
     				SudokuCellCollection cells = SudokuCellCollection.deserialize(data);
     				SudokuBoardView board = (SudokuBoardView)view;
     				board.setReadOnly(true);
+    				board.setFocusable(false); // TODO: bez toho to nejde selectit, doresit
     				((SudokuBoardView)view).setCells(cells);
             	}
 				return true;
@@ -205,9 +206,14 @@ public class SudokuListActivity extends ListActivity{
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		Intent i = new Intent(this, SudokuDetailActivity.class);
-		i.putExtra(SudokuDetailActivity.EXTRAS_SUDOKU_ID, id);
+//		Intent i = new Intent(this, SudokuDetailActivity.class);
+//		i.putExtra(SudokuDetailActivity.EXTRAS_SUDOKU_ID, id);
+//		startActivity(i);
+		
+		Intent i = new Intent(SudokuListActivity.this, SudokuPlayActivity.class);
+		i.putExtra(SudokuPlayActivity.EXTRAS_SUDOKU_ID, id);
 		startActivity(i);
+		
 	}
 	
 
