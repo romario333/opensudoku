@@ -102,11 +102,6 @@ abstract class Timer
 		return accumTime;
 	}
 	
-	public final void setTime(long time) {
-		accumTime = time;
-	}
-	
-	
 	// ******************************************************************** //
 	// Handlers.
 	// ******************************************************************** //

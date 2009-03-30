@@ -5,6 +5,7 @@ import java.util.Date;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.SystemClock;
 
 
 public class SudokuGame implements Parcelable {
@@ -21,6 +22,9 @@ public class SudokuGame implements Parcelable {
 	private Date lastPlayed;
 	
 	private SudokuCellCollection cells;
+	
+	// Time when current activity has become active. 
+	private long activeFromTime = -1; 
 
 	public SudokuGame() {
 		
@@ -52,7 +56,7 @@ public class SudokuGame implements Parcelable {
 	}
 
 	/**
-	 * Sets time of play in seconds.
+	 * Sets time of play in milliseconds.
 	 * @param time
 	 */
 	public void setTime(long time) {
@@ -60,11 +64,15 @@ public class SudokuGame implements Parcelable {
 	}
 
 	/**
-	 * Gets time of play in seconds.
+	 * Gets time of game-play in milliseconds. 
 	 * @return
 	 */
 	public long getTime() {
-		return time;
+		if (activeFromTime != -1) {
+			return time + SystemClock.uptimeMillis() - activeFromTime;
+		} else {
+			return time;
+		}
 	}
 
 	public void setLastPlayed(Date lastPlayed) {
@@ -94,6 +102,23 @@ public class SudokuGame implements Parcelable {
 	
 	public void validate() {
 		cells.validate();
+	}
+	
+	/**
+	 * Start game-play.
+	 */
+	public void start() {
+		// reset time we have spent playing so far, so time when activity was not active
+		// will not be part of the game play time
+		activeFromTime = SystemClock.uptimeMillis();
+	}
+	
+	/**
+	 * Pauses game-play (for example if activity pauses).
+	 */
+	public void pause() {
+		// save time we have spent playing so far - it will be reseted after resuming 
+		time += SystemClock.uptimeMillis() - activeFromTime;
 	}
 	
 	/**

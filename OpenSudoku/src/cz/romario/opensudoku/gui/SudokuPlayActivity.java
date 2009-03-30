@@ -18,6 +18,16 @@ import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.SudokuCellCollection.OnChangeListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 
+/*
+ * TODO:
+ * - timer
+ * - notes
+ * - folder view (v detailu 10 puzzles / 3 solved)
+ * - sudoku list (v detailu stav, cas a tak)
+ * - select number dialog
+ * 
+ */
+
 //TODO: vyresit proc tuhne, kdyz vytahnu klavesnici
 public class SudokuPlayActivity extends Activity{
 	
@@ -62,7 +72,7 @@ public class SudokuPlayActivity extends Activity{
         	sudokuGameID = getIntent().getLongExtra(EXTRAS_SUDOKU_ID, 0);
         	SudokuDatabase sudokuDB = new SudokuDatabase(this);
         	sudokuGame = sudokuDB.getSudoku(sudokuGameID);
-        	gameTimer.setTime(sudokuGame.getTime());
+        	//gameTimer.setTime(sudokuGame.getTime());
         } else {
         	// activity has been running before, restore its state
         	sudokuGame = (SudokuGame)savedInstanceState.getParcelable("sudoku_game");
@@ -75,6 +85,10 @@ public class SudokuPlayActivity extends Activity{
         
         if (sudokuGame.getState() == SudokuGame.GAME_STATE_COMPLETED) {
         	updateTimeLabel(sudokuGame.getTime());
+        }
+        
+        if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+        	sudokuGame.start();
         }
         
     	setTitle(sudokuGame.getName());
@@ -93,7 +107,8 @@ public class SudokuPlayActivity extends Activity{
 	private OnClickListener buttonLeaveClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			sudokuGame.setTime(gameTimer.getTime());
+			//sudokuGame.setTime(gameTimer.getTime());
+			sudokuGame.pause();
 			SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
 			sudokuDB.updateSudoku(sudokuGame);
 			finish();
@@ -107,6 +122,7 @@ public class SudokuPlayActivity extends Activity{
 		super.onResume();
 		
 		if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			sudokuGame.start();
 			gameTimer.start();
 		}
 	}
@@ -119,7 +135,7 @@ public class SudokuPlayActivity extends Activity{
     	//	wakeLock.release();
     	//}
 		if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-			gameTimer.stop();
+			sudokuGame.pause();
 		}
     }
     
@@ -127,7 +143,11 @@ public class SudokuPlayActivity extends Activity{
     protected void onSaveInstanceState(Bundle outState) {
     	// TODO Auto-generated method stub
     	super.onSaveInstanceState(outState);
+		
+    	// TODO: doresit timer, poradne retestnout, funguje divne
+    	gameTimer.stop();
     	outState.putParcelable("sudoku_game", sudokuGame);
+    	gameTimer.saveState(outState);
     }
     
     @Override
@@ -207,7 +227,8 @@ public class SudokuPlayActivity extends Activity{
 		// Use StringBuilders and a Formatter to avoid allocating new
 		// String objects every time -- this function is called often!
 		
-		long time = gameTimer.getTime();
+		//long time = gameTimer.getTime();
+		long time = sudokuGame.getTime();
 		updateTimeLabel(time);
 	}
 	
@@ -223,7 +244,7 @@ public class SudokuPlayActivity extends Activity{
 	private final class GameTimer extends Timer {
 		
 		GameTimer() {
-    		super(1000);
+    		super(5000);
     	}
 		
     	@Override
