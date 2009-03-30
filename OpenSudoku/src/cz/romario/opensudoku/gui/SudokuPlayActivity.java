@@ -5,9 +5,12 @@ import java.util.Formatter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -32,6 +35,8 @@ import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 // TODO: look at Chronometer widget
 //TODO: vyresit proc tuhne, kdyz vytahnu klavesnici
 public class SudokuPlayActivity extends Activity{
+	
+	public static final int MENU_ITEM_RESTART = Menu.FIRST;
 	
 	private static final String TAG = "SudokuPlayActivity";
 	
@@ -68,8 +73,6 @@ public class SudokuPlayActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sudoku_play);
         
-        Button buttonLeave = (Button) findViewById(R.id.button_leave);
-        buttonLeave.setOnClickListener(buttonLeaveClickListener);
         sudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
         selectNumberDialog = new SelectNumberDialog(this);
         selectNumberDialog.setOnNumberSelectListener(onNumberSelectListener);
@@ -104,6 +107,7 @@ public class SudokuPlayActivity extends Activity{
         
         if (sudokuGame.getState() == SudokuGame.GAME_STATE_COMPLETED) {
         	updateTimeLabel(sudokuGame.getTime());
+        	sudokuBoard.setReadOnly(true);
         }
         
         if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
@@ -123,7 +127,44 @@ public class SudokuPlayActivity extends Activity{
         sudokuBoard.setOnCellTapListener(cellTapListener);
         
 		sudokuGame.getCells().addOnChangeListener(cellsOnChangeListener);
-    }	
+    }
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		
+        // This is our one standard application action -- inserting a
+        // new note into the list.
+        menu.add(0, MENU_ITEM_RESTART, 0, "Restart")
+                .setShortcut('3', 'r')
+                .setIcon(android.R.drawable.ic_menu_rotate);
+
+        // Generate any additional actions that can be performed on the
+        // overall list.  In a normal install, there are no additional
+        // actions found here, but this allows other applications to extend
+        // our menu with their own actions.
+        Intent intent = new Intent(null, getIntent().getData());
+        intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
+        menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0,
+                new ComponentName(this, FolderListActivity.class), null, intent, 0, null);
+
+        return true;
+		
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case MENU_ITEM_RESTART:
+            // Restart game
+        	sudokuGame.restart();
+        	sudokuBoard.postInvalidate();
+        	gameTimer.start();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+	}
+	
 	
 	private OnClickListener inputModeClickListener = new OnClickListener() {
 		@Override
@@ -145,18 +186,6 @@ public class SudokuPlayActivity extends Activity{
 		}
 	}
 
-	
-	private OnClickListener buttonLeaveClickListener = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			//sudokuGame.setTime(gameTimer.getTime());
-			sudokuGame.pause();
-			SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
-			sudokuDB.updateSudoku(sudokuGame);
-			finish();
-		}
-	};
-    
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
@@ -178,6 +207,10 @@ public class SudokuPlayActivity extends Activity{
 		if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
 			sudokuGame.pause();
 		}
+		
+		// we will save game to the database as we might not be able to get back
+		SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
+		sudokuDB.updateSudoku(sudokuGame);
     }
     
     @Override

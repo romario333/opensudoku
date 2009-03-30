@@ -321,6 +321,7 @@ public class SudokuBoardView extends View {
 				// clear value in selected cell
 				if (selectedCell != null) {
 					cells.setValue(selectedCell, 0);
+					moveCellSelectionRight();
 				}
 				return true;
 		}
@@ -329,10 +330,25 @@ public class SudokuBoardView extends View {
 			// enter request number in cell
 			int selectedNumber = keyCode - KeyEvent.KEYCODE_0;
 			cells.setValue(selectedCell, selectedNumber);
+			moveCellSelectionRight();
 			return true;
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Movesed selected cell by one cell to the right. If edge is reached, selection
+	 * skips on beginning of another line. 
+	 */
+	private void moveCellSelectionRight() {
+		if (!moveCellSelection(1, 0)) {
+			int selRow = selectedCell.getRowIndex();
+			selRow++;
+			if (!moveCellSelectionTo(selRow, 0)) {
+				moveCellSelectionTo(0, 0);
+			}
+		}
 	}
 	
 	/**
@@ -351,13 +367,23 @@ public class SudokuBoardView extends View {
 			newCol = selectedCell.getColumnIndex() + vx;
 		}
 		
-		if(newCol >= 0 && newCol < SudokuCellCollection.SUDOKU_SIZE 
-				&& newRow >= 0 && newRow < SudokuCellCollection.SUDOKU_SIZE) {
-			selectedCell = cells.getCell(newRow, newCol);
+		return moveCellSelectionTo(newRow, newCol);
+	}
+	
+	
+	/**
+	 * Moves selection to the cell given by row and column index.
+	 * @param row Row index of cell which should be selected.
+	 * @param col Columnd index of cell which should be selected.
+	 * @return True, if cell was successfuly selected.
+	 */
+	private boolean moveCellSelectionTo(int row, int col) {
+		if(col >= 0 && col < SudokuCellCollection.SUDOKU_SIZE 
+				&& row >= 0 && row < SudokuCellCollection.SUDOKU_SIZE) {
+			selectedCell = cells.getCell(row, col);
 			postInvalidate();
 			return true;
 		}
-		
 		
 		return false;
 	}

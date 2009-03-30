@@ -122,6 +122,34 @@ public class SudokuGame implements Parcelable {
 	}
 	
 	/**
+	 * Finishes game-play. Called when puzzle is solved.
+	 */
+	public void finish() {
+		pause();
+		state = GAME_STATE_COMPLETED;
+	}
+	
+	/**
+	 * Restarts game.
+	 */
+	public void restart() {
+		// TODO: chtelo by to iterator
+		for (int r=0; r<SudokuCellCollection.SUDOKU_SIZE; r++) {
+			for (int c=0; c<SudokuCellCollection.SUDOKU_SIZE; c++) {
+				SudokuCell cell = cells.getCell(r, c);
+				if (cell.getEditable()) {
+					cell.setValue(0);
+					cell.setNotes("");
+				}
+			}
+		}
+		validate();
+		setTime(0);
+		state = GAME_STATE_PLAYING;
+		start();
+	}
+	
+	/**
 	 * Returns true, if puzzle is solved. In order to know actual state, you have to
 	 * call validate first. 
 	 * @return
