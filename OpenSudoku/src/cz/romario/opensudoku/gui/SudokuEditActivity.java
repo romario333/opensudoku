@@ -30,8 +30,7 @@ public class SudokuEditActivity extends Activity {
     private long sudokuID;
     
     private SudokuDatabase sudokuDB;
-    private TextView sudokuData;
-    private TextView sudokuName;
+    private SudokuBoardView board;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +40,7 @@ public class SudokuEditActivity extends Activity {
 
 		Button buttonSave = (Button)findViewById(R.id.button_save);
 		Button buttonCancel = (Button)findViewById(R.id.button_cancel);
-		sudokuData = (TextView)findViewById(R.id.sudoku_data);
-		sudokuName = (TextView)findViewById(R.id.sudoku_name);
+		board = (SudokuBoardView)findViewById(R.id.sudoku_board);
 		
 		buttonSave.setOnClickListener(buttonSaveClickListener);
 		buttonCancel.setOnClickListener(buttonCancelClickListener);
@@ -77,14 +75,17 @@ public class SudokuEditActivity extends Activity {
         }
         
         if (savedInstanceState != null) {
-    		sudokuData.setText(savedInstanceState.getString("sudoku_data"));
-    		sudokuName.setText(savedInstanceState.getString("sudoku_name"));
+        	board.setCells((SudokuCellCollection)savedInstanceState.getParcelable("cells"));
         } else {
         	if (sudokuID != 0) {
         		// existing sudoku, read it from database
         		SudokuGame sudoku = sudokuDB.getSudoku(sudokuID);
-        		sudokuData.setText(sudoku.getCells().toString());
-        		sudokuName.setText(sudoku.getName());
+        		SudokuCellCollection cells = sudoku.getCells();
+        		cells.markAllCellsAsEditable();
+        		board.setCells(cells);
+        	} else {
+        		// new sudoku
+        		board.setCells(SudokuCellCollection.CreateEmpty());
         	}
         }
         
@@ -95,29 +96,27 @@ public class SudokuEditActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 		
-		outState.putString("sudoku_data", sudokuData.getText().toString());
-		outState.putString("sudoku_name", sudokuName.getText().toString());
+		outState.putParcelable("cells", board.getCells());
 	}
 
 	private OnClickListener buttonSaveClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
-			String data = sudokuData.getText().toString();
-			String name = sudokuName.getText().toString();
 			
+			SudokuCellCollection cells = board.getCells();
+			cells.markFilledCellsAsNotEditable();
 			
 			switch (state) {
 			case STATE_EDIT:
+				// TODO: doresit jak bude fungovat edit
 				SudokuGame game = sudokuDB.getSudoku(sudokuID);
-				game.setName(name);
-				game.getCells().updateFromString(data, false);
+				game.setCells(cells);
 				sudokuDB.updateSudoku(game);
 				break;
 			case STATE_INSERT:
-				SudokuCellCollection cells = SudokuCellCollection.CreateEmpty();
-				cells.updateFromString(data, true);
-				sudokuDB.insertSudoku(folderID, name, cells);
+				// TODO: remove name completely?
+				sudokuDB.insertSudoku(folderID, "", cells);
 				break;
 			}
 			

@@ -177,6 +177,32 @@ public class SudokuCellCollection  implements Parcelable {
 			onChange();
 		}
 	}
+
+	/**
+	 * Marks all cells as editable.
+	 */
+	public void markAllCellsAsEditable() {
+		// TODO: iterator
+		for (int r=0; r<SUDOKU_SIZE; r++) {
+			for (int c=0; c<SUDOKU_SIZE; c++){
+				SudokuCell cell = cells[r][c];
+				cell.setEditable(true);
+			}
+		}
+	}
+	
+	/**
+	 * Marks all filled cells (cells with value other than 0) as not editable.
+	 */
+	public void markFilledCellsAsNotEditable() {
+		// TODO: iterator
+		for (int r=0; r<SUDOKU_SIZE; r++) {
+			for (int c=0; c<SUDOKU_SIZE; c++){
+				SudokuCell cell = cells[r][c];
+				cell.setEditable(cell.getValue() == 0);
+			}
+		}
+	}
 	
 	
 	// TODO: check that this is ok with Observer pattern and do some performance testing
@@ -290,24 +316,6 @@ public class SudokuCellCollection  implements Parcelable {
 		}
 		sb.deleteCharAt(sb.length()-1);
 		return sb.toString();
-	}
-	
-	// TODO: temporary
-	public void updateFromString(String data, boolean setEditable) {
-		String[] lines = data.split("\n");
-		
-		for (int r=0; r<SUDOKU_SIZE; r++)
-		{
-			for (int c=0; c<SUDOKU_SIZE; c++)
-			{
-				// omg, neco mi urcite unika
-				int value = Integer.parseInt(new Character(lines[r].charAt(c)).toString());
-				cells[r][c].setValue(value);
-				if (setEditable && value != 0) {
-					cells[r][c].setEditable(false);
-				}
-			}
-		}
 	}
 	
 	// TODO: find some standard way of serialization
