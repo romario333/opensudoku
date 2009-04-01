@@ -28,15 +28,9 @@ import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 /*
  * TODO:
  * - timer
- * - notes
  * - folder view (v detailu 10 puzzles / 3 solved)
  * - sudoku list (v detailu stav, cas a tak)
- * - select number dialog
- * 
- * TODO: k cemu je keep screen on?
- * 
  */
-// TODO: look at Chronometer widget
 //TODO: vyresit proc tuhne, kdyz vytahnu klavesnici
 public class SudokuPlayActivity extends Activity{
 	
@@ -63,8 +57,6 @@ public class SudokuPlayActivity extends Activity{
 	private Formatter timeFormatter;
 	
 	private GameTimer gameTimer;
-
-	//PowerManager.WakeLock wakeLock;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,11 +98,6 @@ public class SudokuPlayActivity extends Activity{
         if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
         	sudokuGame.start();
         }
-        
-    	//PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-    	// TODO
-    	//wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
-    	//wakeLock.acquire(5 * 60 * 1000);
         
         sudokuBoard.setCells(sudokuGame.getCells());
         sudokuBoard.setOnCellTapListener(cellTapListener);
@@ -167,11 +154,7 @@ public class SudokuPlayActivity extends Activity{
 	
     @Override
     protected void onPause() {
-    	// TODO Auto-generated method stub
     	super.onPause();
-    	//if (wakeLock.isHeld()) {
-    	//	wakeLock.release();
-    	//}
 		
 		// we will save game to the database as we might not be able to get back
 		SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
@@ -180,7 +163,6 @@ public class SudokuPlayActivity extends Activity{
     
     @Override
     protected void onStop() {
-    	// TODO Auto-generated method stub
     	super.onStop();
     	
 		// TODO: tady bych mel mimo jiny zastavovat ten pitomej timer
