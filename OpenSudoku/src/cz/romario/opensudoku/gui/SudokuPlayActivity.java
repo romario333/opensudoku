@@ -19,6 +19,8 @@ import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.SudokuCellCollection.OnChangeListener;
+import cz.romario.opensudoku.gui.EditCellDialog.OnNoteEditListener;
+import cz.romario.opensudoku.gui.EditCellDialog.OnNumberEditListener;
 import cz.romario.opensudoku.gui.SelectMultipleNumbersDialog.OnNumbersSelectListener;
 import cz.romario.opensudoku.gui.SelectNumberDialog.OnNumberSelectListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
@@ -42,21 +44,20 @@ public class SudokuPlayActivity extends Activity{
 	
 	public static final String EXTRAS_SUDOKU_ID = "sudoku_id";
 	
-	//private static final int REQUEST_SELECT_NUMBER = 1;
-	
-	private static final int DIALOG_SELECT_NUMBER = 1;
-	private static final int DIALOG_SELECT_MULTIPLE_NUMBERS = 2;
 	private static final int DIALOG_WELL_DONE = 3;
+	private static final int DIALOG_EDIT_CELL = 4;
 	
 	private static final int INPUT_MODE_NORMAL = 1;
 	private static final int INPUT_MODE_NOTES = 2;
+	
+	private static final int REQUEST_SELECT_NUMBER = 1;
+
 	
 	private long sudokuGameID;
 	private SudokuGame sudokuGame;
 	private int inputMode;
 	
-	private SelectNumberDialog selectNumberDialog;
-	private SelectMultipleNumbersDialog selectMultipleNumbersDialog;
+	private EditCellDialog editCellDialog;
 	private SudokuBoardView sudokuBoard;
 	private TextView timeLabel;
 	private Button inputModeButton;
@@ -74,10 +75,9 @@ public class SudokuPlayActivity extends Activity{
         setContentView(R.layout.sudoku_play);
         
         sudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
-        selectNumberDialog = new SelectNumberDialog(this);
-        selectNumberDialog.setOnNumberSelectListener(onNumberSelectListener);
-        selectMultipleNumbersDialog = new SelectMultipleNumbersDialog(this);
-        selectMultipleNumbersDialog.setOnNumbersSelectListener(onNumbersSelectListener);
+        editCellDialog = new EditCellDialog(this);
+        editCellDialog.setOnNumberEditListener(onNumberEditListener);
+        editCellDialog.setOnNoteEditListener(onNoteEditListener);
         inputModeButton = (Button) findViewById(R.id.input_mode);
         inputModeButton.setOnClickListener(inputModeClickListener);
         timeLabel = (TextView)findViewById(R.id.time_label);
@@ -204,13 +204,21 @@ public class SudokuPlayActivity extends Activity{
     	//if (wakeLock.isHeld()) {
     	//	wakeLock.release();
     	//}
-		if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-			sudokuGame.pause();
-		}
 		
 		// we will save game to the database as we might not be able to get back
 		SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
 		sudokuDB.updateSudoku(sudokuGame);
+    }
+    
+    @Override
+    protected void onStop() {
+    	// TODO Auto-generated method stub
+    	super.onStop();
+    	
+		// TODO: tady bych mel mimo jiny zastavovat ten pitomej timer
+    	if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			sudokuGame.pause();
+		}
     }
     
     @Override
@@ -228,10 +236,10 @@ public class SudokuPlayActivity extends Activity{
     @Override
     protected Dialog onCreateDialog(int id) {
     	switch (id){
-    	case DIALOG_SELECT_NUMBER:
-    		return selectNumberDialog.getDialog();
-    	case DIALOG_SELECT_MULTIPLE_NUMBERS:
-			return selectMultipleNumbersDialog.getDialog();
+//    	case DIALOG_SELECT_NUMBER:
+//    		return selectNumberDialog.getDialog();
+//    	case DIALOG_SELECT_MULTIPLE_NUMBERS:
+//			return selectMultipleNumbersDialog.getDialog();
     	case DIALOG_WELL_DONE:
             return new AlertDialog.Builder(SudokuPlayActivity.this)
             .setIcon(android.R.drawable.ic_dialog_info)
@@ -242,6 +250,8 @@ public class SudokuPlayActivity extends Activity{
                 }
             })
             .create();
+    	case DIALOG_EDIT_CELL:
+    		return editCellDialog.getDialog();
     	}
     	return null;
     }
@@ -253,13 +263,10 @@ public class SudokuPlayActivity extends Activity{
 		public boolean onCellTap(SudokuCell cell) {
 			if (cell != null && cell.getEditable()) {
 				
-				if (inputMode == INPUT_MODE_NORMAL) {
-					showDialog(DIALOG_SELECT_NUMBER);
-				} else {
-					SudokuCell selectedCell = sudokuBoard.getSelectedCell();
-					selectMultipleNumbersDialog.updateNumbers(selectedCell.getNoteNumbers());
-					showDialog(DIALOG_SELECT_MULTIPLE_NUMBERS);
-				}
+				SudokuCell selectedCell = sudokuBoard.getSelectedCell();
+				editCellDialog.updateNumber(selectedCell.getValue());
+				editCellDialog.updateNote(selectedCell.getNoteNumbers());
+				showDialog(DIALOG_EDIT_CELL);
 			}
 			return true;
 		}
@@ -267,11 +274,11 @@ public class SudokuPlayActivity extends Activity{
     };
     
 	/**
-	 * Occurs when number is selected in SelectNumberDialog.
+	 * Occurs when user selects number in EditCellDialog.
 	 */
-    private OnNumberSelectListener onNumberSelectListener = new OnNumberSelectListener() {
+    private OnNumberEditListener onNumberEditListener = new OnNumberEditListener() {
 		@Override
-		public boolean onNumberSelect(int number) {
+		public boolean onNumberEdit(int number) {
     		SudokuCell selectedCell = sudokuBoard.getSelectedCell();
     		if (number != -1) {
                 // set cell number selected by user
@@ -281,13 +288,12 @@ public class SudokuPlayActivity extends Activity{
 		}
 	};
 	
-	// TODO: OnNumberSelectListener and OnNumbersSelectListener are too close to each other
 	/**
-	 * Occurs when user selects numbers in SelectMultipleNumbersDialog.
+	 * Occurs when user edits note in EditCellDialog
 	 */
-	private OnNumbersSelectListener onNumbersSelectListener = new OnNumbersSelectListener() {
+	private OnNoteEditListener onNoteEditListener = new OnNoteEditListener() {
 		@Override
-		public boolean onNumbersSelect(Integer[] numbers) {
+		public boolean onNoteEdit(Integer[] numbers) {
 			SudokuCell selectedCell = sudokuBoard.getSelectedCell();
 			if (selectedCell != null) {
 				sudokuGame.getCells().setNoteNumbers(selectedCell, numbers);
@@ -316,6 +322,26 @@ public class SudokuPlayActivity extends Activity{
 			return true;
 		}
 	};
+	
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+        case REQUEST_SELECT_NUMBER:
+                SudokuCell selectedCell = sudokuBoard.getSelectedCell();
+                if (resultCode == RESULT_OK && selectedCell != null) {
+                        int selectedNumber = data.getIntExtra(SelectNumberActivity.EXTRAS_SELECTED_NUMBER, -1);
+                        if (selectedNumber != -1) {
+                        // set cell number selected by user
+                                if (selectedCell.getEditable()) {
+                                        sudokuGame.getCells().setValue(selectedCell, selectedNumber);
+                                }
+                        }
+                }
+                break;
+        }
+    }
 
     
 	/**
