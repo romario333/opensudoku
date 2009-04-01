@@ -1,33 +1,45 @@
 package cz.romario.opensudoku.gui;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.ComponentName;
-import android.content.ContentUris;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import cz.romario.opensudoku.db.FolderColumns;
+import android.widget.TextView;
 import cz.romario.opensudoku.db.SudokuDatabase;
+import cz.romario.opensudoku.game.FolderInfo;
 
 public class FolderListActivity extends ListActivity {
-    public static final int MENU_ITEM_INSERT = Menu.FIRST;
-    public static final int MENU_ITEM_EDIT = Menu.FIRST + 1;
+    
+	public static final int MENU_ITEM_ADD = Menu.FIRST;
+    public static final int MENU_ITEM_RENAME = Menu.FIRST + 1;
     public static final int MENU_ITEM_DELETE = Menu.FIRST + 2;
     
-    /** The index of the name column in cursor */
-    private static final int COLUMN_INDEX_NAME = 1;
+    private static final int DIALOG_ADD_FOLDER = 1;
+    private static final int DIALOG_RENAME_FOLDER = 2;
+    private static final int DIALOG_DELETE_FOLDER = 3;
     
     private static final String TAG = "FolderListActivity";
+    
+    private FolderListAdapter listAdapter;
+    
+    // which folder shoud dialog operate on
+    private FolderInfo dialogFolderInfo;
 
 	
 	@Override
@@ -40,16 +52,16 @@ public class FolderListActivity extends ListActivity {
         // Inform the list we provide context menus for items
         getListView().setOnCreateContextMenuListener(this);
 
+        
+        listAdapter = new FolderListAdapter(this);
+        loadAdapterData();
+        setListAdapter(listAdapter);
+	}
+	
+	private void loadAdapterData() {
         SudokuDatabase sudokuDB = new SudokuDatabase(this);
-        
-        Cursor cursor = sudokuDB.getFolderList();
-        startManagingCursor(cursor);
-        
-        
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.folder_list_item, 
-        		cursor, new String[] { FolderColumns.NAME }, 
-        		new int[] { R.id.name });
-        setListAdapter(adapter);
+        FolderInfo[] folderList = sudokuDB.getFolderList();
+        listAdapter.setFolders(folderList);
 	}
 	
 	@Override
@@ -58,7 +70,7 @@ public class FolderListActivity extends ListActivity {
 		
         // This is our one standard application action -- inserting a
         // new note into the list.
-        menu.add(0, MENU_ITEM_INSERT, 0, "Add folder")
+        menu.add(0, MENU_ITEM_ADD, 0, "Add folder")
                 .setShortcut('3', 'a')
                 .setIcon(android.R.drawable.ic_menu_add);
 
@@ -85,18 +97,74 @@ public class FolderListActivity extends ListActivity {
             return;
         }
 
-        Cursor cursor = (Cursor) getListAdapter().getItem(info.position);
-        if (cursor == null) {
-            // For some reason the requested item isn't available, do nothing
-            return;
-        }
-
-        // Setup the menu header
-        menu.setHeaderTitle(cursor.getString(COLUMN_INDEX_NAME));
+        FolderInfo f = (FolderInfo)getListAdapter().getItem(info.position);
+        menu.setHeaderTitle(f.name);
 
         // Add a menu item to delete the note
-        menu.add(0, MENU_ITEM_EDIT, 0, "Edit folder");
+        menu.add(0, MENU_ITEM_RENAME, 0, "Rename folder");
         menu.add(0, MENU_ITEM_DELETE, 1, "Delete folder");
+    }
+    
+    @Override
+    protected Dialog onCreateDialog(int id) {
+    	switch (id) {
+    	case DIALOG_ADD_FOLDER:
+    	{
+            LayoutInflater factory = LayoutInflater.from(this);
+            final View nameView = factory.inflate(R.layout.folder_name, null);
+            final TextView nameInput = (TextView)nameView.findViewById(R.id.name);
+            return new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_menu_add)
+                .setTitle("Add folder")
+                .setView(nameView)
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
+                    	db.insertFolder(nameInput.getText().toString().trim());
+                    	loadAdapterData();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+    	}
+    	case DIALOG_RENAME_FOLDER:
+    	{
+            LayoutInflater factory = LayoutInflater.from(this);
+            final View nameView = factory.inflate(R.layout.folder_name, null);
+            final TextView nameInput = (TextView)nameView.findViewById(R.id.name);
+            
+            nameInput.setText(dialogFolderInfo.name);
+            
+            return new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_menu_add)
+                .setTitle(dialogFolderInfo.name)
+                .setView(nameView)
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
+                    	db.updateFolder(dialogFolderInfo.id, nameInput.getText().toString().trim());
+                    	loadAdapterData();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+    	}
+    	case DIALOG_DELETE_FOLDER:
+            return new AlertDialog.Builder(this)
+            .setIcon(android.R.drawable.ic_delete)
+            .setTitle(dialogFolderInfo.name)
+            .setMessage("Are you sure you want to delete this folder?")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
+                	db.deleteFolder(dialogFolderInfo.id);
+                	loadAdapterData();
+                }
+            })
+            .setNegativeButton("No", null)
+            .create();
+    	}
+    	return null;
     }
     
     @Override
@@ -109,31 +177,35 @@ public class FolderListActivity extends ListActivity {
             return false;
         }
 
+        FolderInfo folder;
         switch (item.getItemId()) {
-        case MENU_ITEM_EDIT: {
-            // TODO: tady by stacil dialog
-        	// Delete the note that the context menu is for
-        	Intent i = new Intent(this, FolderEditActivity.class);
-        	i.setAction(Intent.ACTION_EDIT);
-        	i.putExtra(FolderEditActivity.EXTRAS_FOLDER_ID, info.id);
-            startActivity(i);
+        case MENU_ITEM_RENAME:
+        	folder = (FolderInfo)getListAdapter().getItem(info.position);
+        	showDialog(DIALOG_RENAME_FOLDER, folder);
+        	break;
+        case MENU_ITEM_DELETE:
+        	folder = (FolderInfo)getListAdapter().getItem(info.position);
+        	showDialog(DIALOG_DELETE_FOLDER, folder);
+        	return true;
         }
-        // TODO: na delete zatim kaslu
-    }
-    return false;
+        return false;
     }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case MENU_ITEM_INSERT:
-            // Launch activity to insert a new item
-        	Intent i = new Intent(this, FolderEditActivity.class);
-        	i.setAction(Intent.ACTION_INSERT);
-            startActivity(i);
+		switch (item.getItemId()) {
+        case MENU_ITEM_ADD:
+        	
+        	showDialog(DIALOG_ADD_FOLDER);
             return true;
         }
         return super.onOptionsItemSelected(item);
+	}
+	
+	// TODO: comment
+	private void showDialog(int dialogID, FolderInfo fi) {
+		dialogFolderInfo = fi;
+		showDialog(dialogID);
 	}
 	
     // TODO: onPrepareOptionsMenu - menit polozky v menu podle vybraneho itemu
@@ -144,6 +216,65 @@ public class FolderListActivity extends ListActivity {
 		Intent i = new Intent(this, SudokuListActivity.class);
 		i.putExtra(SudokuListActivity.EXTRAS_FOLDER_ID, id);
 		startActivity(i);
+	}
+	
+	private class FolderListAdapter extends BaseAdapter {
+
+		private LayoutInflater inflater;
+		private FolderInfo[] folders;
+		
+		public FolderListAdapter(Context context) {
+			this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		}
+		
+		public FolderInfo[] getFolders() {
+			return folders;			
+		}
+		
+		public void setFolders(FolderInfo[] folders) {
+			this.folders = folders;
+			notifyDataSetChanged();
+		}
+		
+		@Override
+		public int getCount() {
+			return folders.length;
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return folders[position];
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return folders[position].id;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View itemView = inflater.inflate(R.layout.folder_list_item, parent, false);
+			TextView nameLabel = (TextView) itemView.findViewById(R.id.name);
+			TextView detailLabel = (TextView) itemView.findViewById(R.id.detail);
+			
+			FolderInfo folder = folders[position];
+			nameLabel.setText(folder.name);
+			
+			String folderDetail;
+			if (folder.puzzleCount == 0) {
+				folderDetail = "No puzzles";
+			} else if (folder.puzzleCount == 1) {
+				folderDetail = "1 puzzle";
+			} else {
+				folderDetail = String.format("%s puzzles", folder.puzzleCount);
+			}
+			if (folder.solvedCount != 0) {
+				folderDetail += String.format(" (%s solved)", folder.solvedCount);
+			}
+			detailLabel.setText(folderDetail);
+			
+			return itemView;
+		}
 	}
 
 }

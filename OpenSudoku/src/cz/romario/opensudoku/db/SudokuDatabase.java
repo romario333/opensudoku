@@ -1,21 +1,23 @@
 package cz.romario.opensudoku.db;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.util.Log;
+import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 
 public class SudokuDatabase {
 	public static final String DATABASE_NAME = "sudoku"; // TODO: debug
-    public static final int DATABASE_VERSION = 8;
+    public static final int DATABASE_VERSION = 9;
     
     public static final String SUDOKU_TABLE_NAME = "sudoku";
     public static final String FOLDER_TABLE_NAME = "folder";
@@ -32,17 +34,47 @@ public class SudokuDatabase {
     }
     
 
-    // TODO: nested-folders suport
-    public Cursor getFolderList() {
-        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-
-        qb.setTables(FOLDER_TABLE_NAME);
-        //qb.setProjectionMap(sPlacesProjectionMap);
-        //qb.appendWhere(PlacesColumns._ID + "=" + itemId);
+    public FolderInfo[] getFolderList() {
+    	Map<Long, FolderInfo> folders = new HashMap<Long, FolderInfo>();
+    	
+    	SQLiteDatabase db = null;
+    	Cursor c = null;
+    	try
+        {
+	    	db = mOpenHelper.getReadableDatabase();
+	        
+	        // selectionArgs: You may include ?s in where clause in the query, which will be replaced by the values from selectionArgs. The values will be bound as Strings.
+	        c = db.rawQuery("select folder._id as _id, folder.name as name, sudoku.state as state, count(sudoku.state) as count from folder left join sudoku on folder._id = sudoku.folder_id group by folder._id, sudoku.state;", null);
+	        
+	        while (c.moveToNext()) {
+	        	long id = c.getLong(c.getColumnIndex(FolderColumns._ID));
+	        	String name = c.getString(c.getColumnIndex(SudokuColumns.NAME));
+	        	int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
+	        	int count = c.getInt(c.getColumnIndex("count"));
+	        	
+	        	if (!folders.containsKey(id)) {
+	        		folders.put(id, new FolderInfo(id, name));
+	        	}
+	        	FolderInfo folder = folders.get(id);
+	        	folder.puzzleCount += count;
+	        	if (state == SudokuGame.GAME_STATE_COMPLETED) {
+	        		folder.solvedCount += count;
+	        	}
+	        }
+        }
+        finally {
+        	if (c != null) {
+        		c.close();
+        	}
+        	if (db != null) {
+        		db.close();
+        	}
+        }
         
-        // Get the database and run the query
-        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        return qb.query(db, null, null, null, null, null, "created DESC");
+        FolderInfo[] foldersArray = new FolderInfo[folders.size()];
+        folders.values().toArray(foldersArray);
+        
+        return foldersArray;
     }
     
     // TODO: Folder object
@@ -57,7 +89,7 @@ public class SudokuDatabase {
         long rowId;
         try {
 	        db = mOpenHelper.getWritableDatabase();
-	        rowId = db.insert(FOLDER_TABLE_NAME, FolderColumns.FOLDER_ID, values);
+	        rowId = db.insert(FOLDER_TABLE_NAME, FolderColumns._ID, values);
         } finally {
         	// TODO: mozna nemusim delat
         	if (db != null) db.close();

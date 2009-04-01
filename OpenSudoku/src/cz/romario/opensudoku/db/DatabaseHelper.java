@@ -34,8 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + SudokuDatabase.FOLDER_TABLE_NAME + " ("
                 + FolderColumns._ID + " INTEGER PRIMARY KEY,"
                 + SudokuColumns.CREATED + " INTEGER,"
-                + FolderColumns.NAME + " TEXT,"
-                + FolderColumns.FOLDER_ID + " INTEGER"
+                + FolderColumns.NAME + " TEXT"
                 + ");");
         
         insertFolder(db, 1, "Easy");
@@ -135,7 +134,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     
     private void insertFolder(SQLiteDatabase db, long folderID, String folderName) {
     	long now = System.currentTimeMillis();
-    	db.execSQL("INSERT INTO " + SudokuDatabase.FOLDER_TABLE_NAME + " VALUES ("+ folderID + ", " + now + ", '" + folderName + "', null);");
+    	db.execSQL("INSERT INTO " + SudokuDatabase.FOLDER_TABLE_NAME + " VALUES ("+ folderID + ", " + now + ", '" + folderName + "');");
     }
     
     private void insertSudoku(SQLiteDatabase db, long folderID, long sudokuID, String sudokuName, String data) {
