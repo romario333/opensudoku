@@ -119,6 +119,7 @@ public class SudokuGame implements Parcelable {
 	public void pause() {
 		// save time we have spent playing so far - it will be reseted after resuming 
 		time += SystemClock.uptimeMillis() - activeFromTime;
+		activeFromTime = -1;
 	}
 	
 	/**

@@ -11,27 +11,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.SudokuCellCollection.OnChangeListener;
 import cz.romario.opensudoku.gui.EditCellDialog.OnNoteEditListener;
 import cz.romario.opensudoku.gui.EditCellDialog.OnNumberEditListener;
-import cz.romario.opensudoku.gui.SelectMultipleNumbersDialog.OnNumbersSelectListener;
-import cz.romario.opensudoku.gui.SelectNumberDialog.OnNumberSelectListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 
 /*
  * TODO:
- * - timer
- * - folder view (v detailu 10 puzzles / 3 solved)
+ * - timer does not work properly
  * - sudoku list (v detailu stav, cas a tak)
  */
-//TODO: vyresit proc tuhne, kdyz vytahnu klavesnici
 public class SudokuPlayActivity extends Activity{
 	
 	public static final int MENU_ITEM_RESTART = Menu.FIRST;
@@ -40,8 +32,9 @@ public class SudokuPlayActivity extends Activity{
 	
 	public static final String EXTRAS_SUDOKU_ID = "sudoku_id";
 	
-	private static final int DIALOG_WELL_DONE = 3;
-	private static final int DIALOG_EDIT_CELL = 4;
+	private static final int DIALOG_RESTART = 1;
+	private static final int DIALOG_WELL_DONE = 2;
+	private static final int DIALOG_EDIT_CELL = 3;
 	
 	private static final int REQUEST_SELECT_NUMBER = 1;
 
@@ -91,7 +84,6 @@ public class SudokuPlayActivity extends Activity{
         }
         
         if (sudokuGame.getState() == SudokuGame.GAME_STATE_COMPLETED) {
-        	updateTime();
         	sudokuBoard.setReadOnly(true);
         }
         
@@ -103,6 +95,8 @@ public class SudokuPlayActivity extends Activity{
         sudokuBoard.setOnCellTapListener(cellTapListener);
         
 		sudokuGame.getCells().addOnChangeListener(cellsOnChangeListener);
+		
+		updateTime();
     }
 	
 	@Override
@@ -132,10 +126,7 @@ public class SudokuPlayActivity extends Activity{
 	public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case MENU_ITEM_RESTART:
-            // Restart game
-        	sudokuGame.restart();
-        	sudokuBoard.postInvalidate();
-        	gameTimer.start();
+        	showDialog(DIALOG_RESTART);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -159,24 +150,17 @@ public class SudokuPlayActivity extends Activity{
 		// we will save game to the database as we might not be able to get back
 		SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
 		sudokuDB.updateSudoku(sudokuGame);
-    }
-    
-    @Override
-    protected void onStop() {
-    	super.onStop();
-    	
-		// TODO: tady bych mel mimo jiny zastavovat ten pitomej timer
-    	if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-			sudokuGame.pause();
-		}
+		
+		gameTimer.stop();
     }
     
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-    	// TODO Auto-generated method stub
     	super.onSaveInstanceState(outState);
 		
-    	// TODO: doresit timer, poradne retestnout, funguje divne
+    	if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			sudokuGame.pause();
+		}
     	gameTimer.stop();
     	outState.putParcelable("sudoku_game", sudokuGame);
     	outState.putInt("input_mode", inputMode);
@@ -194,6 +178,8 @@ public class SudokuPlayActivity extends Activity{
             return new AlertDialog.Builder(SudokuPlayActivity.this)
             .setIcon(android.R.drawable.ic_dialog_info)
             .setTitle("Well Done!")
+            .setMessage(
+            		String.format("Congratulations, you have solved the puzzle in %s.", getTime()))
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     /* User clicked OK so do some stuff */
@@ -202,6 +188,22 @@ public class SudokuPlayActivity extends Activity{
             .create();
     	case DIALOG_EDIT_CELL:
     		return editCellDialog.getDialog();
+    	case DIALOG_RESTART:
+            return new AlertDialog.Builder(this)
+            .setIcon(android.R.drawable.ic_menu_rotate)
+            .setTitle("OpenSudoku")
+            .setMessage("Are you sure you want to restart this game?")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Restart game
+                	sudokuGame.restart();
+                	sudokuBoard.setReadOnly(false);
+                	sudokuBoard.postInvalidate();
+                	gameTimer.start();
+                }
+            })
+            .setNegativeButton("No", null)
+            .create();
     	}
     	return null;
     }
@@ -262,9 +264,9 @@ public class SudokuPlayActivity extends Activity{
 			
             // check whether game is completed, if so, finish the game
 			if (sudokuGame.isCompleted()) {
-                showDialog(DIALOG_WELL_DONE);
-                sudokuGame.setState(SudokuGame.GAME_STATE_COMPLETED);
-                sudokuBoard.setReadOnly(true);
+				sudokuGame.finish();
+				sudokuBoard.setReadOnly(true);
+				showDialog(DIALOG_WELL_DONE);
             }
                 
             // update board view
@@ -299,12 +301,14 @@ public class SudokuPlayActivity extends Activity{
      * Update the time of game-play.
      */
 	void updateTime() {
-		// Use StringBuilders and a Formatter to avoid allocating new
-		// String objects every time -- this function is called often!
+		setTitle(getTime());
+	}
+	
+	public String getTime() {
 		long time = sudokuGame.getTime();
 		timeText.setLength(0);
 		timeFormatter.format("%02d:%02d", time / 60000, time / 1000 % 60);
-		setTitle(timeText);
+		return timeText.toString();
 	}
 	
 	// This class implements the game clock.  All it does is update the

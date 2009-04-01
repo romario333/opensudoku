@@ -269,7 +269,11 @@ public class FolderListActivity extends ListActivity {
 				folderDetail = String.format("%s puzzles", folder.puzzleCount);
 			}
 			if (folder.solvedCount != 0) {
-				folderDetail += String.format(" (%s solved)", folder.solvedCount);
+				if (folder.solvedCount == folder.puzzleCount) {
+					folderDetail += " (all solved)";
+				} else {
+					folderDetail += String.format(" (%s solved)", folder.solvedCount);
+				}
 			}
 			detailLabel.setText(folderDetail);
 			

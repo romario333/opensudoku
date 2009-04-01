@@ -3,8 +3,11 @@ package cz.romario.opensudoku.gui;
 import java.util.Date;
 import java.util.Formatter;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -30,6 +33,8 @@ public class SudokuListActivity extends ListActivity{
 	public static final int MENU_ITEM_INSERT = Menu.FIRST;
     public static final int MENU_ITEM_EDIT = Menu.FIRST + 1;
     public static final int MENU_ITEM_DELETE = Menu.FIRST + 2;
+    
+    private static final int DIALOG_DELETE_FOLDER = 1;
 	
 	public static final String EXTRAS_FOLDER_ID = "folder_id";
 	private static final String TAG = "SudokuListActivity";
@@ -42,7 +47,6 @@ public class SudokuListActivity extends ListActivity{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
@@ -139,6 +143,25 @@ public class SudokuListActivity extends ListActivity{
 		
 	}
 	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+    	case DIALOG_DELETE_FOLDER:
+            return new AlertDialog.Builder(this)
+            .setIcon(android.R.drawable.ic_delete)
+            .setTitle("Puzzle")
+            .setMessage("Are you sure you want to delete selected puzzle?")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                	// TODO: delete and reload list
+                }
+            })
+            .setNegativeButton("No", null)
+            .create();
+		}
+		return null;
+	}
+	
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         AdapterView.AdapterContextMenuInfo info;
@@ -155,9 +178,7 @@ public class SudokuListActivity extends ListActivity{
             return;
         }
 
-        // Setup the menu header
-        // TODO: domyslet, jak budu navazovat indexy sloupcu v kurzoru na SudokuColumns
-        menu.setHeaderTitle(cursor.getString(1));
+        menu.setHeaderTitle("Puzzle");
 
         // Add a menu item to delete the note
         menu.add(0, MENU_ITEM_EDIT, 0, "Edit sudoku");
