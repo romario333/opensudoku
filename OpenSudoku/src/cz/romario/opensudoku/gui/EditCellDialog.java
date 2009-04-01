@@ -47,8 +47,8 @@ public class EditCellDialog {
 		// TODO: maybe I should just create my own dialog, this is just quick hack
 		dialog = new AlertDialog.Builder(context)
         .setView(this.tabHost)
-        .setPositiveButton("Close", closeButtonListener)
-        .setNeutralButton("Clear", clearButtonListener)
+        .setPositiveButton("Clear", clearButtonListener)
+        .setNeutralButton("Close", closeButtonListener)
        .create();
 	}
 	
