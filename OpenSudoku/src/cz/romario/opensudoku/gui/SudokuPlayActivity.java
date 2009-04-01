@@ -33,6 +33,8 @@ import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
  * - sudoku list (v detailu stav, cas a tak)
  * - select number dialog
  * 
+ * TODO: k cemu je keep screen on?
+ * 
  */
 // TODO: look at Chronometer widget
 //TODO: vyresit proc tuhne, kdyz vytahnu klavesnici

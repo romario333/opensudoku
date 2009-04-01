@@ -9,8 +9,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -18,16 +19,21 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
-import android.widget.TextView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout.LayoutParams;
 
-// TODO: Clear closes the dialog, I should probably really do my own dialog and do not bend AlertDialog.
 public class EditCellDialog {
 	private Context context;
 	private Dialog dialog;
 	private TabHost tabHost;
+	
+	// TODO: I don't like this dialog, too many things are hard-coded
+	private static final int NUMBER_BUTTON_WIDTH = 97;
+	private static final int NUMBER_BUTTON_HEIGHT = 60;
+	private static final int CLEAR_BUTTON_MARGIN = 15;
 	
 	// buttons from "Select number" tab
 	private Map<Integer,Button> numberButtons = new HashMap<Integer, Button>();
@@ -44,11 +50,10 @@ public class EditCellDialog {
 		
 		this.tabHost = createTabView();
 		
-		// TODO: maybe I should just create my own dialog, this is just quick hack
+		// TODO: maybe I should just create my own dialog?
 		dialog = new AlertDialog.Builder(context)
         .setView(this.tabHost)
-        .setPositiveButton("Clear", clearButtonListener)
-        .setNeutralButton("Close", closeButtonListener)
+        .setPositiveButton("Close", closeButtonListener)
        .create();
 	}
 	
@@ -160,20 +165,15 @@ public class EditCellDialog {
      * @return
      */
 	private View createEditNumberView() {
-        LinearLayout editNumberView = new LinearLayout(context);
-        editNumberView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        editNumberView.setOrientation(LinearLayout.VERTICAL);
-        
-        
-        
+        TableLayout editNumberView = new TableLayout(context);
+		
+        // create 3x3 table with numbers 1 - 9
         for (int x=0; x<3; x++) {
-            LinearLayout row = new LinearLayout(context);
-            row.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-            row.setOrientation(LinearLayout.HORIZONTAL);
+        	TableRow row = new TableRow(context);
             for (int y=0; y<3; y++) {
             	Button numberButton = new Button(context);
-            	numberButton.setWidth(0);
-            	numberButton.setLayoutParams(new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));
+            	numberButton.setWidth(NUMBER_BUTTON_WIDTH);
+            	numberButton.setHeight(NUMBER_BUTTON_HEIGHT);
             	
             	int number = (x * 3) + (y + 1);
             	
@@ -188,26 +188,34 @@ public class EditCellDialog {
             editNumberView.addView(row);
         }
         
+        // Add clear button to the end
+        TableRow row = new TableRow(context);
+        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams();
+        layoutParams.column = 2;
+        layoutParams.topMargin = CLEAR_BUTTON_MARGIN;
+        row.addView(createClearButton(), layoutParams);
+        editNumberView.addView(row);
+        
+        editNumberView.setShrinkAllColumns(true);
+        
         return editNumberView;
     }
+
 	
 	/**
      * Creates view for note editing.
      * @return
      */
 	private View createEditNoteView() {
-        LinearLayout editNoteView = new LinearLayout(context);
-        editNoteView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        editNoteView.setOrientation(LinearLayout.VERTICAL);
+        TableLayout editNumberView = new TableLayout(context);
         
+        // create 3x3 table with numbers 1 - 9
         for (int x=0; x<3; x++) {
-            LinearLayout row = new LinearLayout(context);
-            row.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-            row.setOrientation(LinearLayout.HORIZONTAL);
+        	TableRow row = new TableRow(context);
             for (int y=0; y<3; y++) {
             	ToggleButton numberButton = new ToggleButton(context);
-            	numberButton.setWidth(0);
-            	numberButton.setLayoutParams(new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));
+            	numberButton.setWidth(NUMBER_BUTTON_WIDTH);
+            	numberButton.setHeight(NUMBER_BUTTON_HEIGHT);
             	
             	Integer number = (x * 3) + (y + 1);
             	
@@ -221,12 +229,29 @@ public class EditCellDialog {
             	
             	row.addView(numberButton);
             }
-            editNoteView.addView(row);
+            editNumberView.addView(row);
         }
         
-        return editNoteView;
+        // Add clear button to the end
+        TableRow row = new TableRow(context);
+        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams();
+        layoutParams.column = 2;
+        layoutParams.topMargin = CLEAR_BUTTON_MARGIN;
+        row.addView(createClearButton(), layoutParams);
+        editNumberView.addView(row);
+        
+        editNumberView.setShrinkAllColumns(true);
+        
+        return editNumberView;
     }
 	
+	private View createClearButton() {
+        Button clearButton = new Button(context);
+        clearButton.setText("Clear");
+        clearButton.setWidth(NUMBER_BUTTON_WIDTH);
+        clearButton.setOnClickListener(clearButtonListener);
+		return clearButton;
+	}
 	
 	/**
 	 * Occurs when user selects number in "Select number" tab.
@@ -265,9 +290,9 @@ public class EditCellDialog {
 	/**
 	 * Occurs when user presses "Clear" button.
 	 */
-	private DialogInterface.OnClickListener clearButtonListener = new DialogInterface.OnClickListener() {
+	private OnClickListener clearButtonListener = new OnClickListener() {
 		@Override
-		public void onClick(DialogInterface arg0, int arg1) {
+		public void onClick(View v) {
 			String currentTab = tabHost.getCurrentTabTag();
 			
 			if (currentTab.equals("number")) {
