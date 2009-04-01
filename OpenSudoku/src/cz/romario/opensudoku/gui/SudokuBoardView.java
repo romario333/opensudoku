@@ -247,8 +247,9 @@ public class SudokuBoardView extends View {
 		}
 		
 		// draw vertical lines
-		for (int x=0; x < width; x = x + cellWidth) {
-			if (x % 3 == 0) {
+		for (int c=0; c < 9; c++) {
+			int x = c * cellWidth;
+			if (c % 3 == 0) {
 				canvas.drawRect(x-1, 0, x+1, height, linePaint);
 			} else {
 				canvas.drawLine(x, 0, x, height, linePaint);
@@ -256,8 +257,9 @@ public class SudokuBoardView extends View {
 		}
 		
 		// draw horizontal lines
-		for (int y=0; y < height; y = y + cellHeight) {
-			if (y % 3 == 0) {
+		for (int r=0; r < 9; r++) {
+			int y = r * cellHeight;
+			if (r % 3 == 0) {
 				canvas.drawRect(0, y-1, width, y+1, linePaint);
 			} else {
 				canvas.drawLine(0, y, width, y, linePaint);

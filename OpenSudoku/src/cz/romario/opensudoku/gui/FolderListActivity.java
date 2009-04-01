@@ -47,6 +47,8 @@ public class FolderListActivity extends ListActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
+		setTitle("Puzzle folders");
+		
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 		
         // Inform the list we provide context menus for items
