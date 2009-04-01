@@ -8,28 +8,6 @@
 		android:id="@+id/sudoku_board"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	     />
-	<TextView android:id="@+id/time_label"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:gravity="center_horizontal"
-	    android:text="0:00"
 	    android:keepScreenOn="true"
 	     />
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:orientation="horizontal"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent">
-		<TextView android:id="@+id/time_label"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="Input mode"
-		     />
-		<Button android:id="@+id/input_mode"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:text="Normal"
-		     />
-	</LinearLayout>
-
 </LinearLayout>

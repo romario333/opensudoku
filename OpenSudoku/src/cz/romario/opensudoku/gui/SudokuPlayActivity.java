@@ -49,9 +49,6 @@ public class SudokuPlayActivity extends Activity{
 	private static final int DIALOG_WELL_DONE = 3;
 	private static final int DIALOG_EDIT_CELL = 4;
 	
-	private static final int INPUT_MODE_NORMAL = 1;
-	private static final int INPUT_MODE_NOTES = 2;
-	
 	private static final int REQUEST_SELECT_NUMBER = 1;
 
 	
@@ -61,8 +58,6 @@ public class SudokuPlayActivity extends Activity{
 	
 	private EditCellDialog editCellDialog;
 	private SudokuBoardView sudokuBoard;
-	private TextView timeLabel;
-	private Button inputModeButton;
 	
 	private StringBuilder timeText;
 	private Formatter timeFormatter;
@@ -80,9 +75,6 @@ public class SudokuPlayActivity extends Activity{
         editCellDialog = new EditCellDialog(this);
         editCellDialog.setOnNumberEditListener(onNumberEditListener);
         editCellDialog.setOnNoteEditListener(onNoteEditListener);
-        inputModeButton = (Button) findViewById(R.id.input_mode);
-        inputModeButton.setOnClickListener(inputModeClickListener);
-        timeLabel = (TextView)findViewById(R.id.time_label);
         timeText = new StringBuilder(5);
         timeFormatter = new Formatter(timeText);
         gameTimer = new GameTimer();
@@ -94,7 +86,6 @@ public class SudokuPlayActivity extends Activity{
         	sudokuGameID = getIntent().getLongExtra(EXTRAS_SUDOKU_ID, 0);
         	SudokuDatabase sudokuDB = new SudokuDatabase(this);
         	sudokuGame = sudokuDB.getSudoku(sudokuGameID);
-        	inputMode = INPUT_MODE_NORMAL;
         	//gameTimer.setTime(sudokuGame.getTime());
         } else {
         	// activity has been running before, restore its state
@@ -108,7 +99,7 @@ public class SudokuPlayActivity extends Activity{
         }
         
         if (sudokuGame.getState() == SudokuGame.GAME_STATE_COMPLETED) {
-        	updateTimeLabel(sudokuGame.getTime());
+        	updateTime();
         	sudokuBoard.setReadOnly(true);
         }
         
@@ -116,10 +107,6 @@ public class SudokuPlayActivity extends Activity{
         	sudokuGame.start();
         }
         
-    	setTitle(sudokuGame.getName());
-    	
-    	updateInputModeText();
-
     	//PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
     	// TODO
     	//wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
@@ -165,27 +152,6 @@ public class SudokuPlayActivity extends Activity{
             return true;
         }
         return super.onOptionsItemSelected(item);
-	}
-	
-	
-	private OnClickListener inputModeClickListener = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			if (inputMode == INPUT_MODE_NORMAL) {
-				inputMode = INPUT_MODE_NOTES;
-			} else {
-				inputMode = INPUT_MODE_NORMAL;
-			}
-			updateInputModeText();
-		}
-	};
-	
-	private void updateInputModeText() {
-		if (inputMode == INPUT_MODE_NORMAL) {
-			inputModeButton.setText("Normal");
-		} else {
-			inputModeButton.setText("Notes");
-		}
 	}
 
 	@Override
@@ -346,25 +312,19 @@ public class SudokuPlayActivity extends Activity{
     }
 
     
+	// TODO: can Chronometer replace this?
 	/**
-     * Update the status line to the current game state.
+     * Update the time of game-play.
      */
-	void updateStatus() {
+	void updateTime() {
 		// Use StringBuilders and a Formatter to avoid allocating new
 		// String objects every time -- this function is called often!
-		
-		//long time = gameTimer.getTime();
 		long time = sudokuGame.getTime();
-		updateTimeLabel(time);
-	}
-	
-	void updateTimeLabel(long time) {
 		timeText.setLength(0);
 		timeFormatter.format("%02d:%02d", time / 60000, time / 1000 % 60);
-		timeLabel.setText(timeText);
+		setTitle(timeText);
 	}
-    
-    
+	
 	// This class implements the game clock.  All it does is update the
     // status each tick.
 	private final class GameTimer extends Timer {
@@ -375,7 +335,7 @@ public class SudokuPlayActivity extends Activity{
 		
     	@Override
 		protected boolean step(int count, long time) {
-    		updateStatus();
+    		updateTime();
             
             // Run until explicitly stopped.
             return false;
