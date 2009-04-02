@@ -36,9 +36,6 @@ public class SudokuPlayActivity extends Activity{
 	private static final int DIALOG_WELL_DONE = 2;
 	private static final int DIALOG_EDIT_CELL = 3;
 	
-	private static final int REQUEST_SELECT_NUMBER = 1;
-
-	
 	private long sudokuGameID;
 	private SudokuGame sudokuGame;
 	private int inputMode;
@@ -275,27 +272,6 @@ public class SudokuPlayActivity extends Activity{
 		}
 	};
 	
-	@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-        case REQUEST_SELECT_NUMBER:
-                SudokuCell selectedCell = sudokuBoard.getSelectedCell();
-                if (resultCode == RESULT_OK && selectedCell != null) {
-                        int selectedNumber = data.getIntExtra(SelectNumberActivity.EXTRAS_SELECTED_NUMBER, -1);
-                        if (selectedNumber != -1) {
-                        // set cell number selected by user
-                                if (selectedCell.getEditable()) {
-                                        sudokuGame.getCells().setValue(selectedCell, selectedNumber);
-                                }
-                        }
-                }
-                break;
-        }
-    }
-
-    
 	// TODO: can Chronometer replace this?
 	/**
      * Update the time of game-play.

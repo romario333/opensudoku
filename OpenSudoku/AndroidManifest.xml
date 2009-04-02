@@ -5,9 +5,6 @@
       android:versionName="1.0.0">
     <!-- TODO: z release verze bych mel asi debuggable odstranit -->
     <application android:icon="@drawable/opensudoku_v2" android:label="@string/app_name" android:debuggable="true">
-        <activity android:name=".OpenSudokuActivity"
-                  android:label="@string/app_name">
-        </activity>
         <activity android:name=".SudokuListActivity"
                   android:label="@string/app_name">
         </activity>
@@ -25,10 +22,6 @@
         <activity android:name=".SudokuPlayActivity"
                   android:label="@string/app_name">
         </activity>
-        <activity android:name=".SelectNumberActivity"
-                  android:label="@string/select_number"
-                  android:theme="@android:style/Theme.Dialog">
-        </activity>
         <activity android:name=".FolderListActivity"
                   android:label="@string/app_name">
             <intent-filter>
@@ -36,14 +29,5 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FolderEditActivity"
-                  android:label="@string/app_name">
-	        <intent-filter>
-                <action android:name="android.intent.action.INSERT" />
-                <action android:name="android.intent.action.EDIT" />
-                <category android:name="android.intent.category.DEFAULT" />
-	        </intent-filter>
-        </activity>
-        
     </application>
 </manifest> 
