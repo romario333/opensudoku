@@ -66,6 +66,8 @@ public class SudokuListActivity extends ListActivity{
 
         SudokuDatabase sudokuDB = new SudokuDatabase(this);
         
+        setTitle(sudokuDB.getFolderName(folderID));
+        
         Cursor cursor = sudokuDB.getSudokuList(folderID);
         startManagingCursor(cursor);
         

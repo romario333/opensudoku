@@ -77,6 +77,31 @@ public class SudokuDatabase {
         return foldersArray;
     }
     
+    public String getFolderName(long folderID) {
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        qb.setTables(FOLDER_TABLE_NAME);
+        //qb.setProjectionMap(sPlacesProjectionMap);
+        qb.appendWhere(FolderColumns._ID + "=" + folderID);
+        
+        SQLiteDatabase db = null;
+        Cursor c = null;
+        try {
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, null, null, null, null, null, null);
+	        c.moveToNext();
+	        String name = c.getString(c.getColumnIndex(SudokuColumns.NAME));
+	        return name;
+        } finally {
+        	if (c != null) {
+        		c.close();
+        	}
+        	if (db != null) {
+        		db.close();
+        	}
+        }
+    }
+    
     // TODO: Folder object
     public long insertFolder(String name) {
         Long created = Long.valueOf(System.currentTimeMillis());

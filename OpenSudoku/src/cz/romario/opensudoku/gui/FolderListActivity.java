@@ -57,8 +57,16 @@ public class FolderListActivity extends ListActivity {
 
         
         listAdapter = new FolderListAdapter(this);
-        loadAdapterData();
         setListAdapter(listAdapter);
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		// we will load current folders data on every start
+		loadAdapterData();
+
 	}
 	
 	private void loadAdapterData() {
@@ -224,7 +232,7 @@ public class FolderListActivity extends ListActivity {
 	private class FolderListAdapter extends BaseAdapter {
 
 		private LayoutInflater inflater;
-		private FolderInfo[] folders;
+		private FolderInfo[] folders = new FolderInfo[0];
 		
 		public FolderListAdapter(Context context) {
 			this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
