@@ -193,7 +193,7 @@ public class FolderListActivity extends ListActivity {
         case MENU_ITEM_RENAME:
         	folder = (FolderInfo)getListAdapter().getItem(info.position);
         	showDialog(DIALOG_RENAME_FOLDER, folder);
-        	break;
+        	return true;
         case MENU_ITEM_DELETE:
         	folder = (FolderInfo)getListAdapter().getItem(info.position);
         	showDialog(DIALOG_DELETE_FOLDER, folder);

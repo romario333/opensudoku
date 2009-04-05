@@ -297,9 +297,10 @@ public class SudokuBoardView extends View {
 			invalidate();
 		}
 		
-		return true;
+		return !readonly;
 	}
 	
+	// TODO: do I really need this?
 	@Override
 	public boolean onTrackballEvent(MotionEvent event) {
     	// Actually, just let these come through as D-pad events.
@@ -308,32 +309,34 @@ public class SudokuBoardView extends View {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		switch (keyCode) {
-			case KeyEvent.KEYCODE_DPAD_UP:
-				return moveCellSelection(0, -1);
-			case KeyEvent.KEYCODE_DPAD_RIGHT:
-				return moveCellSelection(1, 0);
-			case KeyEvent.KEYCODE_DPAD_DOWN:
-				return moveCellSelection(0, 1);
-			case KeyEvent.KEYCODE_DPAD_LEFT:
-				return moveCellSelection(-1, 0);
-			case KeyEvent.KEYCODE_0:
-			case KeyEvent.KEYCODE_SPACE:
-			case KeyEvent.KEYCODE_DEL:
-				// clear value in selected cell
-				if (selectedCell != null) {
-					cells.setValue(selectedCell, 0);
-					moveCellSelectionRight();
-				}
+		if (!readonly) {
+			switch (keyCode) {
+				case KeyEvent.KEYCODE_DPAD_UP:
+					return moveCellSelection(0, -1);
+				case KeyEvent.KEYCODE_DPAD_RIGHT:
+					return moveCellSelection(1, 0);
+				case KeyEvent.KEYCODE_DPAD_DOWN:
+					return moveCellSelection(0, 1);
+				case KeyEvent.KEYCODE_DPAD_LEFT:
+					return moveCellSelection(-1, 0);
+				case KeyEvent.KEYCODE_0:
+				case KeyEvent.KEYCODE_SPACE:
+				case KeyEvent.KEYCODE_DEL:
+					// clear value in selected cell
+					if (selectedCell != null) {
+						cells.setValue(selectedCell, 0);
+						moveCellSelectionRight();
+					}
+					return true;
+			}
+			
+			if (keyCode >= KeyEvent.KEYCODE_1 && keyCode <= KeyEvent.KEYCODE_9) {
+				// enter request number in cell
+				int selectedNumber = keyCode - KeyEvent.KEYCODE_0;
+				cells.setValue(selectedCell, selectedNumber);
+				moveCellSelectionRight();
 				return true;
-		}
-		
-		if (keyCode >= KeyEvent.KEYCODE_1 && keyCode <= KeyEvent.KEYCODE_9) {
-			// enter request number in cell
-			int selectedNumber = keyCode - KeyEvent.KEYCODE_0;
-			cells.setValue(selectedCell, selectedNumber);
-			moveCellSelectionRight();
-			return true;
+			}
 		}
 		
 		return false;

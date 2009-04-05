@@ -8,10 +8,9 @@
 	<!--  TODO: pri weight=1 zasekne eclipse -->
 	<TextView
 	    android:id="@+id/detail_label"
-	    android:layout_width="fill_parent" 
+	    android:layout_width="wrap_content" 
 	    android:layout_height="wrap_content"
-	    android:text="hura" 
-		android:gravity="left"
+	    android:text="detail"
 	    />
 	<cz.romario.opensudoku.gui.SudokuBoardView
 		android:id="@+id/sudoku_board"
