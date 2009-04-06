@@ -9,6 +9,14 @@ import java.util.Map.Entry;
 
 
 
+/**
+ * Represents group of cells which must each contain unique number.
+ * 
+ * Typical examples of instances are sudoku row, column or sector (3x3 group of cells).
+ * 
+ * @author EXT91365
+ *
+ */
 public class SudokuCellGroup {
 	private SudokuCell[] cells = new SudokuCell[SudokuCellCollection.SUDOKU_SIZE];
 	private int pos = 0;

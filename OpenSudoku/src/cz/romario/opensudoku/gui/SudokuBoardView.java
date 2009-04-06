@@ -1,16 +1,11 @@
 package cz.romario.opensudoku.gui;
 
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
-
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuCellCollection;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;

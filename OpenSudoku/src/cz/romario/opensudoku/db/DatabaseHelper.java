@@ -23,7 +23,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + SudokuDatabase.SUDOKU_TABLE_NAME + " ("
                 + SudokuColumns._ID + " INTEGER PRIMARY KEY,"
                 + SudokuColumns.FOLDER_ID + " INTEGER,"
-                + SudokuColumns.NAME + " TEXT,"
                 + SudokuColumns.CREATED + " INTEGER,"
                 + SudokuColumns.STATE + " INTEGER,"
                 + SudokuColumns.TIME + " INTEGER,"
@@ -149,14 +148,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	for (int r=0; r<9; r++) {
     		for (int c=0; c<9; c++) {
     			int value = Integer.parseInt(values[pos++]);
-    			cells[r][c] = new SudokuCell(value);
-				cells[r][c].setEditable(value == 0);
+    			cells[r][c] = new SudokuCell();
+				cells[r][c].setValue(value);
+    			cells[r][c].setEditable(value == 0);
     		}
     	}
     	
     	String cellsString = cellCollection.serialize();
 
-    	db.execSQL("INSERT INTO " + SudokuDatabase.SUDOKU_TABLE_NAME + " VALUES ("+sudokuID+", "+ folderID + ", '" + sudokuName + "', " + now + ", 0, 0, null, '"+ cellsString + "');");
+    	String sql = "INSERT INTO " + SudokuDatabase.SUDOKU_TABLE_NAME + " VALUES ("+sudokuID+", "+ folderID + ", " + now + ", 0, 0, null, '"+ cellsString + "');";
+    	db.execSQL(sql);
     	
     }
 

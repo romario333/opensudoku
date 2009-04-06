@@ -28,14 +28,17 @@ import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 public class SudokuPlayActivity extends Activity{
 	
 	public static final int MENU_ITEM_RESTART = Menu.FIRST;
+	public static final int MENU_ITEM_CLEAR_ALL_NOTES = Menu.FIRST + 1;
 	
-	private static final String TAG = "SudokuPlayActivity";
+	
+	//private static final String TAG = "SudokuPlayActivity";
 	
 	public static final String EXTRAS_SUDOKU_ID = "sudoku_id";
 	
 	private static final int DIALOG_RESTART = 1;
 	private static final int DIALOG_WELL_DONE = 2;
 	private static final int DIALOG_EDIT_CELL = 3;
+	private static final int DIALOG_CLEAR_NOTES = 4;
 	
 	private long sudokuGameID;
 	private SudokuGame sudokuGame;
@@ -101,11 +104,15 @@ public class SudokuPlayActivity extends Activity{
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		
-        // This is our one standard application action -- inserting a
-        // new note into the list.
-        menu.add(0, MENU_ITEM_RESTART, 0, "Restart")
-                .setShortcut('3', 'r')
-                .setIcon(android.R.drawable.ic_menu_rotate);
+        menu.add(0, MENU_ITEM_CLEAR_ALL_NOTES, 0, "Clear all notes")
+        .setShortcut('1', 'c')
+        .setIcon(android.R.drawable.ic_input_delete);
+
+        menu.add(0, MENU_ITEM_RESTART, 1, "Restart")
+        .setShortcut('3', 'r')
+        .setIcon(android.R.drawable.ic_menu_rotate);
+
+        
 
         // Generate any additional actions that can be performed on the
         // overall list.  In a normal install, there are no additional
@@ -126,6 +133,9 @@ public class SudokuPlayActivity extends Activity{
         case MENU_ITEM_RESTART:
         	showDialog(DIALOG_RESTART);
             return true;
+        case MENU_ITEM_CLEAR_ALL_NOTES:
+        	showDialog(DIALOG_CLEAR_NOTES);
+        	return true;
         }
         return super.onOptionsItemSelected(item);
 	}
@@ -198,6 +208,18 @@ public class SudokuPlayActivity extends Activity{
                 	sudokuBoard.setReadOnly(false);
                 	sudokuBoard.postInvalidate();
                 	gameTimer.start();
+                }
+            })
+            .setNegativeButton("No", null)
+            .create();
+    	case DIALOG_CLEAR_NOTES:
+            return new AlertDialog.Builder(this)
+            .setIcon(android.R.drawable.ic_input_delete)
+            .setTitle("OpenSudoku")
+            .setMessage("Are you sure you want to clear all notes?")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                	sudokuGame.clearAllNotes();
                 }
             })
             .setNegativeButton("No", null)

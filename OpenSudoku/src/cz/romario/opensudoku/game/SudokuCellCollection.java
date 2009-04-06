@@ -27,20 +27,6 @@ public class SudokuCellCollection  implements Parcelable {
 	
 	public static final int SUDOKU_SIZE = 9;
 	
-	public static SudokuCellCollection CreateDebugGame() {
-		return new SudokuCellCollection(new SudokuCell[][] {
-			{ new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(6), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(9),},
-			{ new SudokuCell(), new SudokuCell(4), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(3),},
-			{ new SudokuCell(5), new SudokuCell(6), new SudokuCell(), new SudokuCell(), new SudokuCell(8), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(),},
-			{ new SudokuCell(), new SudokuCell(), new SudokuCell(7), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(9), new SudokuCell(8), new SudokuCell(),},
-			{ new SudokuCell(8), new SudokuCell(), new SudokuCell(), new SudokuCell(9), new SudokuCell(3), new SudokuCell(7), new SudokuCell(), new SudokuCell(), new SudokuCell(2),},
-			{ new SudokuCell(6), new SudokuCell(), new SudokuCell(), new SudokuCell(5), new SudokuCell(), new SudokuCell(), new SudokuCell(7), new SudokuCell(), new SudokuCell(),},
-			{ new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(2), new SudokuCell(5), new SudokuCell(),},
-			{ new SudokuCell(), new SudokuCell(2), new SudokuCell(), new SudokuCell(7), new SudokuCell(), new SudokuCell(3), new SudokuCell(), new SudokuCell(), new SudokuCell(),},
-			{ new SudokuCell(7), new SudokuCell(), new SudokuCell(1), new SudokuCell(), new SudokuCell(), new SudokuCell(4), new SudokuCell(), new SudokuCell(), new SudokuCell(),},
-		});
-	}
-	
 	/**
 	 * Creates empty sudoku.
 	 * @return
@@ -84,7 +70,6 @@ public class SudokuCellCollection  implements Parcelable {
 	 * @return
 	 */
 	public SudokuCell getCell(int rowIndex, int colIndex) {
-		// TODO: assert
 		return cells[rowIndex][colIndex];
 	}
 	
@@ -147,11 +132,10 @@ public class SudokuCellCollection  implements Parcelable {
 	 * @param value
 	 */
 	public void setValue(SudokuCell cell, int value) {
-		// TODO: check whether is cell editable or not
 		if (cell != null && cell.getEditable()) {
 			cell.setValue(value);
+			onChange();
 		}
-		onChange();
 	}
 	
 	
@@ -204,6 +188,19 @@ public class SudokuCellCollection  implements Parcelable {
 		}
 	}
 	
+	/**
+	 * Clears all notes attached to cells in the collection.
+	 */
+	public void clearAllNotes() {
+		// TODO: iterator
+		for (int r=0; r<SUDOKU_SIZE; r++) {
+			for (int c=0; c<SUDOKU_SIZE; c++){
+				SudokuCell cell = cells[r][c];
+				cell.setNote(null);
+			}
+		}
+		onChange();
+	}
 	
 	// TODO: check that this is ok with Observer pattern and do some performance testing
 	// TODO: it seems that generally in android there can be just one listener at a time, why?
@@ -262,6 +259,7 @@ public class SudokuCellCollection  implements Parcelable {
 
 	/**
 	 * Contructor because of Parcelable support.
+	 * 
 	 * @param in
 	 */
 	private SudokuCellCollection(Parcel in) {
@@ -276,8 +274,6 @@ public class SudokuCellCollection  implements Parcelable {
 		initCollection();
 	}
 	
-	// TODO: Parcelable bych nemel ukladat do databaze, mozna bych se mel uchylit k jinemu
-	// druhu serializace (asi do xml)
 	public static final Parcelable.Creator<SudokuCellCollection> CREATOR = new Parcelable.Creator<SudokuCellCollection>() {
 		public SudokuCellCollection createFromParcel(Parcel in) {
 		    return new SudokuCellCollection(in);
@@ -290,11 +286,9 @@ public class SudokuCellCollection  implements Parcelable {
 	
 	@Override
 	public int describeContents() {
-		// TODO nevim k cemu je
 		return 0;
 	}
 
-	// TODO: k cemu jsou ty flags??
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		for (SudokuCell[] cols : cells) {
@@ -342,7 +336,7 @@ public class SudokuCellCollection  implements Parcelable {
             cell.setValue(Integer.parseInt(tokenizer.nextToken()));
             String note = tokenizer.nextToken(); 
             if (!note.equals("-")) {
-            	cell.setNotes(note);
+            	cell.setNote(note);
             }
             cell.setEditable(tokenizer.nextToken().equals("1"));
             cell.setInvalid(tokenizer.nextToken().equals("1"));
@@ -374,10 +368,10 @@ public class SudokuCellCollection  implements Parcelable {
                 {
                         SudokuCell cell = cells[r][c];
                         sb.append(cell.getValue()).append("|");
-                        if (cell.getNotes() == null || cell.getNotes().equals("")) {
+                        if (cell.getNote() == null || cell.getNote().equals("")) {
                         	sb.append("-").append("|");
                         } else {
-                        	sb.append(cell.getNotes()).append("|");
+                        	sb.append(cell.getNote()).append("|");
                         }
                         sb.append(cell.getEditable() ? "1" : "0").append("|");
                         sb.append(cell.getInvalid() ? "1" : "0").append("|");
@@ -389,7 +383,11 @@ public class SudokuCellCollection  implements Parcelable {
 	
 	public interface OnChangeListener
 	{
+		/**
+		 * Occurs when value or attached note of any cell in the collection changes.
+		 * 
+		 * @return
+		 */
 		boolean onChange();
 	}
-
 }

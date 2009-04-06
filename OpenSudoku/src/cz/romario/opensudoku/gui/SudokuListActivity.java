@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -34,8 +33,11 @@ public class SudokuListActivity extends Activity{
 	public static final int MENU_ITEM_INSERT = Menu.FIRST;
     public static final int MENU_ITEM_EDIT = Menu.FIRST + 1;
     public static final int MENU_ITEM_DELETE = Menu.FIRST + 2;
+    public static final int MENU_ITEM_PLAY = Menu.FIRST + 3;
+    public static final int MENU_ITEM_RESET = Menu.FIRST + 4;
     
     private static final int DIALOG_DELETE_SUDOKU = 1;
+    private static final int DIALOG_RESET_SUDOKU = 2;
 	
 	public static final String EXTRAS_FOLDER_ID = "folder_id";
 	private static final String TAG = "SudokuListActivity";
@@ -165,6 +167,20 @@ public class SudokuListActivity extends Activity{
             })
             .setNegativeButton("No", null)
             .create();
+    	case DIALOG_RESET_SUDOKU:
+            return new AlertDialog.Builder(this)
+            .setIcon(android.R.drawable.ic_menu_rotate)
+            .setTitle("Puzzle")
+            .setMessage("Are you sure you want to reset selected puzzle?")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                	// TODO:
+//                	SudokuDatabase db = new SudokuDatabase(SudokuListActivity.this);
+//                	db.getSudoku(sudokuID)
+                }
+            })
+            .setNegativeButton("No", null)
+            .create();
 		}
 		return null;
 	}
@@ -189,8 +205,9 @@ public class SudokuListActivity extends Activity{
         menu.setHeaderTitle("Puzzle");
 
         // Add a menu item to delete the note
-        menu.add(0, MENU_ITEM_EDIT, 0, "Edit sudoku");
-        menu.add(0, MENU_ITEM_DELETE, 1, "Delete sudoku");
+        menu.add(0, MENU_ITEM_PLAY, 0, "Play sudoku");
+        menu.add(0, MENU_ITEM_EDIT, 1, "Edit sudoku");
+        menu.add(0, MENU_ITEM_DELETE, 2, "Delete sudoku");
     }
     
     @Override
@@ -204,6 +221,9 @@ public class SudokuListActivity extends Activity{
         }
 
         switch (item.getItemId()) {
+        case MENU_ITEM_PLAY:
+        	playSudoku(info.id);
+        	return true;
         case MENU_ITEM_EDIT:
         	Intent i = new Intent(this, SudokuEditActivity.class);
         	i.setAction(Intent.ACTION_EDIT);
@@ -239,13 +259,15 @@ public class SudokuListActivity extends Activity{
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long id) {
-			Intent i = new Intent(SudokuListActivity.this, SudokuPlayActivity.class);
-			i.putExtra(SudokuPlayActivity.EXTRAS_SUDOKU_ID, id);
-			startActivity(i);
-
-			
+			playSudoku(id);
 		}
 	};
+	
+	private void playSudoku(long sudokuID) {
+		Intent i = new Intent(SudokuListActivity.this, SudokuPlayActivity.class);
+		i.putExtra(SudokuPlayActivity.EXTRAS_SUDOKU_ID, sudokuID);
+		startActivity(i);
+	}
 	
 
 }

@@ -7,7 +7,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 
-
 public class SudokuGame implements Parcelable {
 	
 	public static final int GAME_STATE_NOT_STARTED = 0;
@@ -134,13 +133,13 @@ public class SudokuGame implements Parcelable {
 	 * Restarts game.
 	 */
 	public void restart() {
-		// TODO: chtelo by to iterator
+		// TODO: iterator
 		for (int r=0; r<SudokuCellCollection.SUDOKU_SIZE; r++) {
 			for (int c=0; c<SudokuCellCollection.SUDOKU_SIZE; c++) {
 				SudokuCell cell = cells.getCell(r, c);
 				if (cell.getEditable()) {
 					cell.setValue(0);
-					cell.setNotes("");
+					cell.setNote("");
 				}
 			}
 		}
@@ -151,12 +150,16 @@ public class SudokuGame implements Parcelable {
 	}
 	
 	/**
-	 * Returns true, if puzzle is solved. In order to know actual state, you have to
+	 * Returns true, if puzzle is solved. In order to know the current state, you have to
 	 * call validate first. 
 	 * @return
 	 */
 	public boolean isCompleted() {
 		return cells.isCompleted();
+	}
+	
+	public void clearAllNotes() {
+		cells.clearAllNotes();
 	}
 	
 	// constructor for Parcelable
@@ -183,7 +186,6 @@ public class SudokuGame implements Parcelable {
 	
 	@Override
 	public int describeContents() {
-		// TODO nevim k cemu je
 		return 0;
 	}
 

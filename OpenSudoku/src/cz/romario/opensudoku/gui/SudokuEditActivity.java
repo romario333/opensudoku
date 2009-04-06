@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TextView;
 
 public class SudokuEditActivity extends Activity {
 	private static final String TAG = "SudokuEditActivity";
@@ -110,14 +109,13 @@ public class SudokuEditActivity extends Activity {
 			
 			switch (state) {
 			case STATE_EDIT:
-				// TODO: doresit jak bude fungovat edit
+				// TODO: figure out how to handle edit properly
 				SudokuGame game = sudokuDB.getSudoku(sudokuID);
 				game.setCells(cells);
 				sudokuDB.updateSudoku(game);
 				break;
 			case STATE_INSERT:
-				// TODO: remove name completely?
-				sudokuDB.insertSudoku(folderID, "", cells);
+				sudokuDB.insertSudoku(folderID, cells);
 				break;
 			}
 			

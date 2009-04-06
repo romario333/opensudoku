@@ -4,7 +4,6 @@ import android.provider.BaseColumns;
 
 public abstract class SudokuColumns implements BaseColumns {
 	public static final String FOLDER_ID = "folder_id";
-	public static final String NAME = "name";
 	public static final String CREATED = "created";
 	public static final String STATE = "state";
 	public static final String TIME = "time";
