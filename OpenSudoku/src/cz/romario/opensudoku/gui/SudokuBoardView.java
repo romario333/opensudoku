@@ -52,7 +52,9 @@ public class SudokuBoardView extends View {
 	
 	public void setCells(SudokuCellCollection cells) {
 		this.cells = cells;
-		this.selectedCell = this.cells.getCell(0, 0); // first cell will be selected by default
+		if (!this.readonly) {
+			this.selectedCell = this.cells.getCell(0, 0); // first cell will be selected by default
+		}
 		this.invalidate();
 	}
 
@@ -216,7 +218,7 @@ public class SudokuBoardView extends View {
 			}
 
 			// highlight selected cell
-			if (selectedCell != null) {
+			if (!readonly && selectedCell != null) {
 				cellLeft = selectedCell.getColumnIndex() * cellWidth;
 				cellTop = selectedCell.getRowIndex() * cellHeight;
 				canvas.drawRect(
