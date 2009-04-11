@@ -155,7 +155,11 @@ public class SudokuPlayActivity extends Activity{
     protected void onPause() {
     	super.onPause();
 		
-		// we will save game to the database as we might not be able to get back
+    	if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			sudokuGame.pause();
+		}
+    	
+    	// we will save game to the database as we might not be able to get back
 		SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
 		sudokuDB.updateSudoku(sudokuGame);
 		
@@ -166,9 +170,6 @@ public class SudokuPlayActivity extends Activity{
     protected void onSaveInstanceState(Bundle outState) {
     	super.onSaveInstanceState(outState);
 		
-    	if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-			sudokuGame.pause();
-		}
     	gameTimer.stop();
     	outState.putParcelable("sudoku_game", sudokuGame);
     	outState.putInt("input_mode", inputMode);
@@ -204,7 +205,8 @@ public class SudokuPlayActivity extends Activity{
             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     // Restart game
-                	sudokuGame.restart();
+                	sudokuGame.reset();
+                	sudokuGame.start();
                 	sudokuBoard.setReadOnly(false);
                 	sudokuBoard.postInvalidate();
                 	gameTimer.start();

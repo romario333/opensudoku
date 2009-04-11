@@ -9,16 +9,16 @@ import android.os.SystemClock;
 
 public class SudokuGame implements Parcelable {
 	
-	public static final int GAME_STATE_NOT_STARTED = 0;
-	public static final int GAME_STATE_PLAYING = 1;
+	public static final int GAME_STATE_PLAYING = 0;
+	public static final int GAME_STATE_NOT_STARTED = 1;
 	public static final int GAME_STATE_COMPLETED = 2;
 	
 	private long id;
-	private String name = "";
 	private Date created;
 	private int state;
 	private long time;
 	private Date lastPlayed;
+	private String note;
 	
 	private SudokuCellCollection cells;
 	
@@ -29,13 +29,13 @@ public class SudokuGame implements Parcelable {
 		
 	}
 	
-	public void setName(String name) {
-		this.name = name;
+	public void setNote(String note) {
+		this.note = note;
 		
 	}
 
-	public String getName() {
-		return name;
+	public String getNote() {
+		return note;
 	}
 
 	public void setCreated(Date created) {
@@ -119,6 +119,8 @@ public class SudokuGame implements Parcelable {
 		// save time we have spent playing so far - it will be reseted after resuming 
 		time += SystemClock.uptimeMillis() - activeFromTime;
 		activeFromTime = -1;
+		
+		setLastPlayed(new Date(System.currentTimeMillis()));
 	}
 	
 	/**
@@ -130,9 +132,9 @@ public class SudokuGame implements Parcelable {
 	}
 	
 	/**
-	 * Restarts game.
+	 * Resets game.
 	 */
-	public void restart() {
+	public void reset() {
 		// TODO: iterator
 		for (int r=0; r<SudokuCellCollection.SUDOKU_SIZE; r++) {
 			for (int c=0; c<SudokuCellCollection.SUDOKU_SIZE; c++) {
@@ -145,8 +147,8 @@ public class SudokuGame implements Parcelable {
 		}
 		validate();
 		setTime(0);
-		state = GAME_STATE_PLAYING;
-		start();
+		setLastPlayed(new Date(0));
+		state = GAME_STATE_NOT_STARTED;
 	}
 	
 	/**
@@ -165,7 +167,7 @@ public class SudokuGame implements Parcelable {
 	// constructor for Parcelable
 	private SudokuGame(Parcel in) {
 		id = in.readLong();
-		name = in.readString();
+		note = in.readString();
 		created = new Date(in.readLong());
 		state = in.readInt();
 		time = in.readLong();
@@ -192,7 +194,7 @@ public class SudokuGame implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(id);
-		dest.writeString(name);
+		dest.writeString(note);
 		dest.writeLong(created.getTime());
 		dest.writeInt(state);
 		dest.writeLong(time);

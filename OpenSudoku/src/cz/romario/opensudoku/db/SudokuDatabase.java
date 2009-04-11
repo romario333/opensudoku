@@ -16,7 +16,7 @@ import cz.romario.opensudoku.game.SudokuGame;
 
 public class SudokuDatabase {
 	public static final String DATABASE_NAME = "opensudoku";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 6;
     
     public static final String SUDOKU_TABLE_NAME = "sudoku";
     public static final String FOLDER_TABLE_NAME = "folder";
@@ -187,7 +187,7 @@ public class SudokuDatabase {
         qb.appendWhere(SudokuColumns.FOLDER_ID + "=" + folderID);
         
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        return qb.query(db, sudokuListProjection, null, null, null, null, "created DESC");
+        return qb.query(db, sudokuListProjection, null, null, null, null, "state, created DESC");
     }
     
     /**
@@ -218,6 +218,7 @@ public class SudokuDatabase {
             	Date lastPlayed = new Date(c.getLong(c.getColumnIndex(SudokuColumns.LAST_PLAYED)));
             	int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
             	long time = c.getLong(c.getColumnIndex(SudokuColumns.TIME));
+            	String note = c.getString(c.getColumnIndex(SudokuColumns.PUZZLE_NOTE));
             	
             	s = new SudokuGame();
             	s.setId(id);
@@ -226,6 +227,7 @@ public class SudokuDatabase {
             	s.setLastPlayed(lastPlayed);
             	s.setState(state);
             	s.setTime(time);
+            	s.setNote(note);
         	}
         } finally {
         	if (c != null) c.close();
@@ -250,7 +252,7 @@ public class SudokuDatabase {
         ContentValues values = new ContentValues();
         values.put(SudokuColumns.CREATED, created);
         values.put(SudokuColumns.TIME, 0);
-        values.put(SudokuColumns.STATE, SudokuGame.GAME_STATE_NOT_STARTED); // TODO: enum
+        values.put(SudokuColumns.STATE, SudokuGame.GAME_STATE_NOT_STARTED);
         values.put(SudokuColumns.FOLDER_ID, folderID);
         values.put(SudokuColumns.DATA, sudoku.serialize());
 
@@ -274,6 +276,7 @@ public class SudokuDatabase {
         values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
         values.put(SudokuColumns.STATE, sudoku.getState());
         values.put(SudokuColumns.TIME, sudoku.getTime());
+        values.put(SudokuColumns.PUZZLE_NOTE, sudoku.getNote());
         
         SQLiteDatabase db = null;
         try {
@@ -291,7 +294,13 @@ public class SudokuDatabase {
      * @param sudokuID
      */
     public void deleteSudoku(long sudokuID) {
-    	// TODO: delele sudoku
+    	SQLiteDatabase db = null;
+    	try {
+	    	db = mOpenHelper.getWritableDatabase();
+	        db.delete(SUDOKU_TABLE_NAME, SudokuColumns._ID + "=" + sudokuID, null);
+	    } finally {
+	    	if (db != null) db.close();
+	    }
     }
     
     static {
@@ -301,7 +310,8 @@ public class SudokuDatabase {
     		SudokuColumns.STATE,
     		SudokuColumns.TIME,
     		SudokuColumns.DATA,
-    		SudokuColumns.LAST_PLAYED
+    		SudokuColumns.LAST_PLAYED,
+    		SudokuColumns.PUZZLE_NOTE
     	};
     }
 

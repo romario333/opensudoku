@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuCellCollection;
+import cz.romario.opensudoku.game.SudokuGame;
 
 /**
  * This class helps open, create, and upgrade the database file.
@@ -27,7 +28,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + SudokuColumns.STATE + " INTEGER,"
                 + SudokuColumns.TIME + " INTEGER,"
                 + SudokuColumns.LAST_PLAYED + " INTEGER,"
-                + SudokuColumns.DATA + " Text"
+                + SudokuColumns.DATA + " Text,"
+                + SudokuColumns.PUZZLE_NOTE + " Text"
                 + ");");
         
         db.execSQL("CREATE TABLE " + SudokuDatabase.FOLDER_TABLE_NAME + " ("
@@ -156,7 +158,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	
     	String cellsString = cellCollection.serialize();
 
-    	String sql = "INSERT INTO " + SudokuDatabase.SUDOKU_TABLE_NAME + " VALUES ("+sudokuID+", "+ folderID + ", " + now + ", 0, 0, null, '"+ cellsString + "');";
+    	String sql = "INSERT INTO " + SudokuDatabase.SUDOKU_TABLE_NAME + " VALUES ("+sudokuID+", "+ folderID + ", 0, " + SudokuGame.GAME_STATE_NOT_STARTED + ", 0, null, '"+ cellsString + "', null);";
     	db.execSQL(sql);
     	
     }

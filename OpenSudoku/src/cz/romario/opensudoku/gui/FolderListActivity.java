@@ -30,19 +30,11 @@ public class FolderListActivity extends ListActivity {
     public static final int MENU_ITEM_RENAME = Menu.FIRST + 1;
     public static final int MENU_ITEM_DELETE = Menu.FIRST + 2;
     
-    private static final int DIALOG_ADD_FOLDER = 1;
-    private static final int DIALOG_RENAME_FOLDER = 2;
-    private static final int DIALOG_DELETE_FOLDER = 3;
-    
     private static final String TAG = "FolderListActivity";
     
     private FolderListAdapter listAdapter;
     
-    // which folder shoud dialog operate on
-    private FolderInfo dialogFolderInfo;
-
-	
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
@@ -64,11 +56,11 @@ public class FolderListActivity extends ListActivity {
 		super.onStart();
 
 		// we will load current folders data on every start
-		loadAdapterData();
+		fillData();
 
 	}
 	
-	private void loadAdapterData() {
+	private void fillData() {
         SudokuDatabase sudokuDB = new SudokuDatabase(this);
         FolderInfo[] folderList = sudokuDB.getFolderList();
         listAdapter.setFolders(folderList);
@@ -115,67 +107,96 @@ public class FolderListActivity extends ListActivity {
         menu.add(0, MENU_ITEM_DELETE, 1, "Delete folder");
     }
     
-    @Override
-    protected Dialog onCreateDialog(int id) {
-    	switch (id) {
-    	case DIALOG_ADD_FOLDER:
-    	{
-            LayoutInflater factory = LayoutInflater.from(this);
-            final View nameView = factory.inflate(R.layout.folder_name, null);
-            final TextView nameInput = (TextView)nameView.findViewById(R.id.name);
-            return new AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_menu_add)
-                .setTitle("Add folder")
-                .setView(nameView)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                    	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
-                    	db.insertFolder(nameInput.getText().toString().trim());
-                    	loadAdapterData();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .create();
-    	}
-    	case DIALOG_RENAME_FOLDER:
-    	{
-            LayoutInflater factory = LayoutInflater.from(this);
-            final View nameView = factory.inflate(R.layout.folder_name, null);
-            final TextView nameInput = (TextView)nameView.findViewById(R.id.name);
-            
-            nameInput.setText(dialogFolderInfo.name);
-            
-            return new AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_menu_add)
-                .setTitle(dialogFolderInfo.name)
-                .setView(nameView)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                    	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
-                    	db.updateFolder(dialogFolderInfo.id, nameInput.getText().toString().trim());
-                    	loadAdapterData();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .create();
-    	}
-    	case DIALOG_DELETE_FOLDER:
-            return new AlertDialog.Builder(this)
-            .setIcon(android.R.drawable.ic_delete)
-            .setTitle(dialogFolderInfo.name)
-            .setMessage("Are you sure you want to delete this folder?")
-            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+    /**
+	 * Shows "Add folder" dialog. 
+	 * 
+	 * I don't use onCreateDialog for this, because I don't want to reuse
+	 * single instance of this dialog on every show. (TODO: maybe I'm missing something here)
+	 * 
+	 */
+    private void showAddFolderDialog() {
+		// TODO: enter should act as Save button
+		LayoutInflater factory = LayoutInflater.from(this);
+        final View nameView = factory.inflate(R.layout.folder_name, null);
+        final TextView nameInput = (TextView)nameView.findViewById(R.id.name);
+        final Dialog dialog = new AlertDialog.Builder(this)
+            .setIcon(android.R.drawable.ic_menu_add)
+            .setTitle("Add folder")
+            .setView(nameView)
+            .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
-                	db.deleteFolder(dialogFolderInfo.id);
-                	loadAdapterData();
+                	db.insertFolder(nameInput.getText().toString().trim());
+                	fillData();
                 }
             })
-            .setNegativeButton("No", null)
+            .setNegativeButton("Cancel", null)
             .create();
-    	}
-    	return null;
+        dialog.show();
     }
+    
+    /**
+	 * Shows "Rename folder" dialog. 
+	 * 
+	 * I don't use onCreateDialog for this, because I need to change some
+	 * dialog attributes on each show.
+	 * 
+	 * @param folder
+	 */
+    private void showRenameFolderDialog(FolderInfo folder) {
+        LayoutInflater factory = LayoutInflater.from(this);
+        final View nameView = factory.inflate(R.layout.folder_name, null);
+        final TextView nameInput = (TextView)nameView.findViewById(R.id.name);
+        nameInput.setText(folder.name);
+
+        final long folderToEditId = folder.id;
+        final Dialog dialog = new AlertDialog.Builder(this)
+        .setIcon(android.R.drawable.ic_menu_edit)
+        .setTitle(folder.name)
+        .setView(nameView)
+        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
+            	db.updateFolder(folderToEditId, nameInput.getText().toString().trim());
+            	fillData();
+            	//dialog.dismiss();
+            }
+        })
+        .setNegativeButton("Cancel", null)
+        .create();
+        
+        dialog.show();
+	}
+    
+	/**
+	 * Shows "Do you really want to do this?" dialog. 
+	 * 
+	 * I don't use onCreateDialog for this, because I need to change some
+	 * dialog attributes on each show.
+	 * 
+	 * @param folder
+	 */
+    private void showDeleteFolderDialog(FolderInfo folder) {
+        final long folderToDeleteId = folder.id;
+    	final Dialog dialog = new AlertDialog.Builder(this)
+        .setIcon(android.R.drawable.ic_delete)
+        .setTitle(folder.name)
+        .setMessage("Are you sure you want to delete this folder?")
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
+            	db.deleteFolder(folderToDeleteId);
+            	fillData();
+            }
+        })
+        .setNegativeButton("No", null)
+        .create();
+        
+        dialog.show();
+    	
+    }
+    
     
     @Override
     public boolean onContextItemSelected(MenuItem item) {
@@ -191,11 +212,12 @@ public class FolderListActivity extends ListActivity {
         switch (item.getItemId()) {
         case MENU_ITEM_RENAME:
         	folder = (FolderInfo)getListAdapter().getItem(info.position);
-        	showDialog(DIALOG_RENAME_FOLDER, folder);
+        	//showDialog(DIALOG_RENAME_FOLDER, folder);
+        	showRenameFolderDialog(folder);
         	return true;
         case MENU_ITEM_DELETE:
         	folder = (FolderInfo)getListAdapter().getItem(info.position);
-        	showDialog(DIALOG_DELETE_FOLDER, folder);
+        	showDeleteFolderDialog(folder);
         	return true;
         }
         return false;
@@ -205,17 +227,10 @@ public class FolderListActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
         case MENU_ITEM_ADD:
-        	
-        	showDialog(DIALOG_ADD_FOLDER);
+        	showAddFolderDialog();
             return true;
         }
         return super.onOptionsItemSelected(item);
-	}
-	
-	// TODO: comment
-	private void showDialog(int dialogID, FolderInfo fi) {
-		dialogFolderInfo = fi;
-		showDialog(dialogID);
 	}
 	
     // TODO: onPrepareOptionsMenu - menit polozky v menu podle vybraneho itemu
