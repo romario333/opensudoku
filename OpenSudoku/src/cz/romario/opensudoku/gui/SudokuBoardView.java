@@ -52,6 +52,7 @@ public class SudokuBoardView extends View {
 	
 	public void setCells(SudokuCellCollection cells) {
 		this.cells = cells;
+		this.selectedCell = this.cells.getCell(0, 0); // first cell will be selected by default
 		this.invalidate();
 	}
 
