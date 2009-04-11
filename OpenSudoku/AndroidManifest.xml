@@ -8,9 +8,6 @@
         <activity android:name=".gui.SudokuListActivity"
                   android:label="@string/app_name">
         </activity>
-        <activity android:name=".gui.SudokuDetailActivity"
-                  android:label="@string/app_name">
-        </activity>
         <activity android:name=".gui.SudokuEditActivity"
                   android:label="@string/app_name">
 	        <intent-filter>
