@@ -187,7 +187,7 @@ public class SudokuDatabase {
         qb.appendWhere(SudokuColumns.FOLDER_ID + "=" + folderID);
         
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        return qb.query(db, sudokuListProjection, null, null, null, null, "state, created DESC");
+        return qb.query(db, sudokuListProjection, null, null, null, null, "created DESC");
     }
     
     /**

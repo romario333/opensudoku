@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Formatter;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -21,16 +20,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuColumns;
 import cz.romario.opensudoku.db.SudokuDatabase;
-import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 
@@ -55,8 +51,6 @@ public class SudokuListActivity extends ListActivity {
 			.getTimeInstance(DateFormat.SHORT);
 
 	private SimpleCursorAdapter adapter;
-
-	GridView sudokuList;
 
 	private long folderID;
 
@@ -188,8 +182,8 @@ public class SudokuListActivity extends ListActivity {
 		// sudokuList.setOnCreateContextMenuListener(this);
 		// sudokuList.setOnItemClickListener(sudokuListItemListener);
 		// sudokuList.setAdapter(adapter);
-		setListAdapter(adapter);
 		fillData();
+		setListAdapter(adapter);
 	}
 
 	private void fillData() {
