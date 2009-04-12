@@ -51,6 +51,7 @@ public class SudokuListActivity extends ListActivity {
 			.getTimeInstance(DateFormat.SHORT);
 
 	private SimpleCursorAdapter adapter;
+	private Cursor cursor;
 
 	private long folderID;
 
@@ -76,14 +77,14 @@ public class SudokuListActivity extends ListActivity {
 
 		setTitle(sudokuDB.getFolderName(folderID));
 
-		// Cursor cursor = sudokuDB.getSudokuList(folderID);
-		// startManagingCursor(cursor);
 
 		timeText = new StringBuilder();
 		gameTimeFormatter = new Formatter(timeText);
 
+		cursor = sudokuDB.getSudokuList(folderID);
+		startManagingCursor(cursor);
 		adapter = new SimpleCursorAdapter(this, R.layout.sudoku_list_item,
-				null, new String[] { SudokuColumns.DATA, SudokuColumns.STATE,
+				cursor, new String[] { SudokuColumns.DATA, SudokuColumns.STATE,
 						SudokuColumns.TIME, SudokuColumns.LAST_PLAYED,
 						SudokuColumns.CREATED, SudokuColumns.PUZZLE_NOTE },
 				new int[] { R.id.sudoku_board, R.id.state, R.id.time,
@@ -173,25 +174,15 @@ public class SudokuListActivity extends ListActivity {
 					label.setText(note);
 					break;
 				}
+				
 				return true;
 			}
 		});
 
-		// setContentView(R.layout.sudoku_list);
-		// sudokuList = (GridView)findViewById(R.id.sudoku_grid);
-		// sudokuList.setOnCreateContextMenuListener(this);
-		// sudokuList.setOnItemClickListener(sudokuListItemListener);
-		// sudokuList.setAdapter(adapter);
-		fillData();
 		setListAdapter(adapter);
 	}
-
-	private void fillData() {
-		SudokuDatabase db = new SudokuDatabase(this);
-		Cursor cursor = db.getSudokuList(folderID);
-		startManagingCursor(cursor);
-		adapter.changeCursor(cursor);
-	}
+	
+	
 
 	private String getTime(long time) {
 		timeText.setLength(0);
@@ -259,7 +250,7 @@ public class SudokuListActivity extends ListActivity {
 								SudokuDatabase db = new SudokuDatabase(
 										SudokuListActivity.this);
 								db.deleteSudoku(sudokuToDeleteId);
-								fillData();
+								cursor.requery();
 							}
 						}).setNegativeButton("No", null).create();
 
@@ -288,7 +279,7 @@ public class SudokuListActivity extends ListActivity {
 									game.reset();
 									db.updateSudoku(game);
 								}
-								fillData();
+								cursor.requery();
 							}
 						}).setNegativeButton("No", null).create();
 
@@ -323,7 +314,7 @@ public class SudokuListActivity extends ListActivity {
 								gameToUpdate.setNote(noteInput.getText()
 										.toString());
 								db.updateSudoku(gameToUpdate);
-								fillData();
+								cursor.requery();
 							}
 						}).setNegativeButton("Cancel", null).create();
 
