@@ -6,6 +6,7 @@ import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.EditCellDialog.OnNoteEditListener;
 import cz.romario.opensudoku.gui.EditCellDialog.OnNumberEditListener;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,6 +14,7 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 
 /**
  *  Sudoku board widget.
@@ -91,10 +93,14 @@ public class SudokuBoardView extends View {
 	
 	private void initWidget() {
 		Context context = getContext();
-        editCellDialog = new EditCellDialog(context);
-        editCellDialog.setOnNumberEditListener(onNumberEditListener);
-        editCellDialog.setOnNoteEditListener(onNoteEditListener);
-		
+        
+		// TODO: EditCellDialog is not ready for landscape
+		WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+		if (wm.getDefaultDisplay().getOrientation() != Configuration.ORIENTATION_LANDSCAPE) {
+			editCellDialog = new EditCellDialog(context);
+	        editCellDialog.setOnNumberEditListener(onNumberEditListener);
+	        editCellDialog.setOnNoteEditListener(onNoteEditListener);
+		}
 		
 		// TODO: debug
 		setFocusable(true);
@@ -302,9 +308,11 @@ public class SudokuBoardView extends View {
 					if (onCellTapListener != null) {
 						onCellTapListener.onCellTap(selectedCell);
 					}
-					editCellDialog.updateNumber(selectedCell.getValue());
-					editCellDialog.updateNote(getNoteNumbers(selectedCell.getNote()));
-					editCellDialog.getDialog().show();
+					if (editCellDialog != null) {
+						editCellDialog.updateNumber(selectedCell.getValue());
+						editCellDialog.updateNote(getNoteNumbers(selectedCell.getNote()));
+						editCellDialog.getDialog().show();
+					}
 				}
 				break;
 			case MotionEvent.ACTION_CANCEL:

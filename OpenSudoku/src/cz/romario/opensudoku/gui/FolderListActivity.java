@@ -153,7 +153,7 @@ public class FolderListActivity extends ListActivity {
         final long folderToEditId = folder.id;
         final Dialog dialog = new AlertDialog.Builder(this)
         .setIcon(android.R.drawable.ic_menu_edit)
-        .setTitle(folder.name)
+        .setTitle("Rename " + folder.name)
         .setView(nameView)
         .setPositiveButton("Save", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -181,7 +181,7 @@ public class FolderListActivity extends ListActivity {
         final long folderToDeleteId = folder.id;
     	final Dialog dialog = new AlertDialog.Builder(this)
         .setIcon(android.R.drawable.ic_delete)
-        .setTitle(folder.name)
+        .setTitle("Delete " + folder.name)
         .setMessage("Are you sure you want to delete this folder?")
         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {

@@ -14,6 +14,8 @@ import android.os.Parcelable;
  *
  */
 public class SudokuCellCollection  implements Parcelable {
+	
+	// TODO: An array of ints is a much better than an array of Integers, but this also generalizes to the fact that two parallel arrays of ints are also a lot more efficient than an array of (int,int) objects
 	// Cell's data.
 	private SudokuCell[][] cells;
 	

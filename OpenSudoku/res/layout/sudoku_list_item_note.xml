@@ -22,6 +22,7 @@
         android:scrollHorizontally="true"
         android:autoText="false"
         android:singleLine="false"
+        android:lines="2"
         android:capitalize="none"
         android:gravity="fill_horizontal"
         android:textAppearance="?android:attr/textAppearanceMedium" />
