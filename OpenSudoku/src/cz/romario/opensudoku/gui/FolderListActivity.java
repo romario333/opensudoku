@@ -39,6 +39,8 @@ public class FolderListActivity extends ListActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
+		setContentView(R.layout.folder_list);
+		
 		setTitle("Puzzle folders");
 		
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
