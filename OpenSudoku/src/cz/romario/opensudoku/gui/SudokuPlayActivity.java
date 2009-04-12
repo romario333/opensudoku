@@ -15,7 +15,7 @@ import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
-import cz.romario.opensudoku.game.SudokuCellCollection.OnChangeListener;
+import cz.romario.opensudoku.game.SudokuGame.OnPuzzleSolvedListener;
 import cz.romario.opensudoku.gui.EditCellDialog.OnNoteEditListener;
 import cz.romario.opensudoku.gui.EditCellDialog.OnNumberEditListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
@@ -29,6 +29,7 @@ public class SudokuPlayActivity extends Activity{
 	
 	public static final int MENU_ITEM_RESTART = Menu.FIRST;
 	public static final int MENU_ITEM_CLEAR_ALL_NOTES = Menu.FIRST + 1;
+	public static final int MENU_ITEM_UNDO = Menu.FIRST + 2;
 	
 	
 	//private static final String TAG = "SudokuPlayActivity";
@@ -37,14 +38,12 @@ public class SudokuPlayActivity extends Activity{
 	
 	private static final int DIALOG_RESTART = 1;
 	private static final int DIALOG_WELL_DONE = 2;
-	private static final int DIALOG_EDIT_CELL = 3;
-	private static final int DIALOG_CLEAR_NOTES = 4;
+	private static final int DIALOG_CLEAR_NOTES = 3;
 	
 	private long sudokuGameID;
 	private SudokuGame sudokuGame;
 	private int inputMode;
 	
-	private EditCellDialog editCellDialog;
 	private SudokuBoardView sudokuBoard;
 	
 	private StringBuilder timeText;
@@ -58,9 +57,6 @@ public class SudokuPlayActivity extends Activity{
         setContentView(R.layout.sudoku_play);
         
         sudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
-        editCellDialog = new EditCellDialog(this);
-        editCellDialog.setOnNumberEditListener(onNumberEditListener);
-        editCellDialog.setOnNoteEditListener(onNoteEditListener);
         timeText = new StringBuilder(5);
         timeFormatter = new Formatter(timeText);
         gameTimer = new GameTimer();
@@ -92,10 +88,9 @@ public class SudokuPlayActivity extends Activity{
         	sudokuGame.start();
         }
         
-        sudokuBoard.setCells(sudokuGame.getCells());
-        sudokuBoard.setOnCellTapListener(cellTapListener);
+        sudokuBoard.setGame(sudokuGame);
         
-		sudokuGame.getCells().addOnChangeListener(cellsOnChangeListener);
+		sudokuGame.setOnPuzzleSolvedListener(onSolvedListener);
 		
 		updateTime();
     }
@@ -104,12 +99,17 @@ public class SudokuPlayActivity extends Activity{
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		
+        menu.add(0, MENU_ITEM_UNDO, 0, "Undo")
+        .setShortcut('1', 'u')
+        .setIcon(android.R.drawable.ic_menu_revert);
+		
+		// TODO: I should really get my own icons ;-)
         menu.add(0, MENU_ITEM_CLEAR_ALL_NOTES, 0, "Clear all notes")
-        .setShortcut('1', 'c')
-        .setIcon(android.R.drawable.ic_input_delete);
+        .setShortcut('3', 'a')
+        .setIcon(android.R.drawable.ic_menu_delete);
 
         menu.add(0, MENU_ITEM_RESTART, 1, "Restart")
-        .setShortcut('3', 'r')
+        .setShortcut('7', 'r')
         .setIcon(android.R.drawable.ic_menu_rotate);
 
         
@@ -124,7 +124,15 @@ public class SudokuPlayActivity extends Activity{
                 new ComponentName(this, FolderListActivity.class), null, intent, 0, null);
 
         return true;
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
 		
+		menu.findItem(MENU_ITEM_UNDO).setEnabled(sudokuGame.hasSomethingToUndo());
+		
+		return true;
 	}
 	
 	@Override
@@ -135,6 +143,10 @@ public class SudokuPlayActivity extends Activity{
             return true;
         case MENU_ITEM_CLEAR_ALL_NOTES:
         	showDialog(DIALOG_CLEAR_NOTES);
+        	return true;
+        case MENU_ITEM_UNDO:
+        	sudokuGame.undo();
+        	sudokuBoard.postInvalidate();
         	return true;
         }
         return super.onOptionsItemSelected(item);
@@ -195,8 +207,6 @@ public class SudokuPlayActivity extends Activity{
                 }
             })
             .create();
-    	case DIALOG_EDIT_CELL:
-    		return editCellDialog.getDialog();
     	case DIALOG_RESTART:
             return new AlertDialog.Builder(this)
             .setIcon(android.R.drawable.ic_menu_rotate)
@@ -216,7 +226,7 @@ public class SudokuPlayActivity extends Activity{
             .create();
     	case DIALOG_CLEAR_NOTES:
             return new AlertDialog.Builder(this)
-            .setIcon(android.R.drawable.ic_input_delete)
+            .setIcon(android.R.drawable.ic_menu_delete)
             .setTitle("OpenSudoku")
             .setMessage("Are you sure you want to clear all notes?")
             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -230,73 +240,20 @@ public class SudokuPlayActivity extends Activity{
     	return null;
     }
     
-    
-    private OnCellTapListener cellTapListener = new OnCellTapListener() {
+    /**
+     * Occurs when puzzle is solved.
+     */
+    private OnPuzzleSolvedListener onSolvedListener = new OnPuzzleSolvedListener() {
 
 		@Override
-		public boolean onCellTap(SudokuCell cell) {
-			if (cell != null && cell.getEditable()) {
-				
-				SudokuCell selectedCell = sudokuBoard.getSelectedCell();
-				editCellDialog.updateNumber(selectedCell.getValue());
-				editCellDialog.updateNote(selectedCell.getNoteNumbers());
-				showDialog(DIALOG_EDIT_CELL);
-			}
-			return true;
+		public void onPuzzleSolved() {
+			sudokuBoard.setReadOnly(true);
+			sudokuBoard.postInvalidate();
+			showDialog(DIALOG_WELL_DONE);
 		}
     	
     };
     
-	/**
-	 * Occurs when user selects number in EditCellDialog.
-	 */
-    private OnNumberEditListener onNumberEditListener = new OnNumberEditListener() {
-		@Override
-		public boolean onNumberEdit(int number) {
-    		SudokuCell selectedCell = sudokuBoard.getSelectedCell();
-    		if (number != -1) {
-                // set cell number selected by user
-				sudokuGame.getCells().setValue(selectedCell, number);
-    		}
-			return true;
-		}
-	};
-	
-	/**
-	 * Occurs when user edits note in EditCellDialog
-	 */
-	private OnNoteEditListener onNoteEditListener = new OnNoteEditListener() {
-		@Override
-		public boolean onNoteEdit(Integer[] numbers) {
-			SudokuCell selectedCell = sudokuBoard.getSelectedCell();
-			if (selectedCell != null) {
-				sudokuGame.getCells().setNoteNumbers(selectedCell, numbers);
-			}
-			return true;
-		}
-	};
-    
-	/**
-	 * Occurs when any value in sudoku's cells changes.
-	 */
-	private OnChangeListener cellsOnChangeListener = new OnChangeListener() {
-		@Override
-		public boolean onChange() {
-			sudokuGame.validate();
-			
-            // check whether game is completed, if so, finish the game
-			if (sudokuGame.isCompleted()) {
-				sudokuGame.finish();
-				sudokuBoard.setReadOnly(true);
-				showDialog(DIALOG_WELL_DONE);
-            }
-                
-            // update board view
-			sudokuBoard.postInvalidate();
-			return true;
-		}
-	};
-	
 	// TODO: can Chronometer replace this?
 	/**
      * Update the time of game-play.

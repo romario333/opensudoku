@@ -1,6 +1,7 @@
 package cz.romario.opensudoku.game;
 
 import java.util.Date;
+import java.util.Stack;
 
 
 import android.os.Parcel;
@@ -20,13 +21,22 @@ public class SudokuGame implements Parcelable {
 	private Date lastPlayed;
 	private String note;
 	
+	private OnPuzzleSolvedListener onPuzzleSolvedListener;
+	
 	private SudokuCellCollection cells;
+	
+	// very basic implementation of undo
+	private Stack<Command> undoStack = new Stack<Command>();
 	
 	// Time when current activity has become active. 
 	private long activeFromTime = -1; 
 
 	public SudokuGame() {
 		
+	}
+	
+	public void setOnPuzzleSolvedListener(OnPuzzleSolvedListener l) {
+		this.onPuzzleSolvedListener = l;
 	}
 	
 	public void setNote(String note) {
@@ -99,7 +109,53 @@ public class SudokuGame implements Parcelable {
 		return id;
 	}
 	
-	public void validate() {
+	/**
+	 * Sets value for the given cell. 0 means empty cell.
+	 * 
+	 * @param cell
+	 * @param value
+	 */
+	public void setCellValue(SudokuCell cell, int value) {
+		SetCellValueCommand c = new SetCellValueCommand(cell, value);
+		c.execute();
+		undoStack.push(c);
+		
+		validate();
+		if (isCompleted()) {
+			finish();
+			if (onPuzzleSolvedListener != null) {
+				onPuzzleSolvedListener.onPuzzleSolved();
+			}
+		}
+	}
+	
+	/**
+	 * Sets note attached to the given cell.
+	 * 
+	 * @param cell
+	 * @param note
+	 */
+	public void setCellNote(SudokuCell cell, String note) {
+		EditCellNoteCommand c = new EditCellNoteCommand(cell, note);
+		c.execute();
+		undoStack.push(c);
+	}
+	
+	/** 
+	 * Undo last command.
+	 */
+	public void undo() {
+		if (!undoStack.empty()) {
+			Command c = undoStack.pop();
+			c.undo();
+		}
+	}
+	
+	public boolean hasSomethingToUndo() {
+		return undoStack.size() != 0;
+	}
+	
+	private void validate() {
 		cells.validate();
 	}
 	
@@ -126,7 +182,7 @@ public class SudokuGame implements Parcelable {
 	/**
 	 * Finishes game-play. Called when puzzle is solved.
 	 */
-	public void finish() {
+	private void finish() {
 		pause();
 		state = GAME_STATE_COMPLETED;
 	}
@@ -203,4 +259,14 @@ public class SudokuGame implements Parcelable {
 		dest.writeParcelable(cells, flags);
 	}
 
+	public interface OnPuzzleSolvedListener
+	{
+		/**
+		 * Occurs when puzzle is solved.
+		 * 
+		 * @return
+		 */
+		void onPuzzleSolved();
+	}
+	
 }

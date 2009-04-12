@@ -23,8 +23,6 @@ public class SudokuCellCollection  implements Parcelable {
 	private SudokuCellGroup[] rows;
 	private SudokuCellGroup[] columns;
 	
-	private List<OnChangeListener> onChangeListeners = new ArrayList<OnChangeListener>();
-	
 	public static final int SUDOKU_SIZE = 9;
 	
 	/**
@@ -126,41 +124,40 @@ public class SudokuCellCollection  implements Parcelable {
 		return true;
 	}
 	
-	/** 
-	 * Sets value in given cell.
-	 * @param cell
-	 * @param value
-	 */
-	public void setValue(SudokuCell cell, int value) {
-		if (cell != null && cell.getEditable()) {
-			cell.setValue(value);
-			onChange();
-		}
-	}
+//	/** 
+//	 * Sets value in given cell.
+//	 * @param cell
+//	 * @param value
+//	 */
+//	public void setValue(SudokuCell cell, int value) {
+//		if (cell != null && cell.getEditable()) {
+//			cell.setValue(value);
+//		}
+//	}
 	
 	
-	/**
-	 * Sets value in cell given by its row and column index.
-	 * @param rowIndex
-	 * @param columnIndex
-	 * @param value
-	 */
-	public void setValue(int rowIndex, int columnIndex, int value) {
-		SudokuCell cell = getCell(rowIndex, columnIndex);
-		setValue(cell, value);
-	}
+//	/**
+//	 * Sets value in cell given by its row and column index.
+//	 * @param rowIndex
+//	 * @param columnIndex
+//	 * @param value
+//	 */
+//	public void setValue(int rowIndex, int columnIndex, int value) {
+//		SudokuCell cell = getCell(rowIndex, columnIndex);
+//		setValue(cell, value);
+//	}
 	
-	/**
-	 * Sets note for given cell from array of numbers and fires change event. 
-	 * @param cell
-	 * @param numbers
-	 */
-	public void setNoteNumbers(SudokuCell cell, Integer[] numbers) {
-		if (cell != null) {
-			cell.setNoteNumbers(numbers);
-			onChange();
-		}
-	}
+//	/**
+//	 * Sets note for given cell from array of numbers and fires change event. 
+//	 * @param cell
+//	 * @param numbers
+//	 */
+//	public void setNoteNumbers(SudokuCell cell, Integer[] numbers) {
+//		if (cell != null) {
+//			cell.setNoteNumbers(numbers);
+//			onChange();
+//		}
+//	}
 
 	/**
 	 * Marks all cells as editable.
@@ -199,33 +196,8 @@ public class SudokuCellCollection  implements Parcelable {
 				cell.setNote(null);
 			}
 		}
-		onChange();
 	}
 	
-	// TODO: check that this is ok with Observer pattern and do some performance testing
-	// TODO: it seems that generally in android there can be just one listener at a time, why?
-	/** 
-	 * Registers listener, which will be called, when collection is changed.
-	 * Listener will be called synchronously.
-	 * @param l
-	 */
-	public void addOnChangeListener(OnChangeListener l) {
-		onChangeListeners.add(l);
-	}
-	
-	public void removeOnChangeListener(OnChangeListener l) {
-		onChangeListeners.remove(l);
-	}
-	
-	/**
-	 * Fires OnChange event.
-	 */
-	private void onChange() {
-		for (OnChangeListener l : onChangeListeners) {
-			l.onChange();
-		}
-	}
-
 	/**
 	 * Initializes collection, initialization has two steps:
 	 * 1) Groups of cells which must contain unique numbers are created.
@@ -379,15 +351,5 @@ public class SudokuCellCollection  implements Parcelable {
         }
         
         return sb.toString();
-	}
-	
-	public interface OnChangeListener
-	{
-		/**
-		 * Occurs when value or attached note of any cell in the collection changes.
-		 * 
-		 * @return
-		 */
-		boolean onChange();
 	}
 }

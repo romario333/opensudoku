@@ -122,8 +122,8 @@ public class SudokuCell implements Parcelable {
 	 * 
 	 * @param notes
 	 */
-	public void setNote(String notes) {
-		this.note = notes;
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	/**
@@ -142,42 +142,6 @@ public class SudokuCell implements Parcelable {
 	 */
 	public boolean hasNote() {
 		return note != null && note != "";
-	}
-
-	/**
-	 * Returns content of note as array of numbers. Note is expected to be
-	 * in format "n,n,n".
-	 * 
-	 * @return
-	 */
-	public Integer[] getNoteNumbers() {
-		String note = getNote();
-		if (note == null || note.equals(""))
-			return null;
-		
-		String[] numberStrings = note.split(",");
-		Integer[] numbers = new Integer[numberStrings.length];
-		for (int i=0; i<numberStrings.length; i++) {
-			numbers[i] = Integer.parseInt(numberStrings[i]);
-		}
-		
-		return numbers;
-	}
-	
-	/**
-	 * Creates content of note from array of numbers. Note will be stored
-	 * in "n,n,n" format.
-	 * 
-	 * @param numbers
-	 */
-	public void setNoteNumbers(Integer[] numbers) {
-		StringBuffer sb = new StringBuffer();
-		
-		for (Integer number : numbers) {
-			sb.append(number).append(",");
-		}
-		
-		setNote(sb.toString());
 	}
 
 	public Boolean getEditable() {

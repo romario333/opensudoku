@@ -2,6 +2,9 @@ package cz.romario.opensudoku.gui;
 
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuCellCollection;
+import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.gui.EditCellDialog.OnNoteEditListener;
+import cz.romario.opensudoku.gui.EditCellDialog.OnNumberEditListener;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -35,6 +38,9 @@ public class SudokuBoardView extends View {
 	private SudokuCell selectedCell;
 	public boolean readonly = false;
 	
+	private EditCellDialog editCellDialog;
+	
+	private SudokuGame game;
 	private SudokuCellCollection cells;
 	
 	private OnCellTapListener onCellTapListener;
@@ -50,6 +56,11 @@ public class SudokuBoardView extends View {
 		initWidget();
 	}
 	
+	public void setGame(SudokuGame game) {
+		this.game = game;
+		setCells(game.getCells());
+	}
+
 	public void setCells(SudokuCellCollection cells) {
 		this.cells = cells;
 		if (!this.readonly) {
@@ -57,7 +68,7 @@ public class SudokuBoardView extends View {
 		}
 		this.invalidate();
 	}
-
+	
 	public SudokuCellCollection getCells() {
 		return cells;
 	}
@@ -79,6 +90,12 @@ public class SudokuBoardView extends View {
 	}
 	
 	private void initWidget() {
+		Context context = getContext();
+        editCellDialog = new EditCellDialog(context);
+        editCellDialog.setOnNumberEditListener(onNumberEditListener);
+        editCellDialog.setOnNoteEditListener(onNoteEditListener);
+		
+		
 		// TODO: debug
 		setFocusable(true);
 		setFocusableInTouchMode(true);
@@ -195,7 +212,7 @@ public class SudokuBoardView extends View {
 						
 						// TODO: this is ugly temporary version
 						if (cell.hasNote()) {
-							Integer[] numbers = cell.getNoteNumbers();
+							Integer[] numbers = getNoteNumbers(cell.getNote());
 							int r = 0, c = 0;
 							if (numbers != null) {
 								for (Integer number : numbers) {
@@ -281,11 +298,13 @@ public class SudokuBoardView extends View {
 				touchedCell = null;
 				selectedCell = getCellAtPoint(x, y);
 				
-				if (selectedCell != null && onCellTapListener != null) {
-					Boolean res = onCellTapListener.onCellTap(selectedCell);
-					if (!res) {
-						selectedCell = null;
+				if (selectedCell != null) {
+					if (onCellTapListener != null) {
+						onCellTapListener.onCellTap(selectedCell);
 					}
+					editCellDialog.updateNumber(selectedCell.getValue());
+					editCellDialog.updateNote(getNoteNumbers(selectedCell.getNote()));
+					editCellDialog.getDialog().show();
 				}
 				break;
 			case MotionEvent.ACTION_CANCEL:
@@ -322,7 +341,7 @@ public class SudokuBoardView extends View {
 				case KeyEvent.KEYCODE_DEL:
 					// clear value in selected cell
 					if (selectedCell != null) {
-						cells.setValue(selectedCell, 0);
+						setCellValue(selectedCell, 0);
 						moveCellSelectionRight();
 					}
 					return true;
@@ -331,7 +350,7 @@ public class SudokuBoardView extends View {
 			if (keyCode >= KeyEvent.KEYCODE_1 && keyCode <= KeyEvent.KEYCODE_9) {
 				// enter request number in cell
 				int selectedNumber = keyCode - KeyEvent.KEYCODE_0;
-				cells.setValue(selectedCell, selectedNumber);
+				setCellValue(selectedCell, selectedNumber);
 				moveCellSelectionRight();
 				return true;
 			}
@@ -341,7 +360,55 @@ public class SudokuBoardView extends View {
 	}
 	
 	/**
-	 * Movesed selected cell by one cell to the right. If edge is reached, selection
+	 * Occurs when user selects number in EditCellDialog.
+	 */
+    private OnNumberEditListener onNumberEditListener = new OnNumberEditListener() {
+		@Override
+		public boolean onNumberEdit(int number) {
+    		SudokuCell selectedCell = getSelectedCell();
+    		if (number != -1) {
+                // set cell number selected by user
+				setCellValue(selectedCell, number);
+				invalidate();
+    		}
+			return true;
+		}
+	};
+	
+	/**
+	 * Occurs when user edits note in EditCellDialog
+	 */
+	private OnNoteEditListener onNoteEditListener = new OnNoteEditListener() {
+		@Override
+		public boolean onNoteEdit(Integer[] numbers) {
+			SudokuCell selectedCell = getSelectedCell();
+			if (selectedCell != null) {
+				setCellNote(selectedCell, setNoteNumbers(numbers));
+				invalidate();
+			}
+			return true;
+		}
+	};
+	
+	private void setCellValue(SudokuCell cell, int value) {
+		if (game != null) {
+			game.setCellValue(cell, value);
+		} else {
+			cell.setValue(value);
+		}
+	}
+	
+	private void setCellNote(SudokuCell cell, String note) {
+		if (game != null) {
+			game.setCellNote(cell, note);
+		} else {
+			cell.setNote(note);
+		}
+	}
+	
+	
+	/**
+	 * Moves selected cell by one cell to the right. If edge is reached, selection
 	 * skips on beginning of another line. 
 	 */
 	private void moveCellSelectionRight() {
@@ -411,6 +478,44 @@ public class SudokuBoardView extends View {
 		}
 	}
 	
+	/**
+	 * Returns content of note as array of numbers. Note is expected to be
+	 * in format "n,n,n".
+	 * 
+	 * @return
+	 */
+	private Integer[] getNoteNumbers(String note) {
+		if (note == null || note.equals(""))
+			return null;
+		
+		String[] numberStrings = note.split(",");
+		Integer[] numbers = new Integer[numberStrings.length];
+		for (int i=0; i<numberStrings.length; i++) {
+			numbers[i] = Integer.parseInt(numberStrings[i]);
+		}
+		
+		return numbers;
+	}
+	
+	/**
+	 * Creates content of note from array of numbers. Note will be stored
+	 * in "n,n,n" format.
+	 * 
+	 * TODO: find better name for this method
+	 * 
+	 * @param numbers
+	 */
+	private String setNoteNumbers(Integer[] numbers) {
+		StringBuffer sb = new StringBuffer();
+		
+		for (Integer number : numbers) {
+			sb.append(number).append(",");
+		}
+		
+		return sb.toString();
+	}
+	
+	
 	public interface OnCellTapListener
 	{
 		/**
@@ -418,7 +523,7 @@ public class SudokuBoardView extends View {
 		 * @param cell
 		 * @return
 		 */
-		boolean onCellTap(SudokuCell cell);
+		void onCellTap(SudokuCell cell);
 	}
 
 
