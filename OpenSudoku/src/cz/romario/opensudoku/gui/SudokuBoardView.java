@@ -102,7 +102,6 @@ public class SudokuBoardView extends View {
 	        editCellDialog.setOnNoteEditListener(onNoteEditListener);
 		}
 		
-		// TODO: debug
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		
@@ -123,7 +122,8 @@ public class SudokuBoardView extends View {
 		readonlyPaint.setColor(Color.LTGRAY);
 
 		touchedPaint = new Paint();
-		touchedPaint.setColor(Color.rgb(100, 255, 100));
+		touchedPaint.setColor(Color.rgb(50, 50, 255));
+		//touchedPaint.setColor(Color.rgb(100, 255, 100));
 		touchedPaint.setAlpha(100);
 		
 		selectedPaint = new Paint();
@@ -301,9 +301,9 @@ public class SudokuBoardView extends View {
 				touchedCell = getCellAtPoint(x, y);
 				break;
 			case MotionEvent.ACTION_UP:
-				touchedCell = null;
 				selectedCell = getCellAtPoint(x, y);
 				
+				boolean selectNumberShowed = false;
 				if (selectedCell != null) {
 					if (onCellTapListener != null) {
 						onCellTapListener.onCellTap(selectedCell);
@@ -312,7 +312,14 @@ public class SudokuBoardView extends View {
 						editCellDialog.updateNumber(selectedCell.getValue());
 						editCellDialog.updateNote(getNoteNumbers(selectedCell.getNote()));
 						editCellDialog.getDialog().show();
+						selectNumberShowed = true;
 					}
+				}
+				
+				// If select number dialog wasn't showed, clear touched cell highlight, if dialog
+				// is visible, highlight will be cleared after dialog is dismissed.
+				if (!selectNumberShowed) {
+					touchedCell = null;
 				}
 				break;
 			case MotionEvent.ACTION_CANCEL:
@@ -377,6 +384,7 @@ public class SudokuBoardView extends View {
     		if (number != -1) {
                 // set cell number selected by user
 				setCellValue(selectedCell, number);
+				touchedCell = null;
 				invalidate();
     		}
 			return true;
@@ -392,6 +400,7 @@ public class SudokuBoardView extends View {
 			SudokuCell selectedCell = getSelectedCell();
 			if (selectedCell != null) {
 				setCellNote(selectedCell, setNoteNumbers(numbers));
+				touchedCell = null;
 				invalidate();
 			}
 			return true;

@@ -105,8 +105,7 @@ public class SudokuListActivity extends ListActivity {
 							.deserialize(data);
 					SudokuBoardView board = (SudokuBoardView) view;
 					board.setReadOnly(true);
-					board.setFocusable(false); // TODO: bez toho to nejde
-												// selectit, doresit
+					board.setFocusable(false);
 					((SudokuBoardView) view).setCells(cells);
 					break;
 				case R.id.state:
