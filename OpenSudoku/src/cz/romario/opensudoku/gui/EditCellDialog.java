@@ -52,7 +52,7 @@ public class EditCellDialog {
 		
 		// TODO: maybe I should just create my own dialog?
 		dialog = new AlertDialog.Builder(context)
-        .setView(this.tabHost)
+		.setView(this.tabHost)
         //.setPositiveButton("Close", closeButtonListener)
        .create();
 	}
@@ -118,10 +118,12 @@ public class EditCellDialog {
 	 */
 	private TabHost createTabView() {
 		TabHost tabHost = new TabHost(context);
-        tabHost.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+        //tabHost.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+        tabHost.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         
         LinearLayout linearLayout = new LinearLayout(context);
-        linearLayout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+        //linearLayout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+        linearLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 		
 		TabWidget tabWidget = new TabWidget(context);

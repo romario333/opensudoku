@@ -2,7 +2,7 @@
 <resources>
     <!--  TODO: In general, your styles should always inherit (directly or indirectly) from a standard Android style resource -->
     <style name="edit_cell_number_button">
-        <item name="android:layout_width">70sp</item>
+        <item name="android:layout_width">95sp</item>
         <item name="android:layout_height">70sp</item>
     </style>
     <style name="edit_cell_close_button">
@@ -11,8 +11,9 @@
         <item name="android:layout_marginTop">10sp</item>
     </style>
     <style name="edit_cell_clear_button">
-        <item name="android:layout_width">70sp</item>
+        <item name="android:layout_width">95sp</item>
         <item name="android:layout_height">60sp</item>
         <item name="android:layout_marginTop">10sp</item>
+        <item name="android:layout_marginLeft">45sp</item>
     </style>
 </resources>
