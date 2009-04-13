@@ -92,16 +92,6 @@ public class SudokuBoardView extends View {
 	}
 	
 	private void initWidget() {
-		Context context = getContext();
-        
-		// TODO: EditCellDialog is not ready for landscape
-		WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-		if (wm.getDefaultDisplay().getOrientation() != Configuration.ORIENTATION_LANDSCAPE) {
-			editCellDialog = new EditCellDialog(context);
-	        editCellDialog.setOnNumberEditListener(onNumberEditListener);
-	        editCellDialog.setOnNoteEditListener(onNoteEditListener);
-		}
-		
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		
@@ -129,6 +119,30 @@ public class SudokuBoardView extends View {
 		selectedPaint = new Paint();
 		selectedPaint.setColor(Color.YELLOW);
 		selectedPaint.setAlpha(100);
+	}
+
+	private int screenOrientation = -1;
+	/**
+	 * Ensures that editCellDialog exists and is properly initialized.
+	 * 
+	 * @return
+	 */
+	private void ensureEditCellDialog() {
+		if (editCellDialog == null) {
+			if (screenOrientation == -1) {
+				//WindowManager wm = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
+				//screenOrientation = wm.getDefaultDisplay().getOrientation();
+				screenOrientation = getResources().getConfiguration().orientation;
+			}
+			
+			// TODO: EditCellDialog is not ready for landscape
+			if (screenOrientation != Configuration.ORIENTATION_LANDSCAPE) {
+				editCellDialog = new EditCellDialog(getContext());
+		        editCellDialog.setOnNumberEditListener(onNumberEditListener);
+		        editCellDialog.setOnNoteEditListener(onNoteEditListener);
+			}
+		}
+		
 	}
 	
 	@Override
@@ -308,6 +322,7 @@ public class SudokuBoardView extends View {
 					if (onCellTapListener != null) {
 						onCellTapListener.onCellTap(selectedCell);
 					}
+					ensureEditCellDialog();
 					if (selectedCell.getEditable() && editCellDialog != null) {
 						editCellDialog.updateNumber(selectedCell.getValue());
 						editCellDialog.updateNote(getNoteNumbers(selectedCell.getNote()));
