@@ -5,10 +5,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import cz.romario.opensudoku.R;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -17,41 +21,39 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout.LayoutParams;
 
 public class EditCellDialog {
 	private Context context;
+	private LayoutInflater inflater;
+	// TODO: extend dialog
 	private Dialog dialog;
 	private TabHost tabHost;
 	
-	// TODO: I don't like this dialog, too many things are hard-coded
-	private static final int NUMBER_BUTTON_WIDTH = 97;
-	private static final int NUMBER_BUTTON_HEIGHT = 60;
-	private static final int CLEAR_BUTTON_MARGIN = 15;
 	
+	// TODO: sladit nazvy
 	// buttons from "Select number" tab
 	private Map<Integer,Button> numberButtons = new HashMap<Integer, Button>();
-	
-	// buttons and selected numbers on "Edit note" tab
-	private Set<Integer> noteSelectedNumbers = new HashSet<Integer>();
+	// buttons from "Edit note" tab
 	private Map<Integer,ToggleButton> noteNumberButtons = new HashMap<Integer, ToggleButton>();
+	// selected numbers on "Edit note" tab
+	private Set<Integer> noteSelectedNumbers = new HashSet<Integer>();
 	
 	private OnNumberEditListener onNumberEditListener;
 	private OnNoteEditListener onNoteEditListener;
 	
 	public EditCellDialog(Context context) {
 		this.context = context;
+		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
 		this.tabHost = createTabView();
 		
 		// TODO: maybe I should just create my own dialog?
 		dialog = new AlertDialog.Builder(context)
         .setView(this.tabHost)
-        .setPositiveButton("Close", closeButtonListener)
+        //.setPositiveButton("Close", closeButtonListener)
        .create();
 	}
 	
@@ -163,40 +165,30 @@ public class EditCellDialog {
      * @return
      */
 	private View createEditNumberView() {
-        TableLayout editNumberView = new TableLayout(context);
+		View v = inflater.inflate(R.layout.edit_cell_select_number, null);
 		
-        // create 3x3 table with numbers 1 - 9
-        for (int x=0; x<3; x++) {
-        	TableRow row = new TableRow(context);
-            for (int y=0; y<3; y++) {
-            	Button numberButton = new Button(context);
-            	numberButton.setWidth(NUMBER_BUTTON_WIDTH);
-            	numberButton.setHeight(NUMBER_BUTTON_HEIGHT);
-            	
-            	int number = (x * 3) + (y + 1);
-            	
-            	numberButton.setText(new Integer(number).toString());
-            	numberButton.setTag(number);
-            	numberButton.setOnClickListener(editNumberButtonClickListener);
-            	
-            	numberButtons.put(number, numberButton);
-            	
-            	row.addView(numberButton);
-            }
-            editNumberView.addView(row);
-        }
-        
-        // Add clear button to the end
-        TableRow row = new TableRow(context);
-        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams();
-        layoutParams.column = 2;
-        layoutParams.topMargin = CLEAR_BUTTON_MARGIN;
-        row.addView(createClearButton(), layoutParams);
-        editNumberView.addView(row);
-        
-        editNumberView.setShrinkAllColumns(true);
-        
-        return editNumberView;
+		numberButtons.put(1, (Button)v.findViewById(R.id.button_1));
+		numberButtons.put(2, (Button)v.findViewById(R.id.button_2));
+		numberButtons.put(3, (Button)v.findViewById(R.id.button_3));
+		numberButtons.put(4, (Button)v.findViewById(R.id.button_4));
+		numberButtons.put(5, (Button)v.findViewById(R.id.button_5));
+		numberButtons.put(6, (Button)v.findViewById(R.id.button_6));
+		numberButtons.put(7, (Button)v.findViewById(R.id.button_7));
+		numberButtons.put(8, (Button)v.findViewById(R.id.button_8));
+		numberButtons.put(9, (Button)v.findViewById(R.id.button_9));
+		
+		for (Integer num : numberButtons.keySet()) {
+			Button b = numberButtons.get(num);
+			b.setTag(num);
+			b.setOnClickListener(editNumberButtonClickListener);
+		}
+		
+		Button closeButton = (Button)v.findViewById(R.id.button_close);
+		closeButton.setOnClickListener(closeButtonListener);
+		Button clearButton = (Button)v.findViewById(R.id.button_clear);
+		clearButton.setOnClickListener(clearButtonListener);
+		
+		return v;
     }
 
 	
@@ -205,51 +197,77 @@ public class EditCellDialog {
      * @return
      */
 	private View createEditNoteView() {
-        TableLayout editNumberView = new TableLayout(context);
+		View v = inflater.inflate(R.layout.edit_cell_edit_note, null);
+		
+		noteNumberButtons.put(1, (ToggleButton)v.findViewById(R.id.button_1));
+		noteNumberButtons.put(2, (ToggleButton)v.findViewById(R.id.button_2));
+		noteNumberButtons.put(3, (ToggleButton)v.findViewById(R.id.button_3));
+		noteNumberButtons.put(4, (ToggleButton)v.findViewById(R.id.button_4));
+		noteNumberButtons.put(5, (ToggleButton)v.findViewById(R.id.button_5));
+		noteNumberButtons.put(6, (ToggleButton)v.findViewById(R.id.button_6));
+		noteNumberButtons.put(7, (ToggleButton)v.findViewById(R.id.button_7));
+		noteNumberButtons.put(8, (ToggleButton)v.findViewById(R.id.button_8));
+		noteNumberButtons.put(9, (ToggleButton)v.findViewById(R.id.button_9));
+		
+		for (Integer num : noteNumberButtons.keySet()) {
+			ToggleButton b = noteNumberButtons.get(num);
+			b.setTag(num);
+			b.setOnCheckedChangeListener(editNoteCheckedChangeListener);
+		}
+		
+		Button closeButton = (Button)v.findViewById(R.id.button_close);
+		closeButton.setOnClickListener(closeButtonListener);
+		Button clearButton = (Button)v.findViewById(R.id.button_clear);
+		clearButton.setOnClickListener(clearButtonListener);
+		
+		return v;
         
-        // create 3x3 table with numbers 1 - 9
-        for (int x=0; x<3; x++) {
-        	TableRow row = new TableRow(context);
-            for (int y=0; y<3; y++) {
-            	ToggleButton numberButton = new ToggleButton(context);
-            	numberButton.setWidth(NUMBER_BUTTON_WIDTH);
-            	numberButton.setHeight(NUMBER_BUTTON_HEIGHT);
-            	
-            	Integer number = (x * 3) + (y + 1);
-            	
-            	numberButton.setTextOn(number.toString());
-            	numberButton.setTextOff(number.toString());
-            	numberButton.setChecked(this.noteSelectedNumbers.contains(number));
-            	numberButton.setTag(number);
-            	numberButton.setOnCheckedChangeListener(editNoteCheckedChangeListener);
-            	
-            	noteNumberButtons.put(number, numberButton);
-            	
-            	row.addView(numberButton);
-            }
-            editNumberView.addView(row);
-        }
-        
-        // Add clear button to the end
-        TableRow row = new TableRow(context);
-        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams();
-        layoutParams.column = 2;
-        layoutParams.topMargin = CLEAR_BUTTON_MARGIN;
-        row.addView(createClearButton(), layoutParams);
-        editNumberView.addView(row);
-        
-        editNumberView.setShrinkAllColumns(true);
-        
-        return editNumberView;
+//		
+//		TableLayout editNumberView = new TableLayout(context);
+//        
+//        // create 3x3 table with numbers 1 - 9
+//        for (int x=0; x<3; x++) {
+//        	TableRow row = new TableRow(context);
+//            for (int y=0; y<3; y++) {
+//            	ToggleButton numberButton = new ToggleButton(context);
+//            	numberButton.setWidth(NUMBER_BUTTON_WIDTH);
+//            	numberButton.setHeight(NUMBER_BUTTON_HEIGHT);
+//            	
+//            	Integer number = (x * 3) + (y + 1);
+//            	
+//            	numberButton.setTextOn(number.toString());
+//            	numberButton.setTextOff(number.toString());
+//            	numberButton.setChecked(this.noteSelectedNumbers.contains(number));
+//            	numberButton.setTag(number);
+//            	numberButton.setOnCheckedChangeListener(editNoteCheckedChangeListener);
+//            	
+//            	noteNumberButtons.put(number, numberButton);
+//            	
+//            	row.addView(numberButton);
+//            }
+//            editNumberView.addView(row);
+//        }
+//        
+//        // Add clear button to the end
+//        TableRow row = new TableRow(context);
+//        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams();
+//        layoutParams.column = 2;
+//        layoutParams.topMargin = CLEAR_BUTTON_MARGIN;
+//        row.addView(createClearButton(), layoutParams);
+//        editNumberView.addView(row);
+//        
+//        editNumberView.setShrinkAllColumns(true);
+//        
+//        return editNumberView;
     }
 	
-	private View createClearButton() {
-        Button clearButton = new Button(context);
-        clearButton.setText("Clear");
-        clearButton.setWidth(NUMBER_BUTTON_WIDTH);
-        clearButton.setOnClickListener(clearButtonListener);
-		return clearButton;
-	}
+//	private View createClearButton() {
+//        Button clearButton = new Button(context);
+//        clearButton.setText("Clear");
+//        clearButton.setWidth(NUMBER_BUTTON_WIDTH);
+//        clearButton.setOnClickListener(clearButtonListener);
+//		return clearButton;
+//	}
 	
 	/**
 	 * Occurs when user selects number in "Select number" tab.
@@ -310,9 +328,10 @@ public class EditCellDialog {
 	/**
 	 * Occurs when user presses "Close" button.
 	 */
-	private DialogInterface.OnClickListener closeButtonListener = new DialogInterface.OnClickListener() {
+	private OnClickListener closeButtonListener = new OnClickListener() {
+
 		@Override
-		public void onClick(DialogInterface dialog, int which) {
+		public void onClick(View v) {
 			if (onNoteEditListener != null) {
 				Integer[] numbers = new Integer[noteSelectedNumbers.size()];
 				onNoteEditListener.onNoteEdit(noteSelectedNumbers.toArray(numbers));
@@ -320,18 +339,6 @@ public class EditCellDialog {
 			dialog.dismiss();
 		}
 	};
-	
-	
-//	/**
-//	 * Occurs when user presses "Cancel" button.
-//	 */
-//	private DialogInterface.OnClickListener cancelButtonListener = new DialogInterface.OnClickListener() {
-//		@Override
-//		public void onClick(DialogInterface dialog, int which) {
-//			// TODO Auto-generated method stub
-//			
-//		}
-//	};
 	
 	/**
 	 * Interface definition for a callback to be invoked, when user selects number, which
