@@ -1,6 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, OpenSudokuActivity</string>
     <string name="app_name">OpenSudoku</string>
-    <string name="select_number">Select number</string>
+    <string name="edit_sudoku">Edit sudoku</string>
+    
+    <string name="puzzle_folders">Puzzle folders</string>
+    
+    <string name="version">Version: %s</string>
+	<string name="homepage">Homepage: http://opensudoku.eu</string>
+	
+	<string name="close">Close</string>
+	<string name="clear">Clear</string>
+	<string name="save">Save</string>
+	
+	<string name="add_folder_hint">Press menu if you want to add new folder.</string>
+
+	<string name="name">Name:</string>
+	<string name="note">Note:</string>
+	
+	<string name="select_number">Select number</string>
+	<string name="edit_note">Edit note</string>
+	
+	<string name="add_folder">Add folder</string>
+	<string name="about">About</string>
+	<string name="rename_folder">Rename folder</string>
+	<string name="delete_folder">Delete folder</string>
+	<string name="rename_folder_title">Rename %s</string>
+	<string name="delete_folder_title">Delete %s</string>
+	<string name="delete_folder_confirm">Are you sure you want to delete this folder?</string>
+	
+	<string name="no_puzzles">No puzzles</string>
+	<string name="one_puzzle">1 puzzle</string>
+	<string name="n_puzzles">%s puzzles</string>
+	<string name="all_solved"> (all solved)</string>
+	<string name="n_solved"> (%s solved)</string>
+	
+	<string name="solved">Solved</string>
+	<string name="playing">Playing</string>
+	<string name="last_played_at">Last played %s</string>
+	<string name="created_at">Created %s</string>
+	<string name="at_time">at %s</string>
+	<string name="yesterday_at_time">yesterday at %s</string>
+	<string name="on_date">on %s</string>
+	<string name="add_sudoku">Add sudoku</string>
+	<string name="delete_puzzle_confirm">Are you sure you want to delete selected puzzle?</string>
+	<string name="reset_puzzle_confirm">Are you sure you want to reset selected puzzle?</string>
+	<string name="edit_puzzle_note">Edit puzzle's note</string>
+	<string name="play_puzzle">Play this puzzle</string>
+	<string name="reset_puzzle">Reset puzzle</string>
+	<string name="edit_puzzle">Edit puzzle</string>
+	<string name="delete_puzzle">Delete puzzle</string>
+	
+	<string name="undo">Undo</string>
+	<string name="clear_all_notes">Clear all notes</string>
+	<string name="restart">Restart</string>
+	<string name="congrats">Congratulations, you have solved the puzzle in %s.</string>
+	<string name="restart_confirm">Are you sure you want to restart this game?</string>
+	<string name="well_done">Well Done!</string>
+	<string name="clear_all_notes_confirm">Are you sure you want to clear all notes?</string>
 </resources>

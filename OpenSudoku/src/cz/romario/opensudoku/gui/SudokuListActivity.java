@@ -114,10 +114,10 @@ public class SudokuListActivity extends ListActivity {
 					String stateString = null;
 					switch (state) {
 					case SudokuGame.GAME_STATE_COMPLETED:
-						stateString = String.format("Solved");
+						stateString = getString(R.string.solved);
 						break;
 					case SudokuGame.GAME_STATE_PLAYING:
-						stateString = String.format("Playing");
+						stateString = getString(R.string.playing);
 						break;
 					}
 					label.setVisibility(stateString == null ? View.GONE
@@ -140,8 +140,8 @@ public class SudokuListActivity extends ListActivity {
 					label = ((TextView) view);
 					String lastPlayedString = null;
 					if (lastPlayed != 0) {
-						lastPlayedString = "Last played "
-								+ getDateAndTimeForHumans(lastPlayed);
+						lastPlayedString = getString(R.string.last_played_at,
+								getDateAndTimeForHumans(lastPlayed));
 					}
 					label.setVisibility(lastPlayedString == null ? View.GONE
 							: View.VISIBLE);
@@ -152,8 +152,8 @@ public class SudokuListActivity extends ListActivity {
 					label = ((TextView) view);
 					String createdString = null;
 					if (created != 0) {
-						createdString = "Created "
-								+ getDateAndTimeForHumans(created);
+						createdString = getString(R.string.created_at,
+								getDateAndTimeForHumans(created));
 					}
 					label.setVisibility(createdString == null ? View.GONE
 							: View.VISIBLE);
@@ -199,11 +199,11 @@ public class SudokuListActivity extends ListActivity {
 				- (1000 * 60 * 60 * 24));
 
 		if (date.after(today)) {
-			return "at " + timeFormatter.format(date);
+			return getString(R.string.at_time, timeFormatter.format(date));
 		} else if (date.after(yesterday)) {
-			return "yesterday at " + timeFormatter.format(date);
+			return getString(R.string.yesterday_at_time, timeFormatter.format(date));
 		} else {
-			return "on " + dateTimeFormatter.format(date);
+			return getString(R.string.on_date, dateTimeFormatter.format(date));
 		}
 
 	}
@@ -214,7 +214,7 @@ public class SudokuListActivity extends ListActivity {
 
 		// This is our one standard application action -- inserting a
 		// new note into the list.
-		menu.add(0, MENU_ITEM_INSERT, 0, "Add sudoku").setShortcut('3', 'a')
+		menu.add(0, MENU_ITEM_INSERT, 0, R.string.add_sudoku).setShortcut('3', 'a')
 				.setIcon(android.R.drawable.ic_menu_add);
 
 		// Generate any additional actions that can be performed on the
@@ -241,8 +241,8 @@ public class SudokuListActivity extends ListActivity {
 		final long sudokuToDeleteId = sudokuId;
 		Dialog dialog = new AlertDialog.Builder(this).setIcon(
 				android.R.drawable.ic_delete).setTitle("Puzzle").setMessage(
-				"Are you sure you want to delete selected puzzle?")
-				.setPositiveButton("Yes",
+				R.string.delete_puzzle_confirm)
+				.setPositiveButton(android.R.string.yes,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
@@ -251,7 +251,7 @@ public class SudokuListActivity extends ListActivity {
 								db.deleteSudoku(sudokuToDeleteId);
 								cursor.requery();
 							}
-						}).setNegativeButton("No", null).create();
+						}).setNegativeButton(android.R.string.no, null).create();
 
 		dialog.show();
 	}
@@ -266,8 +266,8 @@ public class SudokuListActivity extends ListActivity {
 		final long sudokuToResetId = sudokuId;
 		Dialog dialog = new AlertDialog.Builder(this).setIcon(
 				android.R.drawable.ic_menu_rotate).setTitle("Puzzle")
-				.setMessage("Are you sure you want to reset selected puzzle?")
-				.setPositiveButton("Yes",
+				.setMessage(R.string.reset_puzzle_confirm)
+				.setPositiveButton(android.R.string.yes,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
@@ -280,7 +280,7 @@ public class SudokuListActivity extends ListActivity {
 								}
 								cursor.requery();
 							}
-						}).setNegativeButton("No", null).create();
+						}).setNegativeButton(android.R.string.no, null).create();
 
 		dialog.show();
 	}
@@ -303,8 +303,8 @@ public class SudokuListActivity extends ListActivity {
 		noteInput.setText(gameToUpdate.getNote());
 
 		Dialog dialog = new AlertDialog.Builder(this).setIcon(
-				android.R.drawable.ic_menu_add).setTitle("Edit puzzle's note")
-				.setView(noteView).setPositiveButton("Save",
+				android.R.drawable.ic_menu_add).setTitle(R.string.edit_puzzle_note)
+				.setView(noteView).setPositiveButton(R.string.save,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
@@ -315,7 +315,7 @@ public class SudokuListActivity extends ListActivity {
 								db.updateSudoku(gameToUpdate);
 								cursor.requery();
 							}
-						}).setNegativeButton("Cancel", null).create();
+						}).setNegativeButton(android.R.string.cancel, null).create();
 
 		dialog.show();
 	}
@@ -343,11 +343,11 @@ public class SudokuListActivity extends ListActivity {
 		menu.setHeaderTitle("Puzzle");
 
 		// Add a menu item to delete the note
-		menu.add(0, MENU_ITEM_PLAY, 0, "Play this puzzle");
-		menu.add(0, MENU_ITEM_EDIT_NOTE, 1, "Edit note");
-		menu.add(0, MENU_ITEM_RESET, 2, "Reset puzzle");
-		menu.add(0, MENU_ITEM_EDIT, 3, "Edit puzzle");
-		menu.add(0, MENU_ITEM_DELETE, 4, "Delete puzzle");
+		menu.add(0, MENU_ITEM_PLAY, 0, R.string.play_puzzle);
+		menu.add(0, MENU_ITEM_EDIT_NOTE, 1, R.string.edit_note);
+		menu.add(0, MENU_ITEM_RESET, 2, R.string.reset_puzzle);
+		menu.add(0, MENU_ITEM_EDIT, 3, R.string.edit_puzzle);
+		menu.add(0, MENU_ITEM_DELETE, 4, R.string.delete_puzzle);
 	}
 
 	@Override

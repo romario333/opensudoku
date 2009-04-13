@@ -13,6 +13,6 @@
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
 	    android:gravity="center"
-    	android:text="Press menu if you want to add new folder." />
+    	android:text="@string/add_folder_hint" />
      
 </LinearLayout>

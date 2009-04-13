@@ -43,8 +43,6 @@ public class FolderListActivity extends ListActivity {
 		
 		setContentView(R.layout.folder_list);
 		
-		setTitle("Puzzle folders");
-		
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 		
         // Inform the list we provide context menus for items
@@ -76,10 +74,10 @@ public class FolderListActivity extends ListActivity {
 		
         // This is our one standard application action -- inserting a
         // new note into the list.
-        menu.add(0, MENU_ITEM_ADD, 0, "Add folder")
+		menu.add(0, MENU_ITEM_ADD, 0, R.string.add_folder)
                 .setShortcut('3', 'a')
                 .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(0, MENU_ITEM_ABOUT, 1, "About")
+        menu.add(0, MENU_ITEM_ABOUT, 1, R.string.about)
         .setShortcut('1', 'h')
         .setIcon(android.R.drawable.ic_menu_info_details);
 
@@ -110,8 +108,8 @@ public class FolderListActivity extends ListActivity {
         menu.setHeaderTitle(f.name);
 
         // Add a menu item to delete the note
-        menu.add(0, MENU_ITEM_RENAME, 0, "Rename folder");
-        menu.add(0, MENU_ITEM_DELETE, 1, "Delete folder");
+        menu.add(0, MENU_ITEM_RENAME, 0, R.string.rename_folder);
+        menu.add(0, MENU_ITEM_DELETE, 1, R.string.delete_folder);
     }
     
 
@@ -123,12 +121,12 @@ public class FolderListActivity extends ListActivity {
 		try {
 			versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
 		} catch (NameNotFoundException e) {
-			version_label.setText("Version: unable to retreive version");
+			versionName = "unable to retreive version";
 		}
-        version_label.setText("Version: " + versionName);
+        version_label.setText(getString(R.string.version, versionName));
         final Dialog dialog = new AlertDialog.Builder(this)
             .setIcon(R.drawable.opensudoku)
-            .setTitle("OpenSudoku")
+            .setTitle(R.string.app_name)
             .setView(aboutView)
             .setPositiveButton("OK", null)
             .create();
@@ -149,16 +147,16 @@ public class FolderListActivity extends ListActivity {
         final TextView nameInput = (TextView)nameView.findViewById(R.id.name);
         final Dialog dialog = new AlertDialog.Builder(this)
             .setIcon(android.R.drawable.ic_menu_add)
-            .setTitle("Add folder")
+            .setTitle(R.string.add_folder)
             .setView(nameView)
-            .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
                 	db.insertFolder(nameInput.getText().toString().trim());
                 	fillData();
                 }
             })
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(android.R.string.cancel, null)
             .create();
         dialog.show();
     }
@@ -180,9 +178,9 @@ public class FolderListActivity extends ListActivity {
         final long folderToEditId = folder.id;
         final Dialog dialog = new AlertDialog.Builder(this)
         .setIcon(android.R.drawable.ic_menu_edit)
-        .setTitle("Rename " + folder.name)
+        .setTitle(getString(R.string.rename_folder_title, folder.name))
         .setView(nameView)
-        .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+        .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
             	db.updateFolder(folderToEditId, nameInput.getText().toString().trim());
@@ -190,7 +188,7 @@ public class FolderListActivity extends ListActivity {
             	//dialog.dismiss();
             }
         })
-        .setNegativeButton("Cancel", null)
+        .setNegativeButton(android.R.string.cancel, null)
         .create();
         
         dialog.show();
@@ -208,16 +206,16 @@ public class FolderListActivity extends ListActivity {
         final long folderToDeleteId = folder.id;
     	final Dialog dialog = new AlertDialog.Builder(this)
         .setIcon(android.R.drawable.ic_delete)
-        .setTitle("Delete " + folder.name)
-        .setMessage("Are you sure you want to delete this folder?")
-        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        .setTitle(getString(R.string.delete_folder_title, folder.name))
+        .setMessage(R.string.delete_folder_confirm)
+        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
             	db.deleteFolder(folderToDeleteId);
             	fillData();
             }
         })
-        .setNegativeButton("No", null)
+        .setNegativeButton(android.R.string.no, null)
         .create();
         
         dialog.show();
@@ -312,19 +310,20 @@ public class FolderListActivity extends ListActivity {
 			FolderInfo folder = folders[position];
 			nameLabel.setText(folder.name);
 			
+			// TODO: tohle se bude blbe prekladat
 			String folderDetail;
 			if (folder.puzzleCount == 0) {
-				folderDetail = "No puzzles";
+				folderDetail = getString(R.string.no_puzzles);
 			} else if (folder.puzzleCount == 1) {
-				folderDetail = "1 puzzle";
+				folderDetail = getString(R.string.one_puzzle);
 			} else {
-				folderDetail = String.format("%s puzzles", folder.puzzleCount);
+				folderDetail = getString(R.string.n_puzzles, folder.puzzleCount); 
 			}
 			if (folder.solvedCount != 0) {
 				if (folder.solvedCount == folder.puzzleCount) {
-					folderDetail += " (all solved)";
+					folderDetail += getString(R.string.all_solved);
 				} else {
-					folderDetail += String.format(" (%s solved)", folder.solvedCount);
+					folderDetail += getString(R.string.n_solved, folder.solvedCount);
 				}
 			}
 			detailLabel.setText(folderDetail);

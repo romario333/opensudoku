@@ -139,7 +139,7 @@ public class EditCellDialog {
 		tabHost.setup();
 
 		tabHost.addTab(tabHost.newTabSpec("number")
-                .setIndicator("Select number")
+                .setIndicator(context.getString(R.string.select_number))
                 .setContent(new TabHost.TabContentFactory() {
 					
                 	@Override
@@ -149,7 +149,7 @@ public class EditCellDialog {
                 	
                 }));
 		tabHost.addTab(tabHost.newTabSpec("note")
-                .setIndicator("Edit note")
+                .setIndicator(context.getString(R.string.edit_note))
                 .setContent(new TabHost.TabContentFactory() {
 					
                 	@Override

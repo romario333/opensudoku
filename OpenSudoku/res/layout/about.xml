@@ -9,14 +9,14 @@
 		android:layout_marginLeft="5sp"
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
-    	android:text="Version: don't know" />
+    	android:text="@string/version" />
    <TextView 
 		android:layout_marginLeft="5sp"
    		android:layout_marginTop="5sp"
    		android:layout_marginBottom="5sp"
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
-    	android:text="Homepage: http://opensudoku.eu"
+    	android:text="@string/homepage"
     	android:autoLink="all" />
     
      

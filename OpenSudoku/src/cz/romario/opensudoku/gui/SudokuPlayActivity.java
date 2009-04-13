@@ -129,16 +129,16 @@ public class SudokuPlayActivity extends Activity{
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		
-        menu.add(0, MENU_ITEM_UNDO, 0, "Undo")
+        menu.add(0, MENU_ITEM_UNDO, 0, R.string.undo)
         .setShortcut('1', 'u')
         .setIcon(android.R.drawable.ic_menu_revert);
 		
 		// TODO: I should really get my own icons ;-)
-        menu.add(0, MENU_ITEM_CLEAR_ALL_NOTES, 0, "Clear all notes")
+        menu.add(0, MENU_ITEM_CLEAR_ALL_NOTES, 0, R.string.clear_all_notes)
         .setShortcut('3', 'a')
         .setIcon(android.R.drawable.ic_menu_delete);
 
-        menu.add(0, MENU_ITEM_RESTART, 1, "Restart")
+        menu.add(0, MENU_ITEM_RESTART, 1, R.string.restart)
         .setShortcut('7', 'r')
         .setIcon(android.R.drawable.ic_menu_rotate);
 
@@ -192,10 +192,9 @@ public class SudokuPlayActivity extends Activity{
     	case DIALOG_WELL_DONE:
             return new AlertDialog.Builder(SudokuPlayActivity.this)
             .setIcon(android.R.drawable.ic_dialog_info)
-            .setTitle("Well Done!")
-            .setMessage(
-            		String.format("Congratulations, you have solved the puzzle in %s.", getTime()))
-            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            .setTitle(R.string.well_done)
+            .setMessage(getString(R.string.congrats, getTime()))
+            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     /* User clicked OK so do some stuff */
                 }
@@ -204,9 +203,9 @@ public class SudokuPlayActivity extends Activity{
     	case DIALOG_RESTART:
             return new AlertDialog.Builder(this)
             .setIcon(android.R.drawable.ic_menu_rotate)
-            .setTitle("OpenSudoku")
-            .setMessage("Are you sure you want to restart this game?")
-            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            .setTitle(R.string.app_name)
+            .setMessage(R.string.restart_confirm)
+            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     // Restart game
                 	sudokuGame.reset();
@@ -216,19 +215,19 @@ public class SudokuPlayActivity extends Activity{
                 	gameTimer.start();
                 }
             })
-            .setNegativeButton("No", null)
+            .setNegativeButton(android.R.string.no, null)
             .create();
     	case DIALOG_CLEAR_NOTES:
             return new AlertDialog.Builder(this)
             .setIcon(android.R.drawable.ic_menu_delete)
-            .setTitle("OpenSudoku")
-            .setMessage("Are you sure you want to clear all notes?")
-            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            .setTitle(R.string.app_name)
+            .setMessage(R.string.clear_all_notes_confirm)
+            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	sudokuGame.clearAllNotes();
                 }
             })
-            .setNegativeButton("No", null)
+            .setNegativeButton(android.R.string.no, null)
             .create();
     	}
     	return null;
