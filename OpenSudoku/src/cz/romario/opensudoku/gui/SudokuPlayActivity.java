@@ -213,11 +213,7 @@ public class SudokuPlayActivity extends Activity{
             .setIcon(android.R.drawable.ic_dialog_info)
             .setTitle(R.string.well_done)
             .setMessage(getString(R.string.congrats, getTime()))
-            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    /* User clicked OK so do some stuff */
-                }
-            })
+            .setPositiveButton(android.R.string.ok, null)
             .create();
     	case DIALOG_RESTART:
             return new AlertDialog.Builder(this)
@@ -244,6 +240,7 @@ public class SudokuPlayActivity extends Activity{
             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	sudokuGame.clearAllNotes();
+                	sudokuBoard.postInvalidate();
                 }
             })
             .setNegativeButton(android.R.string.no, null)

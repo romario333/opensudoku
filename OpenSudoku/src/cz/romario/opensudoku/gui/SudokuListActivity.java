@@ -303,7 +303,7 @@ public class SudokuListActivity extends ListActivity {
 		noteInput.setText(gameToUpdate.getNote());
 
 		Dialog dialog = new AlertDialog.Builder(this).setIcon(
-				android.R.drawable.ic_menu_add).setTitle(R.string.edit_puzzle_note)
+				android.R.drawable.ic_menu_add).setTitle(R.string.edit_note)
 				.setView(noteView).setPositiveButton(R.string.save,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,

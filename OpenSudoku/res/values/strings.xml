@@ -44,8 +44,6 @@
 	<string name="add_sudoku">Add sudoku</string>
 	<string name="delete_puzzle_confirm">Are you sure you want to delete selected puzzle?</string>
 	<string name="reset_puzzle_confirm">Are you sure you want to reset selected puzzle?</string>
-	<!-- TODO: fuck ' -->
-	<string name="edit_puzzle_note">Edit puzzle's note</string>
 	<string name="play_puzzle">Play this puzzle</string>
 	<string name="reset_puzzle">Reset puzzle</string>
 	<string name="edit_puzzle">Edit puzzle</string>
