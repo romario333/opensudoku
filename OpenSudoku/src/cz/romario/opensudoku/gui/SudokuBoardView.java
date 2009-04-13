@@ -308,7 +308,7 @@ public class SudokuBoardView extends View {
 					if (onCellTapListener != null) {
 						onCellTapListener.onCellTap(selectedCell);
 					}
-					if (editCellDialog != null) {
+					if (selectedCell.getEditable() && editCellDialog != null) {
 						editCellDialog.updateNumber(selectedCell.getValue());
 						editCellDialog.updateNote(getNoteNumbers(selectedCell.getNote()));
 						editCellDialog.getDialog().show();

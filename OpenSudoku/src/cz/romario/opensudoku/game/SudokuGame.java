@@ -148,6 +148,7 @@ public class SudokuGame implements Parcelable {
 		if (!undoStack.empty()) {
 			Command c = undoStack.pop();
 			c.undo();
+			validate();
 		}
 	}
 	
@@ -163,6 +164,11 @@ public class SudokuGame implements Parcelable {
 	 * Start game-play.
 	 */
 	public void start() {
+		state = GAME_STATE_PLAYING;
+		resume();
+	}
+	
+	public void resume() {
 		// reset time we have spent playing so far, so time when activity was not active
 		// will not be part of the game play time
 		activeFromTime = SystemClock.uptimeMillis();

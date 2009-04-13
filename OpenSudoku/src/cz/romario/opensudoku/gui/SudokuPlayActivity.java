@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Chronometer;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuCell;
@@ -42,7 +43,6 @@ public class SudokuPlayActivity extends Activity{
 	
 	private long sudokuGameID;
 	private SudokuGame sudokuGame;
-	private int inputMode;
 	
 	private SudokuBoardView sudokuBoard;
 	
@@ -61,7 +61,6 @@ public class SudokuPlayActivity extends Activity{
         timeFormatter = new Formatter(timeText);
         gameTimer = new GameTimer();
         
-        
         // create sudoku game instance
         if (savedInstanceState == null) {
         	// activity runs for the first time, read game from database
@@ -73,27 +72,58 @@ public class SudokuPlayActivity extends Activity{
         	// activity has been running before, restore its state
         	sudokuGame = (SudokuGame)savedInstanceState.getParcelable("sudoku_game");
         	gameTimer.restoreState(savedInstanceState);
-        	inputMode = savedInstanceState.getInt("input_mode");
         }
         
         if (sudokuGame.getState() == SudokuGame.GAME_STATE_NOT_STARTED) {
-        	sudokuGame.setState(SudokuGame.GAME_STATE_PLAYING);
-        }
+        	sudokuGame.start();
+        } else if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+        	sudokuGame.resume();
+        } 
         
         if (sudokuGame.getState() == SudokuGame.GAME_STATE_COMPLETED) {
         	sudokuBoard.setReadOnly(true);
         }
-        
-        if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-        	sudokuGame.start();
-        }
-        
+
         sudokuBoard.setGame(sudokuGame);
         
 		sudokuGame.setOnPuzzleSolvedListener(onSolvedListener);
 		
 		updateTime();
     }
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			sudokuGame.resume();
+			gameTimer.start();
+		}
+	}
+	
+    @Override
+    protected void onPause() {
+    	super.onPause();
+		
+    	if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			sudokuGame.pause();
+		}
+    	
+    	// we will save game to the database as we might not be able to get back
+		SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
+		sudokuDB.updateSudoku(sudokuGame);
+		
+		gameTimer.stop();
+    }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    	super.onSaveInstanceState(outState);
+		
+    	gameTimer.stop();
+    	outState.putParcelable("sudoku_game", sudokuGame);
+    	gameTimer.saveState(outState);
+    }	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -151,42 +181,6 @@ public class SudokuPlayActivity extends Activity{
         }
         return super.onOptionsItemSelected(item);
 	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		
-		if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-			sudokuGame.start();
-			gameTimer.start();
-		}
-	}
-	
-    @Override
-    protected void onPause() {
-    	super.onPause();
-		
-    	if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-			sudokuGame.pause();
-		}
-    	
-    	// we will save game to the database as we might not be able to get back
-		SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
-		sudokuDB.updateSudoku(sudokuGame);
-		
-		gameTimer.stop();
-    }
-    
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-    	super.onSaveInstanceState(outState);
-		
-    	gameTimer.stop();
-    	outState.putParcelable("sudoku_game", sudokuGame);
-    	outState.putInt("input_mode", inputMode);
-    	gameTimer.saveState(outState);
-    }
     
     @Override
     protected Dialog onCreateDialog(int id) {
