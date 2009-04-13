@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -29,6 +30,7 @@ public class FolderListActivity extends ListActivity {
 	public static final int MENU_ITEM_ADD = Menu.FIRST;
     public static final int MENU_ITEM_RENAME = Menu.FIRST + 1;
     public static final int MENU_ITEM_DELETE = Menu.FIRST + 2;
+    public static final int MENU_ITEM_ABOUT = Menu.FIRST + 3;
     
     private static final String TAG = "FolderListActivity";
     
@@ -77,6 +79,9 @@ public class FolderListActivity extends ListActivity {
         menu.add(0, MENU_ITEM_ADD, 0, "Add folder")
                 .setShortcut('3', 'a')
                 .setIcon(android.R.drawable.ic_menu_add);
+        menu.add(0, MENU_ITEM_ABOUT, 1, "About")
+        .setShortcut('1', 'h')
+        .setIcon(android.R.drawable.ic_menu_info_details);
 
         // Generate any additional actions that can be performed on the
         // overall list.  In a normal install, there are no additional
@@ -110,6 +115,26 @@ public class FolderListActivity extends ListActivity {
     }
     
 
+    private void showAboutDialog() {
+		LayoutInflater factory = LayoutInflater.from(this);
+        final View aboutView = factory.inflate(R.layout.about, null);
+        TextView version_label = (TextView)aboutView.findViewById(R.id.version_label);
+        String versionName = null;
+		try {
+			versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+		} catch (NameNotFoundException e) {
+			version_label.setText("Version: unable to retreive version");
+		}
+        version_label.setText("Version: " + versionName);
+        final Dialog dialog = new AlertDialog.Builder(this)
+            .setIcon(R.drawable.opensudoku)
+            .setTitle("OpenSudoku")
+            .setView(aboutView)
+            .setPositiveButton("OK", null)
+            .create();
+        dialog.show();
+    }
+    
     /**
 	 * Shows "Add folder" dialog. 
 	 * 
@@ -231,12 +256,12 @@ public class FolderListActivity extends ListActivity {
         case MENU_ITEM_ADD:
         	showAddFolderDialog();
             return true;
+        case MENU_ITEM_ABOUT:
+        	showAboutDialog();
+        	return true;
         }
         return super.onOptionsItemSelected(item);
 	}
-	
-    // TODO: onPrepareOptionsMenu - menit polozky v menu podle vybraneho itemu
-	
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
