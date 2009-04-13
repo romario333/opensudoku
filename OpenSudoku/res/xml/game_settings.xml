@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+            android:title="Game Helpers">
+            
+        <CheckBoxPreference
+                android:key="highlight_wrong_values"
+                android:title="Highlight wrong values"
+                android:summary="Highlight values which break rules of sudoku."
+                android:defaultValue="true" />
+            
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -3,7 +3,7 @@
     <string name="app_name">OpenSudoku</string>
     <string name="edit_sudoku">Edit sudoku</string>
     
-    <string name="puzzle_folders">Puzzle folders</string>
+    <string name="puzzle_folders">OpenSudoku puzzle folders</string>
     
     <string name="version">Version: %s</string>
 	<string name="homepage">Homepage: http://opensudoku.eu</string>
@@ -44,6 +44,7 @@
 	<string name="add_sudoku">Add sudoku</string>
 	<string name="delete_puzzle_confirm">Are you sure you want to delete selected puzzle?</string>
 	<string name="reset_puzzle_confirm">Are you sure you want to reset selected puzzle?</string>
+	<!-- TODO: fuck ' -->
 	<string name="edit_puzzle_note">Edit puzzle's note</string>
 	<string name="play_puzzle">Play this puzzle</string>
 	<string name="reset_puzzle">Reset puzzle</string>
@@ -57,4 +58,7 @@
 	<string name="restart_confirm">Are you sure you want to restart this game?</string>
 	<string name="well_done">Well Done!</string>
 	<string name="clear_all_notes_confirm">Are you sure you want to clear all notes?</string>
+	<string name="settings">Settings</string>
+	<string name="game_settings">Game settings</string>
+	
 </resources>

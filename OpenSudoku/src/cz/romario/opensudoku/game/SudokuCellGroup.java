@@ -46,10 +46,12 @@ public class SudokuCellGroup {
 		for (int i=0; i<cells.length; i++) {
 			int value = cells[i].getValue();
 			
-			if (!cellsByValue.containsKey(value)) {
-				cellsByValue.put(value, new ArrayList<SudokuCell>());
+			if (value != 0) {
+				if (!cellsByValue.containsKey(value)) {
+					cellsByValue.put(value, new ArrayList<SudokuCell>());
+				}
+				cellsByValue.get(value).add(cells[i]);
 			}
-			cellsByValue.get(value).add(cells[i]);
 		}
 		
 		// if some number is in group more than once, mark cells holding this number as invalid.

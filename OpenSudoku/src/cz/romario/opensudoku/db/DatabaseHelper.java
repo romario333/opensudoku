@@ -143,7 +143,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	
     	String[] values = data.split(" ");
     	
-    	SudokuCellCollection cellCollection = SudokuCellCollection.CreateEmpty();
+    	SudokuCellCollection cellCollection = SudokuCellCollection.createEmpty();
     	SudokuCell[][] cells = cellCollection.getCells();
     	
     	int pos = 0;

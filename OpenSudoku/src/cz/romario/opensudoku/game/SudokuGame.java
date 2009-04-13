@@ -31,6 +31,8 @@ public class SudokuGame implements Parcelable {
 	// Time when current activity has become active. 
 	private long activeFromTime = -1; 
 
+	private boolean highlightWrongVals = true;
+	
 	public SudokuGame() {
 		
 	}
@@ -94,7 +96,6 @@ public class SudokuGame implements Parcelable {
 
 	public void setCells(SudokuCellCollection cells) {
 		this.cells = cells;
-		this.validate();
 	}
 	
 	public SudokuCellCollection getCells() {
@@ -154,10 +155,6 @@ public class SudokuGame implements Parcelable {
 	
 	public boolean hasSomethingToUndo() {
 		return undoStack.size() != 0;
-	}
-	
-	private void validate() {
-		cells.validate();
 	}
 	
 	/**
@@ -225,6 +222,27 @@ public class SudokuGame implements Parcelable {
 	public void clearAllNotes() {
 		cells.clearAllNotes();
 	}
+	
+	public void setHighlightWrongVals(boolean highlightWrongVals) {
+		this.highlightWrongVals = highlightWrongVals;
+		cells.markAllCellsAsValid();
+		
+		if (this.highlightWrongVals) {
+			validate();
+		}
+	}
+
+	public boolean getHighlightWrongVals() {
+		return highlightWrongVals;
+	}
+	
+	private void validate() {
+		if (highlightWrongVals) {
+			cells.validate();
+		}
+	}
+	
+	
 	
 	// constructor for Parcelable
 	private SudokuGame(Parcel in) {

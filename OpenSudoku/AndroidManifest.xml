@@ -26,5 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".gui.GameSettingsActivity"
+                  android:label="@string/game_settings">
+        </activity>
+        
     </application>
 </manifest> 

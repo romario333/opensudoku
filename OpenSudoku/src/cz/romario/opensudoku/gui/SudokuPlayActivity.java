@@ -8,7 +8,9 @@ import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Chronometer;
@@ -31,6 +33,7 @@ public class SudokuPlayActivity extends Activity{
 	public static final int MENU_ITEM_RESTART = Menu.FIRST;
 	public static final int MENU_ITEM_CLEAR_ALL_NOTES = Menu.FIRST + 1;
 	public static final int MENU_ITEM_UNDO = Menu.FIRST + 2;
+	public static final int MENU_ITEM_SETTINGS = Menu.FIRST + 3;
 	
 	
 	//private static final String TAG = "SudokuPlayActivity";
@@ -85,7 +88,6 @@ public class SudokuPlayActivity extends Activity{
         }
 
         sudokuBoard.setGame(sudokuGame);
-        
 		sudokuGame.setOnPuzzleSolvedListener(onSolvedListener);
 		
 		updateTime();
@@ -99,6 +101,12 @@ public class SudokuPlayActivity extends Activity{
 			sudokuGame.resume();
 			gameTimer.start();
 		}
+		
+        // read game settings
+		SharedPreferences gameSettings = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean highlightWrongValues = gameSettings.getBoolean("highlight_wrong_values", true);
+        sudokuGame.setHighlightWrongVals(highlightWrongValues);
+		
 	}
 	
     @Override
@@ -142,6 +150,12 @@ public class SudokuPlayActivity extends Activity{
         .setShortcut('7', 'r')
         .setIcon(android.R.drawable.ic_menu_rotate);
 
+        menu.add(0, MENU_ITEM_SETTINGS, 1, R.string.settings)
+        .setShortcut('9', 's')
+        .setIcon(android.R.drawable.ic_menu_preferences);
+        
+        
+
         
 
         // Generate any additional actions that can be performed on the
@@ -177,6 +191,11 @@ public class SudokuPlayActivity extends Activity{
         case MENU_ITEM_UNDO:
         	sudokuGame.undo();
         	sudokuBoard.postInvalidate();
+        	return true;
+        case MENU_ITEM_SETTINGS:
+        	Intent i = new Intent();
+        	i.setClass(this, GameSettingsActivity.class);
+        	startActivity(i);
         	return true;
         }
         return super.onOptionsItemSelected(item);

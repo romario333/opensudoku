@@ -31,7 +31,7 @@ public class SudokuCellCollection  implements Parcelable {
 	 * Creates empty sudoku.
 	 * @return
 	 */
-	public static SudokuCellCollection CreateEmpty()
+	public static SudokuCellCollection createEmpty()
 	{
 		SudokuCell[][] cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
 		
@@ -73,6 +73,16 @@ public class SudokuCellCollection  implements Parcelable {
 		return cells[rowIndex][colIndex];
 	}
 	
+	public void markAllCellsAsValid() {
+		for (int r=0; r<SUDOKU_SIZE; r++)
+		{
+			for (int c=0; c<SUDOKU_SIZE; c++)
+			{
+				cells[r][c].setInvalid(false);
+			}
+		}
+	}
+	
 	/**
 	 * Validates numbers in collection according to the sudoku rules. Cells with invalid
 	 * values are marked - you can use getInvalid method of cell to find out whether cell
@@ -84,13 +94,7 @@ public class SudokuCellCollection  implements Parcelable {
 		boolean valid = true;
 		
 		// first set all cells as valid
-		for (int r=0; r<SUDOKU_SIZE; r++)
-		{
-			for (int c=0; c<SUDOKU_SIZE; c++)
-			{
-				cells[r][c].setInvalid(false);
-			}
-		}
+		markAllCellsAsValid();
 		
 		// run validation in groups
 		for (SudokuCellGroup row : rows) {
@@ -313,7 +317,6 @@ public class SudokuCellCollection  implements Parcelable {
             	cell.setNote(note);
             }
             cell.setEditable(tokenizer.nextToken().equals("1"));
-            cell.setInvalid(tokenizer.nextToken().equals("1"));
             
             cells[r][c] = cell;
             c++;
@@ -348,7 +351,6 @@ public class SudokuCellCollection  implements Parcelable {
                         	sb.append(cell.getNote()).append("|");
                         }
                         sb.append(cell.getEditable() ? "1" : "0").append("|");
-                        sb.append(cell.getInvalid() ? "1" : "0").append("|");
                 }
         }
         

@@ -85,7 +85,7 @@ public class SudokuEditActivity extends Activity {
         		board.setCells(cells);
         	} else {
         		// new sudoku
-        		board.setCells(SudokuCellCollection.CreateEmpty());
+        		board.setCells(SudokuCellCollection.createEmpty());
         	}
         }
         
