@@ -31,8 +31,10 @@
 	<string name="no_puzzles">No puzzles</string>
 	<string name="one_puzzle">1 puzzle</string>
 	<string name="n_puzzles">%s puzzles</string>
-	<string name="all_solved"> (all solved)</string>
-	<string name="n_solved"> (%s solved)</string>
+	<string name="all_solved">all solved</string>
+	<string name="n_solved"> %s solved</string>
+	<string name="n_unsolved"> %s unsolved</string>
+	<string name="n_playing"> %s playing</string>
 	
 	<string name="solved">Solved</string>
 	<string name="playing">Playing</string>

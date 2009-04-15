@@ -27,6 +27,7 @@ import android.widget.SimpleCursorAdapter.ViewBinder;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuColumns;
 import cz.romario.opensudoku.db.SudokuDatabase;
+import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 
@@ -74,9 +75,6 @@ public class SudokuListActivity extends ListActivity {
 		getListView().setOnCreateContextMenuListener(this);
 
 		SudokuDatabase sudokuDB = new SudokuDatabase(this);
-
-		setTitle(sudokuDB.getFolderName(folderID));
-
 
 		timeText = new StringBuilder();
 		gameTimeFormatter = new Formatter(timeText);
@@ -180,8 +178,30 @@ public class SudokuListActivity extends ListActivity {
 
 		setListAdapter(adapter);
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		updateTitle();
+	}
 	
+	/**
+	 * Updates whole list.
+	 */
+	private void update() {
+		// update title
+		updateTitle();
+		
+		// update data bound to the list
+		cursor.requery();
+	}
 	
+	private void updateTitle() {
+		SudokuDatabase sudokuDB = new SudokuDatabase(this);
+		FolderInfo folder = sudokuDB.getFolder(folderID);
+		setTitle(folder.name + " - " + sudokuDB.getFolder(folderID).getDetail(this));
+	}
 
 	private String getTime(long time) {
 		timeText.setLength(0);
@@ -249,7 +269,7 @@ public class SudokuListActivity extends ListActivity {
 								SudokuDatabase db = new SudokuDatabase(
 										SudokuListActivity.this);
 								db.deleteSudoku(sudokuToDeleteId);
-								cursor.requery();
+								update();
 							}
 						}).setNegativeButton(android.R.string.no, null).create();
 
@@ -278,7 +298,7 @@ public class SudokuListActivity extends ListActivity {
 									game.reset();
 									db.updateSudoku(game);
 								}
-								cursor.requery();
+								update();
 							}
 						}).setNegativeButton(android.R.string.no, null).create();
 
@@ -313,7 +333,7 @@ public class SudokuListActivity extends ListActivity {
 								gameToUpdate.setNote(noteInput.getText()
 										.toString());
 								db.updateSudoku(gameToUpdate);
-								cursor.requery();
+								update();
 							}
 						}).setNegativeButton(android.R.string.cancel, null).create();
 

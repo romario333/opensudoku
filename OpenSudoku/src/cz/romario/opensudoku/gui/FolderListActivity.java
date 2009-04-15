@@ -310,23 +310,7 @@ public class FolderListActivity extends ListActivity {
 			FolderInfo folder = folders[position];
 			nameLabel.setText(folder.name);
 			
-			// TODO: tohle se bude blbe prekladat
-			String folderDetail;
-			if (folder.puzzleCount == 0) {
-				folderDetail = getString(R.string.no_puzzles);
-			} else if (folder.puzzleCount == 1) {
-				folderDetail = getString(R.string.one_puzzle);
-			} else {
-				folderDetail = getString(R.string.n_puzzles, folder.puzzleCount); 
-			}
-			if (folder.solvedCount != 0) {
-				if (folder.solvedCount == folder.puzzleCount) {
-					folderDetail += getString(R.string.all_solved);
-				} else {
-					folderDetail += getString(R.string.n_solved, folder.solvedCount);
-				}
-			}
-			detailLabel.setText(folderDetail);
+			detailLabel.setText(folder.getDetail(FolderListActivity.this));
 			
 			return itemView;
 		}

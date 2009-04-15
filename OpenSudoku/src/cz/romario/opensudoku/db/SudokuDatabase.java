@@ -61,6 +61,9 @@ public class SudokuDatabase {
 	        	if (state == SudokuGame.GAME_STATE_COMPLETED) {
 	        		folder.solvedCount += count;
 	        	}
+	        	if (state == SudokuGame.GAME_STATE_PLAYING) {
+	        		folder.playingCount += count;
+	        	}
 	        }
         }
         finally {
@@ -79,27 +82,46 @@ public class SudokuDatabase {
     }
     
     /**
-     * Returns the name of the given folder.
+     * Returns the folder info.
      * 
      * @param folderID Primary key of folder.
      * @return
      */
-    public String getFolderName(long folderID) {
-        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-
-        qb.setTables(FOLDER_TABLE_NAME);
-        //qb.setProjectionMap(sPlacesProjectionMap);
-        qb.appendWhere(FolderColumns._ID + "=" + folderID);
-        
-        SQLiteDatabase db = null;
-        Cursor c = null;
-        try {
-	        db = mOpenHelper.getReadableDatabase();
-	        c = qb.query(db, null, null, null, null, null, null);
-	        c.moveToNext();
-	        String name = c.getString(c.getColumnIndex(FolderColumns.NAME));
-	        return name;
-        } finally {
+    public FolderInfo getFolder(long folderID) {
+    	FolderInfo folder = null;
+    	
+    	SQLiteDatabase db = null;
+    	Cursor c = null;
+    	try
+        {
+    		
+    		
+	    	db = mOpenHelper.getReadableDatabase();
+	        
+	        // selectionArgs: You may include ?s in where clause in the query, which will be replaced by the values from selectionArgs. The values will be bound as Strings.
+	    	String q = "select folder._id as _id, folder.name as name, sudoku.state as state, count(sudoku.state) as count from folder left join sudoku on folder._id = sudoku.folder_id where folder._id = " + folderID + " group by folder._id, sudoku.state;";
+	        c = db.rawQuery(q, null);
+	        
+	        while (c.moveToNext()) {
+	        	long id = c.getLong(c.getColumnIndex(FolderColumns._ID));
+	        	String name = c.getString(c.getColumnIndex(FolderColumns.NAME));
+	        	int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
+	        	int count = c.getInt(c.getColumnIndex("count"));
+	        	
+	        	if (folder == null) {
+	        		folder = new FolderInfo(id, name);
+	        	}
+	        	
+	        	folder.puzzleCount += count;
+	        	if (state == SudokuGame.GAME_STATE_COMPLETED) {
+	        		folder.solvedCount += count;
+	        	}
+	        	if (state == SudokuGame.GAME_STATE_PLAYING) {
+	        		folder.playingCount += count;
+	        	}
+	        }
+        }
+        finally {
         	if (c != null) {
         		c.close();
         	}
@@ -107,6 +129,8 @@ public class SudokuDatabase {
         		db.close();
         	}
         }
+        
+        return folder;
     }
     
     /**
