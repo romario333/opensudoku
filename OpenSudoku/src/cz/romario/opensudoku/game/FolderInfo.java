@@ -49,27 +49,27 @@ public class FolderInfo {
 		} else {
 			sb.append(puzzleCount == 1 ? c.getString(R.string.one_puzzle) : c.getString(R.string.n_puzzles, puzzleCount));
 			
-			if (playingCount != 0 || solvedCount != 0) {
+			int unsolvedCount = puzzleCount - solvedCount;
+			
+			if (playingCount != 0 || unsolvedCount != 0) {
 				sb.append(" (");
 			}
 			
 			if (playingCount != 0) {
 				sb.append(c.getString(R.string.n_playing, playingCount));
-				if (solvedCount != 0) {
+				if (unsolvedCount != 0) {
 					sb.append(", ");
 				}
 			}
 			
-			if (solvedCount != 0) {
+			if (unsolvedCount != 0) {
 				if (puzzleCount == solvedCount) {
 					sb.append(c.getString(R.string.all_solved));
 				}
-				
-				int unsolvedCount = puzzleCount - solvedCount;
 				sb.append(c.getString(R.string.n_unsolved, unsolvedCount));
 			}
-
-			if (playingCount != 0 || solvedCount != 0) {
+			
+			if (playingCount != 0 || unsolvedCount != 0) {
 				sb.append(")");
 			}
 		}

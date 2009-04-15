@@ -10,7 +10,9 @@ import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -92,6 +94,8 @@ public class SudokuListActivity extends ListActivity {
 			@Override
 			public boolean setViewValue(View view, Cursor c, int columnIndex) {
 
+				int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
+				
 				TextView label = null;
 
 				switch (view.getId()) {
@@ -107,7 +111,6 @@ public class SudokuListActivity extends ListActivity {
 					((SudokuBoardView) view).setCells(cells);
 					break;
 				case R.id.state:
-					int state = c.getInt(columnIndex);
 					label = ((TextView) view);
 					String stateString = null;
 					switch (state) {
@@ -121,6 +124,12 @@ public class SudokuListActivity extends ListActivity {
 					label.setVisibility(stateString == null ? View.GONE
 							: View.VISIBLE);
 					label.setText(stateString);
+					if (state == SudokuGame.GAME_STATE_COMPLETED) {
+						// TODO: read colors from android resources
+						label.setTextColor(Color.rgb(187, 187, 187));
+					} else {
+						//label.setTextColor(SudokuListActivity.this.getResources().getColor(R.));
+					}
 					break;
 				case R.id.time:
 					long time = c.getLong(columnIndex);
@@ -132,6 +141,12 @@ public class SudokuListActivity extends ListActivity {
 					label.setVisibility(timeString == null ? View.GONE
 							: View.VISIBLE);
 					label.setText(timeString);
+					if (state == SudokuGame.GAME_STATE_COMPLETED) {
+						// TODO: read colors from android resources
+						label.setTextColor(Color.rgb(187, 187, 187));
+					} else {
+						label.setTextColor(Color.rgb(255, 255, 255));
+					}
 					break;
 				case R.id.last_played:
 					long lastPlayed = c.getLong(columnIndex);
