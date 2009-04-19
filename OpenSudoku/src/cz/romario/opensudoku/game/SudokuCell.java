@@ -16,9 +16,9 @@ public class SudokuCell implements Parcelable {
 	// if cell is included in collection, here are some information about cell's position
 	private int mRowIndex = -1;
 	private int mColumnIndex = -1;
-	private SudokuCellGroup mSector; // sector to which cell belongs
-	private SudokuCellGroup mRow; // row to which cell belongs
-	private SudokuCellGroup mColumn; // column to which cell belongs
+	private SudokuCellGroup mSector; // sector containing this cell
+	private SudokuCellGroup mRow; // row containing this cell
+	private SudokuCellGroup mColumn; // column containing this cell
 	
 	private int mValue;
 	private String mNote = "";
@@ -74,7 +74,7 @@ public class SudokuCell implements Parcelable {
 	}
 	
 	/**
-	 * Returns sector to which this cell belongs. Sector is 3x3 group of cells.
+	 * Returns sector containing this cell. Sector is 3x3 group of cells.
 	 * 
 	 * @return
 	 */
@@ -83,7 +83,9 @@ public class SudokuCell implements Parcelable {
 	}
 	
 	/**
-	 * TODO: This sounds weird, correct it before commit: Return row to which this cell belongs.
+	 * Returns row containing this cell.
+	 * 
+	 * 
 	 * 
 	 * 
 	 * @return
@@ -93,7 +95,7 @@ public class SudokuCell implements Parcelable {
 	}
 
 	/**
-	 * Returns column to which this cell belongs.
+	 * Returns column containing this cell.
 	 * 
 	 * @return
 	 */
@@ -183,7 +185,6 @@ public class SudokuCell implements Parcelable {
 	
 	@Override
 	public int describeContents() {
-		// TODO nevim k cemu je
 		return 0;
 	}
 

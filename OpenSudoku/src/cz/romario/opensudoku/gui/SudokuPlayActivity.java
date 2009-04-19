@@ -24,9 +24,6 @@ import cz.romario.opensudoku.gui.EditCellDialog.OnNumberEditListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 
 /*
- * TODO:
- * - timer does not work properly
- * - sudoku list (v detailu stav, cas a tak)
  */
 public class SudokuPlayActivity extends Activity{
 	
@@ -141,7 +138,6 @@ public class SudokuPlayActivity extends Activity{
         .setShortcut('1', 'u')
         .setIcon(android.R.drawable.ic_menu_revert);
 		
-		// TODO: I should really get my own icons ;-)
         menu.add(0, MENU_ITEM_CLEAR_ALL_NOTES, 0, R.string.clear_all_notes)
         .setShortcut('3', 'a')
         .setIcon(android.R.drawable.ic_menu_delete);

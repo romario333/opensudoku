@@ -144,7 +144,6 @@ public class FolderListActivity extends ListActivity {
 	 * 
 	 */
     private void showAddFolderDialog() {
-		// TODO: enter should act as Save button
 		LayoutInflater factory = LayoutInflater.from(this);
         final View nameView = factory.inflate(R.layout.folder_name, null);
         final TextView nameInput = (TextView)nameView.findViewById(R.id.name);
@@ -213,6 +212,7 @@ public class FolderListActivity extends ListActivity {
         .setMessage(R.string.delete_folder_confirm)
         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
+            	// TODO: this could take a while, I should show progress dialog
             	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
             	db.deleteFolder(folderToDeleteId);
             	fillData();

@@ -45,6 +45,8 @@ public class SudokuBoardView extends View {
 	private SudokuGame mGame;
 	private SudokuCellCollection mCells;
 	
+	private int mScreenOrientation = -1;
+	
 	private OnCellTapListener mOnCellTapListener;
 	
 	public SudokuBoardView(Context context) {
@@ -121,7 +123,6 @@ public class SudokuBoardView extends View {
 		mSelectedPaint.setAlpha(100);
 	}
 
-	private int screenOrientation = -1;
 	/**
 	 * Ensures that editCellDialog exists and is properly initialized.
 	 * 
@@ -129,14 +130,12 @@ public class SudokuBoardView extends View {
 	 */
 	private void ensureEditCellDialog() {
 		if (mEditCellDialog == null) {
-			if (screenOrientation == -1) {
-				//WindowManager wm = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
-				//screenOrientation = wm.getDefaultDisplay().getOrientation();
-				screenOrientation = getResources().getConfiguration().orientation;
+			if (mScreenOrientation == -1) {
+				mScreenOrientation = getResources().getConfiguration().orientation;
 			}
 			
 			// TODO: EditCellDialog is not ready for landscape
-			if (screenOrientation != Configuration.ORIENTATION_LANDSCAPE) {
+			if (mScreenOrientation != Configuration.ORIENTATION_LANDSCAPE) {
 				mEditCellDialog = new EditCellDialog(getContext());
 		        mEditCellDialog.setOnNumberEditListener(onNumberEditListener);
 		        mEditCellDialog.setOnNoteEditListener(onNoteEditListener);
@@ -172,7 +171,7 @@ public class SudokuBoardView extends View {
         }
         
         // sudoku will always be square
-        // TODO: predpokladam ze vyska px je stejna jako sirka
+        // TODO: I'm expecting pixel's width to be same as height
         int size = Math.min(width, height);
         width = size;
         height = size;
@@ -180,7 +179,7 @@ public class SudokuBoardView extends View {
         mCellWidth = width / 9;
         mCellHeight = height / 9;
 
-        // TODO: zohlednovat padding
+        // TODO: padding should not be hardcoded (+ 1)
         setMeasuredDimension(mCellWidth * 9 + 1, mCellHeight * 9 + 1);
         
         mNumberPaint.setTextSize(mCellHeight * 0.75f);

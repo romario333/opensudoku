@@ -93,7 +93,6 @@ public class SudokuEditActivity extends Activity {
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 		
 		outState.putParcelable("cells", mBoard.getCells());
@@ -109,7 +108,7 @@ public class SudokuEditActivity extends Activity {
 			
 			switch (mState) {
 			case STATE_EDIT:
-				// TODO: figure out how to handle edit properly
+				// TODO: figure out how to handle edit properly - what to do with cell's editable state?
 				SudokuGame game = mSudokuDB.getSudoku(mSudokuID);
 				game.setCells(cells);
 				mSudokuDB.updateSudoku(game);

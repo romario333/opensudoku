@@ -2,7 +2,6 @@ package cz.romario.opensudoku.game.command;
 
 import cz.romario.opensudoku.game.SudokuCell;
 
-// TODO: How will I serialize this?
 public class SetCellValueCommand implements Command {
 
 	private SudokuCell mCell;

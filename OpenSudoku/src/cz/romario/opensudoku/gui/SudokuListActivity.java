@@ -101,8 +101,7 @@ public class SudokuListActivity extends ListActivity {
 				switch (view.getId()) {
 				case R.id.sudoku_board:
 					String data = c.getString(columnIndex);
-					// TODO: porad by slo jeste zrychlit, nemusim volat
-					// initCollection, cist poznamky
+					// TODO: still can be faster, I don't have to call initCollection and read notes
 					SudokuCellCollection cells = SudokuCellCollection
 							.deserialize(data);
 					SudokuBoardView board = (SudokuBoardView) view;
@@ -366,9 +365,6 @@ public class SudokuListActivity extends ListActivity {
 			return;
 		}
 
-		// TODO:
-		// Cursor cursor = (Cursor)
-		// sudokuList.getAdapter().getItem(info.position);
 		Cursor cursor = (Cursor) getListAdapter().getItem(info.position);
 		if (cursor == null) {
 			// For some reason the requested item isn't available, do nothing

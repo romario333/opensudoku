@@ -68,8 +68,6 @@ public class SudokuCellCollection  implements Parcelable {
 		return debugGame;
 	}
 	
-
-	// TODO: SudokuCellCollection should be collection, implement Enumerable or something like that
 	public SudokuCell[][] getCells() {
 		return mCells;
 	}
@@ -191,7 +189,7 @@ public class SudokuCellCollection  implements Parcelable {
 	 * Marks all cells as editable.
 	 */
 	public void markAllCellsAsEditable() {
-		// TODO: iterator
+		// TODO: implement iterator? (consider also performance)
 		for (int r=0; r<SUDOKU_SIZE; r++) {
 			for (int c=0; c<SUDOKU_SIZE; c++){
 				SudokuCell cell = mCells[r][c];
@@ -204,7 +202,6 @@ public class SudokuCellCollection  implements Parcelable {
 	 * Marks all filled cells (cells with value other than 0) as not editable.
 	 */
 	public void markFilledCellsAsNotEditable() {
-		// TODO: iterator
 		for (int r=0; r<SUDOKU_SIZE; r++) {
 			for (int c=0; c<SUDOKU_SIZE; c++){
 				SudokuCell cell = mCells[r][c];
@@ -217,7 +214,6 @@ public class SudokuCellCollection  implements Parcelable {
 	 * Clears all notes attached to cells in the collection.
 	 */
 	public void clearAllNotes() {
-		// TODO: iterator
 		for (int r=0; r<SUDOKU_SIZE; r++) {
 			for (int c=0; c<SUDOKU_SIZE; c++){
 				SudokuCell cell = mCells[r][c];

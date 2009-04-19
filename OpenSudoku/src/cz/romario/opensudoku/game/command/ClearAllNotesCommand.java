@@ -2,7 +2,7 @@ package cz.romario.opensudoku.game.command;
 
 import cz.romario.opensudoku.game.SudokuCellCollection;
 
-// TODO: complete
+// TODO: complete this
 public class ClearAllNotesCommand implements Command {
 
 	private SudokuCellCollection mCells;
@@ -15,12 +15,10 @@ public class ClearAllNotesCommand implements Command {
 	@Override
 	public void execute() {
 		
-		
 	}
 
 	@Override
 	public void undo() {
-		// TODO Auto-generated method stub
 		
 	}
 

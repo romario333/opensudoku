@@ -147,6 +147,8 @@ public class SudokuGame implements Parcelable {
 	 * Undo last command.
 	 */
 	public void undo() {
+		// TODO: undo stack should be saved to activity's saved state
+		// TODO: redo
 		if (!mUndoStack.empty()) {
 			Command c = mUndoStack.pop();
 			c.undo();
@@ -195,7 +197,6 @@ public class SudokuGame implements Parcelable {
 	 * Resets game.
 	 */
 	public void reset() {
-		// TODO: iterator
 		for (int r=0; r<SudokuCellCollection.SUDOKU_SIZE; r++) {
 			for (int c=0; c<SudokuCellCollection.SUDOKU_SIZE; c++) {
 				SudokuCell cell = mCells.getCell(r, c);
@@ -278,7 +279,6 @@ public class SudokuGame implements Parcelable {
 		dest.writeInt(mState);
 		dest.writeLong(mTime);
 		dest.writeLong(mLastPlayed.getTime());
-		// TODO: zas ty flags co nevim k cemu jsou
 		dest.writeParcelable(mCells, flags);
 	}
 

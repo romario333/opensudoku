@@ -186,11 +186,13 @@ public class SudokuDatabase {
      * @param folderID Primary key of folder.
      */
     public void deleteFolder(long folderID) {
-    	// TODO: deal somehow with puzzles stored in this folder
     	SQLiteDatabase db = null;
     	try {
 	    	db = mOpenHelper.getWritableDatabase();
-	        db.delete(FOLDER_TABLE_NAME, FolderColumns._ID + "=" + folderID, null);
+	        // delete all puzzles in folder we are going to delete
+	    	db.delete(SUDOKU_TABLE_NAME, SudokuColumns.FOLDER_ID + "=" + folderID, null);
+	    	// delete the folder
+	    	db.delete(FOLDER_TABLE_NAME, FolderColumns._ID + "=" + folderID, null);
 	    } finally {
 	    	if (db != null) db.close();
 	    }
