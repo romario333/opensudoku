@@ -99,7 +99,7 @@ public class SudokuDatabase {
 	    	db = mOpenHelper.getReadableDatabase();
 	        
 	        // selectionArgs: You may include ?s in where clause in the query, which will be replaced by the values from selectionArgs. The values will be bound as Strings.
-	    	String q = "select folder._id as _id, folder.name as name, sudoku.state as state, count(sudoku.state) as count from folder left join sudoku on folder._id = sudoku.folder_id where folder._id = " + folderID + " group by folder._id, sudoku.state;";
+	    	String q = "select folder._id as _id, folder.name as name, sudoku.state as state, count(sudoku.state) as count from folder left join sudoku on folder._id = sudoku.folder_id where folder._id = " + folderID + " group by sudoku.state;";
 	        c = db.rawQuery(q, null);
 	        
 	        while (c.moveToNext()) {
@@ -325,6 +325,15 @@ public class SudokuDatabase {
 	    } finally {
 	    	if (db != null) db.close();
 	    }
+    }
+    
+    public void generateDebugPuzzles(int numOfFolders, int puzzlesPerFolder) {
+    	for (int f=0; f<numOfFolders; f++) {
+    		long folderID = insertFolder("debug" + f);
+    		for (int p=0; p<puzzlesPerFolder; p++) {
+    			insertSudoku(folderID, SudokuCellCollection.createDebugGame());
+    		}
+    	}
     }
     
     static {

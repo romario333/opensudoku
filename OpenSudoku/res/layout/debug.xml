@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    android:gravity="center_horizontal">
+	<LinearLayout 
+	    android:orientation="vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:gravity="center_horizontal">
+	    <EditText 
+	    	android:id="@+id/num_of_folders"
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:text="1"
+	         />
+	    <EditText 
+	    	android:id="@+id/num_of_puzzles"
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:text="1"
+	         />
+	    
+	    <Button
+		    android:id="@+id/generate_puzzles"
+		    android:layout_width="fill_parent" 
+		    android:layout_height="wrap_content"
+		    android:text="Generate puzzles" 
+			/> 
+	</LinearLayout>
+</ScrollView>

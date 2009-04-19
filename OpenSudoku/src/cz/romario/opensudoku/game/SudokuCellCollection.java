@@ -46,6 +46,28 @@ public class SudokuCellCollection  implements Parcelable {
 		
 		return new SudokuCellCollection(cells);
 	}
+	
+	/**
+	 * Generates debug game.
+	 * 
+	 * @return
+	 */
+	public static SudokuCellCollection createDebugGame() {
+		SudokuCellCollection debugGame = new SudokuCellCollection(new SudokuCell[][] {
+                { new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(4), new SudokuCell(5), new SudokuCell(6), new SudokuCell(7), new SudokuCell(8), new SudokuCell(9),},
+                { new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(7), new SudokuCell(8), new SudokuCell(9), new SudokuCell(1), new SudokuCell(2), new SudokuCell(3),},
+                { new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(1), new SudokuCell(2), new SudokuCell(3), new SudokuCell(4), new SudokuCell(5), new SudokuCell(6),},
+                { new SudokuCell(2), new SudokuCell(3), new SudokuCell(4), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(8), new SudokuCell(9), new SudokuCell(1),},
+                { new SudokuCell(5), new SudokuCell(6), new SudokuCell(7), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(2), new SudokuCell(3), new SudokuCell(4),},
+                { new SudokuCell(8), new SudokuCell(9), new SudokuCell(1), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(5), new SudokuCell(6), new SudokuCell(7),},
+                { new SudokuCell(3), new SudokuCell(4), new SudokuCell(5), new SudokuCell(6), new SudokuCell(7), new SudokuCell(8), new SudokuCell(9), new SudokuCell(1), new SudokuCell(2),},
+                { new SudokuCell(6), new SudokuCell(7), new SudokuCell(8), new SudokuCell(9), new SudokuCell(1), new SudokuCell(2), new SudokuCell(3), new SudokuCell(4), new SudokuCell(5),},
+                { new SudokuCell(9), new SudokuCell(1), new SudokuCell(2), new SudokuCell(3), new SudokuCell(4), new SudokuCell(5), new SudokuCell(6), new SudokuCell(7), new SudokuCell(8),},
+        });
+		debugGame.markFilledCellsAsNotEditable();
+		return debugGame;
+	}
+	
 
 	// TODO: SudokuCellCollection should be collection, implement Enumerable or something like that
 	public SudokuCell[][] getCells() {

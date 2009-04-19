@@ -31,6 +31,11 @@ public class SudokuCell implements Parcelable {
 		invalid = false;
 	}
 	
+	public SudokuCell(int value) {
+		this();
+		this.value = value;
+	}
+	
 	/**
 	 * Gets cell's row index within SudokuCellCollection.
 	 * @return

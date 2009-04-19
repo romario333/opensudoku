@@ -31,6 +31,7 @@ public class FolderListActivity extends ListActivity {
     public static final int MENU_ITEM_RENAME = Menu.FIRST + 1;
     public static final int MENU_ITEM_DELETE = Menu.FIRST + 2;
     public static final int MENU_ITEM_ABOUT = Menu.FIRST + 3;
+    public static final int MENU_ITEM_DEBUG = Menu.FIRST + 4;
     
     private static final String TAG = "FolderListActivity";
     
@@ -80,6 +81,9 @@ public class FolderListActivity extends ListActivity {
         .setShortcut('1', 'h')
         .setIcon(android.R.drawable.ic_menu_info_details);
 
+        // TODO: visible only in debug mode
+        menu.add(0, MENU_ITEM_DEBUG, 2, "debug");
+        
         // Generate any additional actions that can be performed on the
         // overall list.  In a normal install, there are no additional
         // actions found here, but this allows other applications to extend
@@ -255,6 +259,11 @@ public class FolderListActivity extends ListActivity {
             return true;
         case MENU_ITEM_ABOUT:
         	showAboutDialog();
+        	return true;
+        case MENU_ITEM_DEBUG:
+        	Intent i = new Intent();
+        	i.setClass(this, DebugActivity.class);
+        	startActivity(i);
         	return true;
         }
         return super.onOptionsItemSelected(item);

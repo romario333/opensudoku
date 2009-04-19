@@ -29,6 +29,8 @@
         <activity android:name=".gui.GameSettingsActivity"
                   android:label="@string/game_settings">
         </activity>
-        
+        <activity android:name=".gui.DebugActivity"
+                  android:label="debug">
+        </activity>
     </application>
 </manifest> 
