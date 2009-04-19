@@ -14,26 +14,26 @@ import android.os.Parcelable;
  */
 public class SudokuCell implements Parcelable {
 	// if cell is included in collection, here are some information about cell's position
-	private int rowIndex = -1;
-	private int columnIndex = -1;
-	private SudokuCellGroup sector; // sector to which cell belongs
-	private SudokuCellGroup row; // row to which cell belongs
-	private SudokuCellGroup column; // column to which cell belongs
+	private int mRowIndex = -1;
+	private int mColumnIndex = -1;
+	private SudokuCellGroup mSector; // sector to which cell belongs
+	private SudokuCellGroup mRow; // row to which cell belongs
+	private SudokuCellGroup mColumn; // column to which cell belongs
 	
-	private int value;
-	private String note = "";
-	private Boolean editable = false;
-	private Boolean invalid = false;
+	private int mValue;
+	private String mNote = "";
+	private Boolean mEditable = false;
+	private Boolean mInvalid = false;
 	
 	public SudokuCell() {
-		note = "";
-		editable = true;
-		invalid = false;
+		mNote = "";
+		mEditable = true;
+		mInvalid = false;
 	}
 	
 	public SudokuCell(int value) {
 		this();
-		this.value = value;
+		mValue = value;
 	}
 	
 	/**
@@ -41,7 +41,7 @@ public class SudokuCell implements Parcelable {
 	 * @return
 	 */
 	public int getRowIndex() {
-		return rowIndex;
+		return mRowIndex;
 	}
 	
 	/**
@@ -49,7 +49,7 @@ public class SudokuCell implements Parcelable {
 	 * @return
 	 */
 	public int getColumnIndex() {
-		return columnIndex;
+		return mColumnIndex;
 	}
 	
 	/**
@@ -62,13 +62,11 @@ public class SudokuCell implements Parcelable {
 	 * @param column Reference to column group in which cell is included. 
 	 */
 	protected void initCollection(int rowIndex, int colIndex, SudokuCellGroup sector, SudokuCellGroup row, SudokuCellGroup column) {
-		
-		
-		this.rowIndex = rowIndex;
-		this.columnIndex = colIndex;
-		this.sector = sector;
-		this.row = row;
-		this.column = column;
+		mRowIndex = rowIndex;
+		mColumnIndex = colIndex;
+		mSector = sector;
+		mRow = row;
+		mColumn = column;
 		
 		sector.addCell(this);
 		row.addCell(this);
@@ -81,7 +79,7 @@ public class SudokuCell implements Parcelable {
 	 * @return
 	 */
 	public SudokuCellGroup getSector() {
-		return sector;
+		return mSector;
 	}
 	
 	/**
@@ -91,7 +89,7 @@ public class SudokuCell implements Parcelable {
 	 * @return
 	 */
 	public SudokuCellGroup getRow() {
-		return row;
+		return mRow;
 	}
 
 	/**
@@ -100,7 +98,7 @@ public class SudokuCell implements Parcelable {
 	 * @return
 	 */
 	public SudokuCellGroup getColumn() {
-		return column;
+		return mColumn;
 	}
 	
 	/**
@@ -111,7 +109,7 @@ public class SudokuCell implements Parcelable {
 	public void setValue(int value) {
 		assert value >= 0 && value < 10;
 		
-		this.value = value;
+		mValue = value;
 	}
 
 	/**
@@ -119,7 +117,7 @@ public class SudokuCell implements Parcelable {
 	 * @return
 	 */
 	public int getValue() {
-		return value;
+		return mValue;
 	}
 
 	/**
@@ -128,7 +126,7 @@ public class SudokuCell implements Parcelable {
 	 * @param notes
 	 */
 	public void setNote(String note) {
-		this.note = note;
+		mNote = note;
 	}
 
 	/**
@@ -137,7 +135,7 @@ public class SudokuCell implements Parcelable {
 	 * @return
 	 */
 	public String getNote() {
-		return note;
+		return mNote;
 	}
 	
 	/**
@@ -146,31 +144,31 @@ public class SudokuCell implements Parcelable {
 	 * @return
 	 */
 	public boolean hasNote() {
-		return note != null && note != "";
+		return mNote != null && mNote != "";
 	}
 
 	public Boolean getEditable() {
-		return editable;
+		return mEditable;
 	}
 	
 	public void setEditable(Boolean editable) {
-		this.editable = editable;
+		mEditable = editable;
 	}
 	
 	public void setInvalid(Boolean invalid) {
-		this.invalid = invalid;
+		mInvalid = invalid;
 	}
 
 	public Boolean getInvalid() {
-		return invalid;
+		return mInvalid;
 	}
 	
 	// constructor for Parcelable
 	private SudokuCell(Parcel in) {
-		value = in.readInt();
-		note = in.readString();
-		editable = (Boolean)in.readValue(null);
-		invalid = (Boolean)in.readValue(null);
+		mValue = in.readInt();
+		mNote = in.readString();
+		mEditable = (Boolean)in.readValue(null);
+		mInvalid = (Boolean)in.readValue(null);
 	}
 
 	public static final Parcelable.Creator<SudokuCell> CREATOR = new Parcelable.Creator<SudokuCell>() {
@@ -191,9 +189,9 @@ public class SudokuCell implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeInt(value);
-		dest.writeString(note);
-		dest.writeValue(editable);
-		dest.writeValue(invalid);
+		dest.writeInt(mValue);
+		dest.writeString(mNote);
+		dest.writeValue(mEditable);
+		dest.writeValue(mInvalid);
 	}
 }

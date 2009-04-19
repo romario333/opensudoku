@@ -139,8 +139,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     
     private void insertSudoku(SQLiteDatabase db, long folderID, long sudokuID, String sudokuName, String data) {
-    	long now = System.currentTimeMillis();
-    	
     	String[] values = data.split(" ");
     	
     	SudokuCellCollection cellCollection = SudokuCellCollection.createEmpty();

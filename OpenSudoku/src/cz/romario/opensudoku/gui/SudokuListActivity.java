@@ -46,17 +46,17 @@ public class SudokuListActivity extends ListActivity {
 	private static final String TAG = "SudokuListActivity";
 
 	// TODO: duplicated code
-	private StringBuilder timeText;
-	private Formatter gameTimeFormatter;
-	private DateFormat dateTimeFormatter = DateFormat.getDateTimeInstance(
+	private StringBuilder mTimeText;
+	private Formatter mGameTimeFormatter;
+	private DateFormat mDateTimeFormatter = DateFormat.getDateTimeInstance(
 			DateFormat.SHORT, DateFormat.SHORT);
-	private DateFormat timeFormatter = DateFormat
+	private DateFormat mTimeFormatter = DateFormat
 			.getTimeInstance(DateFormat.SHORT);
 
-	private SimpleCursorAdapter adapter;
-	private Cursor cursor;
+	private SimpleCursorAdapter mAdapter;
+	private Cursor mCursor;
 
-	private long folderID;
+	private long mFolderID;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,7 @@ public class SudokuListActivity extends ListActivity {
 
 		Intent intent = getIntent();
 		if (intent.hasExtra(EXTRAS_FOLDER_ID)) {
-			folderID = intent.getLongExtra(EXTRAS_FOLDER_ID, 0);
+			mFolderID = intent.getLongExtra(EXTRAS_FOLDER_ID, 0);
 		} else {
 			Log.d(TAG, "No 'folder_id' extra provided, exiting.");
 			finish();
@@ -78,19 +78,19 @@ public class SudokuListActivity extends ListActivity {
 
 		SudokuDatabase sudokuDB = new SudokuDatabase(this);
 
-		timeText = new StringBuilder();
-		gameTimeFormatter = new Formatter(timeText);
+		mTimeText = new StringBuilder();
+		mGameTimeFormatter = new Formatter(mTimeText);
 
-		cursor = sudokuDB.getSudokuList(folderID);
-		startManagingCursor(cursor);
-		adapter = new SimpleCursorAdapter(this, R.layout.sudoku_list_item,
-				cursor, new String[] { SudokuColumns.DATA, SudokuColumns.STATE,
+		mCursor = sudokuDB.getSudokuList(mFolderID);
+		startManagingCursor(mCursor);
+		mAdapter = new SimpleCursorAdapter(this, R.layout.sudoku_list_item,
+				mCursor, new String[] { SudokuColumns.DATA, SudokuColumns.STATE,
 						SudokuColumns.TIME, SudokuColumns.LAST_PLAYED,
 						SudokuColumns.CREATED, SudokuColumns.PUZZLE_NOTE },
 				new int[] { R.id.sudoku_board, R.id.state, R.id.time,
 						R.id.last_played, R.id.created, R.id.note });
 
-		adapter.setViewBinder(new ViewBinder() {
+		mAdapter.setViewBinder(new ViewBinder() {
 			@Override
 			public boolean setViewValue(View view, Cursor c, int columnIndex) {
 
@@ -191,7 +191,7 @@ public class SudokuListActivity extends ListActivity {
 			}
 		});
 
-		setListAdapter(adapter);
+		setListAdapter(mAdapter);
 	}
 
 	@Override
@@ -209,19 +209,19 @@ public class SudokuListActivity extends ListActivity {
 		updateTitle();
 		
 		// update data bound to the list
-		cursor.requery();
+		mCursor.requery();
 	}
 	
 	private void updateTitle() {
 		SudokuDatabase sudokuDB = new SudokuDatabase(this);
-		FolderInfo folder = sudokuDB.getFolder(folderID);
-		setTitle(folder.name + " - " + sudokuDB.getFolder(folderID).getDetail(this));
+		FolderInfo folder = sudokuDB.getFolder(mFolderID);
+		setTitle(folder.name + " - " + sudokuDB.getFolder(mFolderID).getDetail(this));
 	}
 
 	private String getTime(long time) {
-		timeText.setLength(0);
-		gameTimeFormatter.format("%02d:%02d", time / 60000, time / 1000 % 60);
-		return timeText.toString();
+		mTimeText.setLength(0);
+		mGameTimeFormatter.format("%02d:%02d", time / 60000, time / 1000 % 60);
+		return mTimeText.toString();
 	}
 
 	private String getDateAndTimeForHumans(long datetime) {
@@ -234,11 +234,11 @@ public class SudokuListActivity extends ListActivity {
 				- (1000 * 60 * 60 * 24));
 
 		if (date.after(today)) {
-			return getString(R.string.at_time, timeFormatter.format(date));
+			return getString(R.string.at_time, mTimeFormatter.format(date));
 		} else if (date.after(yesterday)) {
-			return getString(R.string.yesterday_at_time, timeFormatter.format(date));
+			return getString(R.string.yesterday_at_time, mTimeFormatter.format(date));
 		} else {
-			return getString(R.string.on_date, dateTimeFormatter.format(date));
+			return getString(R.string.on_date, mDateTimeFormatter.format(date));
 		}
 
 	}
@@ -426,7 +426,7 @@ public class SudokuListActivity extends ListActivity {
 			// Launch activity to insert a new item
 			Intent i = new Intent(this, SudokuEditActivity.class);
 			i.setAction(Intent.ACTION_INSERT);
-			i.putExtra(SudokuEditActivity.EXTRAS_FOLDER_ID, folderID);
+			i.putExtra(SudokuEditActivity.EXTRAS_FOLDER_ID, mFolderID);
 			startActivity(i);
 			return true;
 		}

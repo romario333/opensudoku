@@ -22,9 +22,9 @@ abstract class Timer
 	 * @param	ival			Tick interval in ms.
 	 */
 	public Timer(long ival) {
-		tickInterval = ival;
-		isRunning = false;
-		accumTime = 0;
+		mTickInterval = ival;
+		mIsRunning = false;
+		mAccumTime = 0;
 	}
 	
 
@@ -40,19 +40,19 @@ abstract class Timer
 	 * must then call super.start().
 	 */
 	public void start() {
-		if (isRunning)
+		if (mIsRunning)
 			return;
 		
-		isRunning = true;
+		mIsRunning = true;
 		
 		long now = SystemClock.uptimeMillis();
 		
 		// Start accumulating time again.
-		lastLogTime = now;
+		mLastLogTime = now;
 		
 		// Schedule the first event at once.
-		nextTime = now;
-		postAtTime(runner, nextTime);
+		mNextTime = now;
+		postAtTime(runner, mNextTime);
 	}
 
 
@@ -64,11 +64,11 @@ abstract class Timer
 	 * must then call super.stop().
 	 */
 	public void stop() {
-		if (isRunning) {
-			isRunning = false;
+		if (mIsRunning) {
+			mIsRunning = false;
 			long now = SystemClock.uptimeMillis();
-			accumTime += now - lastLogTime;
-			lastLogTime = now;
+			mAccumTime += now - mLastLogTime;
+			mLastLogTime = now;
 		}
 	}
 
@@ -78,8 +78,8 @@ abstract class Timer
 	 */
 	public final void reset() {
 		stop();
-		tickCount = 0;
-		accumTime = 0;
+		mTickCount = 0;
+		mAccumTime = 0;
 	}
 
 
@@ -89,7 +89,7 @@ abstract class Timer
 	 * @return					true iff we're running.
 	 */
 	public final boolean isRunning() {
-		return isRunning;
+		return mIsRunning;
 	}
 	
 
@@ -99,7 +99,7 @@ abstract class Timer
 	 * @return					How long this timer has been running, in ms.
 	 */
 	public final long getTime() {
-		return accumTime;
+		return mAccumTime;
 	}
 	
 	// ******************************************************************** //
@@ -135,23 +135,23 @@ abstract class Timer
 	private final Runnable runner = new Runnable() {
 		
 		public final void run() {
-			if (isRunning) {
+			if (mIsRunning) {
 				long now = SystemClock.uptimeMillis();
 
 				// Add up the time since the last step.
-				accumTime += now - lastLogTime;
-				lastLogTime = now;
+				mAccumTime += now - mLastLogTime;
+				mLastLogTime = now;
 				
-				if (!step(tickCount++, accumTime)) {
+				if (!step(mTickCount++, mAccumTime)) {
 					// Schedule the next.  If we've got behind, schedule
 					// it for a tick after now.  (Otherwise we'd end
 					// up with a zillion events queued.)
-					nextTime += tickInterval;
-					if (nextTime <= now)
-						nextTime += tickInterval;
-					postAtTime(runner, nextTime);
+					mNextTime += mTickInterval;
+					if (mNextTime <= now)
+						mNextTime += mTickInterval;
+					postAtTime(runner, mNextTime);
 				} else {
-					isRunning = false;
+					mIsRunning = false;
 					done();
 				}
 			}
@@ -174,16 +174,16 @@ abstract class Timer
      */
     void saveState(Bundle outState) {
     	// Accumulate all time up to now, so we know where we're saving.
-    	if (isRunning) {
+    	if (mIsRunning) {
     		long now = SystemClock.uptimeMillis();
-    		accumTime += now - lastLogTime;
-    		lastLogTime = now;
+    		mAccumTime += now - mLastLogTime;
+    		mLastLogTime = now;
     	}
 
-    	outState.putLong("tickInterval", tickInterval);
-    	outState.putBoolean("isRunning", isRunning);
-    	outState.putInt("tickCount", tickCount);
-    	outState.putLong("accumTime", accumTime);
+    	outState.putLong("tickInterval", mTickInterval);
+    	outState.putBoolean("isRunning", mIsRunning);
+    	outState.putInt("tickCount", mTickCount);
+    	outState.putLong("accumTime", mAccumTime);
     }
 
     
@@ -212,18 +212,18 @@ abstract class Timer
      * 						current configuration.
      */
     boolean restoreState(Bundle map, boolean run) {
-    	tickInterval = map.getLong("tickInterval");
-    	isRunning = map.getBoolean("isRunning");
-    	tickCount = map.getInt("tickCount");
-    	accumTime = map.getLong("accumTime");
-		lastLogTime = SystemClock.uptimeMillis();
+    	mTickInterval = map.getLong("tickInterval");
+    	mIsRunning = map.getBoolean("isRunning");
+    	mTickCount = map.getInt("tickCount");
+    	mAccumTime = map.getLong("accumTime");
+		mLastLogTime = SystemClock.uptimeMillis();
 
     	// If we were running, restart if requested, else stop.
-    	if (isRunning) {
+    	if (mIsRunning) {
     		if (run)
         		start();
     		else
-    			isRunning = false;
+    			mIsRunning = false;
     	}
 
         return true;
@@ -235,24 +235,24 @@ abstract class Timer
     // ******************************************************************** //
 
 	// The tick interval in ms.
-	private long tickInterval = 0;
+	private long mTickInterval = 0;
 
 	// true iff the timer is running.
-	private boolean isRunning = false;
+	private boolean mIsRunning = false;
 
 	// Number of times step() has been called.
-	private int tickCount;
+	private int mTickCount;
 
 	// Time at which to execute the next step.  We schedule each
 	// step at this plus x ms; this gives us an even execution rate.
-	private long nextTime;
+	private long mNextTime;
 
 	// The accumulated time in ms for which this timer has been running.
 	// Increments between start() and stop(); start(true) resets it.
-	private long accumTime;
+	private long mAccumTime;
 
 	// The time at which we last added to accumTime.
-	private long lastLogTime;
+	private long mLastLogTime;
 
 }
 

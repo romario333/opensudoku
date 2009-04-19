@@ -24,28 +24,28 @@ import android.view.WindowManager;
  */
 public class SudokuBoardView extends View {
 
-	private int cellWidth;
-	private int cellHeight;
+	private int mCellWidth;
+	private int mCellHeight;
 	
-	private Paint linePaint;
-	private Paint numberPaint;
-	private Paint notePaint;
-	private int numberLeft;
-	private int numberTop;
-	private Paint readonlyPaint;
-	private Paint touchedPaint;
-	private Paint selectedPaint;
+	private Paint mLinePaint;
+	private Paint mNumberPaint;
+	private Paint mNotePaint;
+	private int mNumberLeft;
+	private int mNumberTop;
+	private Paint mReadonlyPaint;
+	private Paint mTouchedPaint;
+	private Paint mSelectedPaint;
 	
-	private SudokuCell touchedCell;
-	private SudokuCell selectedCell;
-	public boolean readonly = false;
+	private SudokuCell mTouchedCell;
+	private SudokuCell mSelectedCell;
+	public boolean mReadonly = false;
 	
-	private EditCellDialog editCellDialog;
+	private EditCellDialog mEditCellDialog;
 	
-	private SudokuGame game;
-	private SudokuCellCollection cells;
+	private SudokuGame mGame;
+	private SudokuCellCollection mCells;
 	
-	private OnCellTapListener onCellTapListener;
+	private OnCellTapListener mOnCellTapListener;
 	
 	public SudokuBoardView(Context context) {
 		super(context);
@@ -59,36 +59,36 @@ public class SudokuBoardView extends View {
 	}
 	
 	public void setGame(SudokuGame game) {
-		this.game = game;
+		mGame = game;
 		setCells(game.getCells());
 	}
 
 	public void setCells(SudokuCellCollection cells) {
-		this.cells = cells;
-		if (!this.readonly) {
-			this.selectedCell = this.cells.getCell(0, 0); // first cell will be selected by default
+		mCells = cells;
+		if (!mReadonly) {
+			mSelectedCell = mCells.getCell(0, 0); // first cell will be selected by default
 		}
-		this.invalidate();
+		invalidate();
 	}
 	
 	public SudokuCellCollection getCells() {
-		return cells;
+		return mCells;
 	}
 	
 	public SudokuCell getSelectedCell() {
-		return selectedCell;
+		return mSelectedCell;
 	}
 	
 	public void setReadOnly(boolean readonly) {
-		this.readonly = readonly;
+		mReadonly = readonly;
 	}
 	
 	public boolean getReadOnly() {
-		return readonly;
+		return mReadonly;
 	}
 	
 	public void setOnCellTapListener(OnCellTapListener l) {
-		onCellTapListener = l;
+		mOnCellTapListener = l;
 	}
 	
 	private void initWidget() {
@@ -97,28 +97,28 @@ public class SudokuBoardView extends View {
 		
 		setBackgroundColor(Color.WHITE);
 		
-		linePaint = new Paint();
-		linePaint.setColor(Color.BLACK);
+		mLinePaint = new Paint();
+		mLinePaint.setColor(Color.BLACK);
 		
-		numberPaint = new Paint();
-		numberPaint.setColor(Color.BLACK);
-		numberPaint.setAntiAlias(true);
+		mNumberPaint = new Paint();
+		mNumberPaint.setColor(Color.BLACK);
+		mNumberPaint.setAntiAlias(true);
 
-		notePaint = new Paint();
-		notePaint.setColor(Color.BLACK);
-		notePaint.setAntiAlias(true);
+		mNotePaint = new Paint();
+		mNotePaint.setColor(Color.BLACK);
+		mNotePaint.setAntiAlias(true);
 		
-		readonlyPaint = new Paint();
-		readonlyPaint.setColor(Color.LTGRAY);
+		mReadonlyPaint = new Paint();
+		mReadonlyPaint.setColor(Color.LTGRAY);
 
-		touchedPaint = new Paint();
-		touchedPaint.setColor(Color.rgb(50, 50, 255));
+		mTouchedPaint = new Paint();
+		mTouchedPaint.setColor(Color.rgb(50, 50, 255));
 		//touchedPaint.setColor(Color.rgb(100, 255, 100));
-		touchedPaint.setAlpha(100);
+		mTouchedPaint.setAlpha(100);
 		
-		selectedPaint = new Paint();
-		selectedPaint.setColor(Color.YELLOW);
-		selectedPaint.setAlpha(100);
+		mSelectedPaint = new Paint();
+		mSelectedPaint.setColor(Color.YELLOW);
+		mSelectedPaint.setAlpha(100);
 	}
 
 	private int screenOrientation = -1;
@@ -128,7 +128,7 @@ public class SudokuBoardView extends View {
 	 * @return
 	 */
 	private void ensureEditCellDialog() {
-		if (editCellDialog == null) {
+		if (mEditCellDialog == null) {
 			if (screenOrientation == -1) {
 				//WindowManager wm = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
 				//screenOrientation = wm.getDefaultDisplay().getOrientation();
@@ -137,9 +137,9 @@ public class SudokuBoardView extends View {
 			
 			// TODO: EditCellDialog is not ready for landscape
 			if (screenOrientation != Configuration.ORIENTATION_LANDSCAPE) {
-				editCellDialog = new EditCellDialog(getContext());
-		        editCellDialog.setOnNumberEditListener(onNumberEditListener);
-		        editCellDialog.setOnNoteEditListener(onNoteEditListener);
+				mEditCellDialog = new EditCellDialog(getContext());
+		        mEditCellDialog.setOnNumberEditListener(onNumberEditListener);
+		        mEditCellDialog.setOnNoteEditListener(onNoteEditListener);
 			}
 		}
 		
@@ -177,17 +177,17 @@ public class SudokuBoardView extends View {
         width = size;
         height = size;
         
-        cellWidth = width / 9;
-        cellHeight = height / 9;
+        mCellWidth = width / 9;
+        mCellHeight = height / 9;
 
         // TODO: zohlednovat padding
-        setMeasuredDimension(cellWidth * 9 + 1, cellHeight * 9 + 1);
+        setMeasuredDimension(mCellWidth * 9 + 1, mCellHeight * 9 + 1);
         
-        numberPaint.setTextSize(cellHeight * 0.75f);
-        notePaint.setTextSize(cellHeight / 3f);
+        mNumberPaint.setTextSize(mCellHeight * 0.75f);
+        mNotePaint.setTextSize(mCellHeight / 3f);
         // compute offsets in each cell to center the rendered number
-        numberLeft = (int) ((cellWidth - numberPaint.measureText("9")) / 2);
-        numberTop = (int) ((cellHeight - numberPaint.getTextSize()) / 2);
+        mNumberLeft = (int) ((mCellWidth - mNumberPaint.measureText("9")) / 2);
+        mNumberTop = (int) ((mCellHeight - mNumberPaint.getTextSize()) / 2);
 	}
 	
 	@Override
@@ -199,35 +199,35 @@ public class SudokuBoardView extends View {
 		
 		// draw cells
 		int cellLeft, cellTop;
-		if (cells != null) {
+		if (mCells != null) {
 			
 			// TODO: why?
-			float numberAscent = numberPaint.ascent();
-			float noteAscent = notePaint.ascent();
-			float noteWidth = cellWidth / 3f;
+			float numberAscent = mNumberPaint.ascent();
+			float noteAscent = mNotePaint.ascent();
+			float noteWidth = mCellWidth / 3f;
 			for (int row=0; row<9; row++) {
 				for (int col=0; col<9; col++) {
-					SudokuCell cell = cells.getCell(row, col);
+					SudokuCell cell = mCells.getCell(row, col);
 					
-					cellLeft = col * cellWidth;
-					cellTop = row * cellHeight;
+					cellLeft = col * mCellWidth;
+					cellTop = row * mCellHeight;
 
 					// draw read-only field background
 					if (!cell.getEditable()) {
 						canvas.drawRect(
 								cellLeft, cellTop, 
-								cellLeft + cellWidth, cellTop + cellHeight,
-								readonlyPaint);
+								cellLeft + mCellWidth, cellTop + mCellHeight,
+								mReadonlyPaint);
 					}
 					
 					// draw cell Text
 					int value = cell.getValue();
 					if (value != 0) {
-						numberPaint.setColor(cell.getInvalid() ? Color.RED : Color.BLACK);
+						mNumberPaint.setColor(cell.getInvalid() ? Color.RED : Color.BLACK);
 						canvas.drawText(new Integer(value).toString(),
-								cellLeft + numberLeft, 
-								cellTop + numberTop - numberAscent, 
-								numberPaint);
+								cellLeft + mNumberLeft, 
+								cellTop + mNumberTop - numberAscent, 
+								mNumberPaint);
 					} else {
 						
 						// TODO: this is ugly temporary version
@@ -241,7 +241,7 @@ public class SudokuBoardView extends View {
 										c = 0;
 									}
 									
-									canvas.drawText(number.toString(), cellLeft + c*noteWidth + 2, cellTop - noteAscent + r*noteWidth - 1, notePaint);
+									canvas.drawText(number.toString(), cellLeft + c*noteWidth + 2, cellTop - noteAscent + r*noteWidth - 1, mNotePaint);
 									
 									c++;
 								}
@@ -255,49 +255,49 @@ public class SudokuBoardView extends View {
 			}
 
 			// highlight selected cell
-			if (!readonly && selectedCell != null) {
-				cellLeft = selectedCell.getColumnIndex() * cellWidth;
-				cellTop = selectedCell.getRowIndex() * cellHeight;
+			if (!mReadonly && mSelectedCell != null) {
+				cellLeft = mSelectedCell.getColumnIndex() * mCellWidth;
+				cellTop = mSelectedCell.getRowIndex() * mCellHeight;
 				canvas.drawRect(
 						cellLeft, cellTop, 
-						cellLeft + cellWidth, cellTop + cellHeight,
-						selectedPaint);
+						cellLeft + mCellWidth, cellTop + mCellHeight,
+						mSelectedPaint);
 			}
 			
 			// visually highlight cell under the finger (to cope with touch screen
 			// imprecision)
-			if (touchedCell != null) {
-				cellLeft = touchedCell.getColumnIndex() * cellWidth;
-				cellTop = touchedCell.getRowIndex() * cellHeight;
+			if (mTouchedCell != null) {
+				cellLeft = mTouchedCell.getColumnIndex() * mCellWidth;
+				cellTop = mTouchedCell.getRowIndex() * mCellHeight;
 				canvas.drawRect(
 						cellLeft, 0,
-						cellLeft + cellWidth, height,
-						touchedPaint);
+						cellLeft + mCellWidth, height,
+						mTouchedPaint);
 				canvas.drawRect(
 						0, cellTop,
-						width, cellTop + cellHeight,
-						touchedPaint);
+						width, cellTop + mCellHeight,
+						mTouchedPaint);
 			}
 
 		}
 		
 		// draw vertical lines
 		for (int c=0; c < 9; c++) {
-			int x = c * cellWidth;
+			int x = c * mCellWidth;
 			if (c % 3 == 0) {
-				canvas.drawRect(x-1, 0, x+1, height, linePaint);
+				canvas.drawRect(x-1, 0, x+1, height, mLinePaint);
 			} else {
-				canvas.drawLine(x, 0, x, height, linePaint);
+				canvas.drawLine(x, 0, x, height, mLinePaint);
 			}
 		}
 		
 		// draw horizontal lines
 		for (int r=0; r < 9; r++) {
-			int y = r * cellHeight;
+			int y = r * mCellHeight;
 			if (r % 3 == 0) {
-				canvas.drawRect(0, y-1, width, y+1, linePaint);
+				canvas.drawRect(0, y-1, width, y+1, mLinePaint);
 			} else {
-				canvas.drawLine(0, y, width, y, linePaint);
+				canvas.drawLine(0, y, width, y, mLinePaint);
 			}
 		}
 	}
@@ -305,28 +305,28 @@ public class SudokuBoardView extends View {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		
-		if (!readonly) {
+		if (!mReadonly) {
 			int x = (int)event.getX();
 			int y = (int)event.getY();
 			
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_MOVE:
-				touchedCell = getCellAtPoint(x, y);
+				mTouchedCell = getCellAtPoint(x, y);
 				break;
 			case MotionEvent.ACTION_UP:
-				selectedCell = getCellAtPoint(x, y);
+				mSelectedCell = getCellAtPoint(x, y);
 				
 				boolean selectNumberShowed = false;
-				if (selectedCell != null) {
-					if (onCellTapListener != null) {
-						onCellTapListener.onCellTap(selectedCell);
+				if (mSelectedCell != null) {
+					if (mOnCellTapListener != null) {
+						mOnCellTapListener.onCellTap(mSelectedCell);
 					}
 					ensureEditCellDialog();
-					if (selectedCell.getEditable() && editCellDialog != null) {
-						editCellDialog.updateNumber(selectedCell.getValue());
-						editCellDialog.updateNote(getNoteNumbers(selectedCell.getNote()));
-						editCellDialog.getDialog().show();
+					if (mSelectedCell.getEditable() && mEditCellDialog != null) {
+						mEditCellDialog.updateNumber(mSelectedCell.getValue());
+						mEditCellDialog.updateNote(getNoteNumbers(mSelectedCell.getNote()));
+						mEditCellDialog.getDialog().show();
 						selectNumberShowed = true;
 					}
 				}
@@ -334,17 +334,17 @@ public class SudokuBoardView extends View {
 				// If select number dialog wasn't showed, clear touched cell highlight, if dialog
 				// is visible, highlight will be cleared after dialog is dismissed.
 				if (!selectNumberShowed) {
-					touchedCell = null;
+					mTouchedCell = null;
 				}
 				break;
 			case MotionEvent.ACTION_CANCEL:
-				touchedCell = null;
+				mTouchedCell = null;
 				break;
 			}
 			invalidate();
 		}
 		
-		return !readonly;
+		return !mReadonly;
 	}
 	
 	// TODO: do I really need this?
@@ -356,7 +356,7 @@ public class SudokuBoardView extends View {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (!readonly) {
+		if (!mReadonly) {
 			switch (keyCode) {
 				case KeyEvent.KEYCODE_DPAD_UP:
 					return moveCellSelection(0, -1);
@@ -370,8 +370,8 @@ public class SudokuBoardView extends View {
 				case KeyEvent.KEYCODE_SPACE:
 				case KeyEvent.KEYCODE_DEL:
 					// clear value in selected cell
-					if (selectedCell != null) {
-						setCellValue(selectedCell, 0);
+					if (mSelectedCell != null) {
+						setCellValue(mSelectedCell, 0);
 						moveCellSelectionRight();
 					}
 					return true;
@@ -380,7 +380,7 @@ public class SudokuBoardView extends View {
 			if (keyCode >= KeyEvent.KEYCODE_1 && keyCode <= KeyEvent.KEYCODE_9) {
 				// enter request number in cell
 				int selectedNumber = keyCode - KeyEvent.KEYCODE_0;
-				setCellValue(selectedCell, selectedNumber);
+				setCellValue(mSelectedCell, selectedNumber);
 				moveCellSelectionRight();
 				return true;
 			}
@@ -399,7 +399,7 @@ public class SudokuBoardView extends View {
     		if (number != -1) {
                 // set cell number selected by user
 				setCellValue(selectedCell, number);
-				touchedCell = null;
+				mTouchedCell = null;
 				invalidate();
     		}
 			return true;
@@ -415,7 +415,7 @@ public class SudokuBoardView extends View {
 			SudokuCell selectedCell = getSelectedCell();
 			if (selectedCell != null) {
 				setCellNote(selectedCell, setNoteNumbers(numbers));
-				touchedCell = null;
+				mTouchedCell = null;
 				invalidate();
 			}
 			return true;
@@ -423,16 +423,16 @@ public class SudokuBoardView extends View {
 	};
 	
 	private void setCellValue(SudokuCell cell, int value) {
-		if (game != null) {
-			game.setCellValue(cell, value);
+		if (mGame != null) {
+			mGame.setCellValue(cell, value);
 		} else {
 			cell.setValue(value);
 		}
 	}
 	
 	private void setCellNote(SudokuCell cell, String note) {
-		if (game != null) {
-			game.setCellNote(cell, note);
+		if (mGame != null) {
+			mGame.setCellNote(cell, note);
 		} else {
 			cell.setNote(note);
 		}
@@ -445,7 +445,7 @@ public class SudokuBoardView extends View {
 	 */
 	private void moveCellSelectionRight() {
 		if (!moveCellSelection(1, 0)) {
-			int selRow = selectedCell.getRowIndex();
+			int selRow = mSelectedCell.getRowIndex();
 			selRow++;
 			if (!moveCellSelectionTo(selRow, 0)) {
 				moveCellSelectionTo(0, 0);
@@ -464,9 +464,9 @@ public class SudokuBoardView extends View {
 		int newRow = 0;
 		int newCol = 0;
 		
-		if (selectedCell != null) {
-			newRow = selectedCell.getRowIndex() + vy;
-			newCol = selectedCell.getColumnIndex() + vx;
+		if (mSelectedCell != null) {
+			newRow = mSelectedCell.getRowIndex() + vy;
+			newCol = mSelectedCell.getColumnIndex() + vx;
 		}
 		
 		return moveCellSelectionTo(newRow, newCol);
@@ -482,7 +482,7 @@ public class SudokuBoardView extends View {
 	private boolean moveCellSelectionTo(int row, int col) {
 		if(col >= 0 && col < SudokuCellCollection.SUDOKU_SIZE 
 				&& row >= 0 && row < SudokuCellCollection.SUDOKU_SIZE) {
-			selectedCell = cells.getCell(row, col);
+			mSelectedCell = mCells.getCell(row, col);
 			postInvalidate();
 			return true;
 		}
@@ -499,12 +499,12 @@ public class SudokuBoardView extends View {
 	private SudokuCell getCellAtPoint(int x, int y) {
 		// TODO: this is not nice, col/row vs x/y
 		
-		int row = y / cellHeight;
-		int col = x / cellWidth;
+		int row = y / mCellHeight;
+		int col = x / mCellWidth;
 		
 		if(col >= 0 && col < SudokuCellCollection.SUDOKU_SIZE 
 				&& row >= 0 && row < SudokuCellCollection.SUDOKU_SIZE) {
-			return cells.getCell(row, col);
+			return mCells.getCell(row, col);
 		} else {
 			return null;
 		}

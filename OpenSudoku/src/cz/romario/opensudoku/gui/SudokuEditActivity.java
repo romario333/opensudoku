@@ -25,12 +25,12 @@ public class SudokuEditActivity extends Activity {
     private static final int STATE_EDIT = 0;
     private static final int STATE_INSERT = 1;
 
-    private int state;
-    private long folderID;
-    private long sudokuID;
+    private int mState;
+    private long mFolderID;
+    private long mSudokuID;
     
-    private SudokuDatabase sudokuDB;
-    private SudokuBoardView board;
+    private SudokuDatabase mSudokuDB;
+    private SudokuBoardView mBoard;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,29 +40,29 @@ public class SudokuEditActivity extends Activity {
 
 		Button buttonSave = (Button)findViewById(R.id.button_save);
 		Button buttonCancel = (Button)findViewById(R.id.button_cancel);
-		board = (SudokuBoardView)findViewById(R.id.sudoku_board);
+		mBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
 		
 		buttonSave.setOnClickListener(buttonSaveClickListener);
 		buttonCancel.setOnClickListener(buttonCancelClickListener);
 		
-        sudokuDB = new SudokuDatabase(this);
+        mSudokuDB = new SudokuDatabase(this);
 		
 		Intent intent = getIntent();
         String action = intent.getAction();
         if (Intent.ACTION_EDIT.equals(action)) {
             // Requested to edit: set that state, and the data being edited.
-            state = STATE_EDIT;
+            mState = STATE_EDIT;
             if (intent.hasExtra(EXTRAS_SUDOKU_ID)) {
-            	sudokuID = intent.getLongExtra(EXTRAS_SUDOKU_ID, 0);
+            	mSudokuID = intent.getLongExtra(EXTRAS_SUDOKU_ID, 0);
             } else {
             	throw new IllegalArgumentException(String.format("Extra with key '%s' is required.", EXTRAS_SUDOKU_ID));
             }
         } else if (Intent.ACTION_INSERT.equals(action)) {
-        	state = STATE_INSERT;
-        	sudokuID = 0;
+        	mState = STATE_INSERT;
+        	mSudokuID = 0;
         	
             if (intent.hasExtra(EXTRAS_FOLDER_ID)) {
-            	folderID = intent.getLongExtra(EXTRAS_FOLDER_ID, 0);
+            	mFolderID = intent.getLongExtra(EXTRAS_FOLDER_ID, 0);
             } else {
             	throw new IllegalArgumentException(String.format("Extra with key '%s' is required.", EXTRAS_FOLDER_ID));
             }
@@ -75,17 +75,17 @@ public class SudokuEditActivity extends Activity {
         }
         
         if (savedInstanceState != null) {
-        	board.setCells((SudokuCellCollection)savedInstanceState.getParcelable("cells"));
+        	mBoard.setCells((SudokuCellCollection)savedInstanceState.getParcelable("cells"));
         } else {
-        	if (sudokuID != 0) {
+        	if (mSudokuID != 0) {
         		// existing sudoku, read it from database
-        		SudokuGame sudoku = sudokuDB.getSudoku(sudokuID);
+        		SudokuGame sudoku = mSudokuDB.getSudoku(mSudokuID);
         		SudokuCellCollection cells = sudoku.getCells();
         		cells.markAllCellsAsEditable();
-        		board.setCells(cells);
+        		mBoard.setCells(cells);
         	} else {
         		// new sudoku
-        		board.setCells(SudokuCellCollection.createEmpty());
+        		mBoard.setCells(SudokuCellCollection.createEmpty());
         	}
         }
         
@@ -96,7 +96,7 @@ public class SudokuEditActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 		
-		outState.putParcelable("cells", board.getCells());
+		outState.putParcelable("cells", mBoard.getCells());
 	}
 
 	private OnClickListener buttonSaveClickListener = new OnClickListener() {
@@ -104,18 +104,18 @@ public class SudokuEditActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			
-			SudokuCellCollection cells = board.getCells();
+			SudokuCellCollection cells = mBoard.getCells();
 			cells.markFilledCellsAsNotEditable();
 			
-			switch (state) {
+			switch (mState) {
 			case STATE_EDIT:
 				// TODO: figure out how to handle edit properly
-				SudokuGame game = sudokuDB.getSudoku(sudokuID);
+				SudokuGame game = mSudokuDB.getSudoku(mSudokuID);
 				game.setCells(cells);
-				sudokuDB.updateSudoku(game);
+				mSudokuDB.updateSudoku(game);
 				break;
 			case STATE_INSERT:
-				sudokuDB.insertSudoku(folderID, cells);
+				mSudokuDB.insertSudoku(mFolderID, cells);
 				break;
 			}
 			

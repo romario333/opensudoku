@@ -10,8 +10,6 @@ import cz.romario.opensudoku.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,33 +24,32 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout.LayoutParams;
 
 public class EditCellDialog {
-	private Context context;
-	private LayoutInflater inflater;
+	private Context mContext;
+	private LayoutInflater mInflater;
 	// TODO: extend dialog
-	private Dialog dialog;
-	private TabHost tabHost;
+	private Dialog mDialog;
+	private TabHost mTabHost;
 	
 	
-	// TODO: sladit nazvy
 	// buttons from "Select number" tab
-	private Map<Integer,Button> numberButtons = new HashMap<Integer, Button>();
+	private Map<Integer,Button> mNumberButtons = new HashMap<Integer, Button>();
 	// buttons from "Edit note" tab
-	private Map<Integer,ToggleButton> noteNumberButtons = new HashMap<Integer, ToggleButton>();
+	private Map<Integer,ToggleButton> mNoteNumberButtons = new HashMap<Integer, ToggleButton>();
 	// selected numbers on "Edit note" tab
-	private Set<Integer> noteSelectedNumbers = new HashSet<Integer>();
+	private Set<Integer> mNoteSelectedNumbers = new HashSet<Integer>();
 	
-	private OnNumberEditListener onNumberEditListener;
-	private OnNoteEditListener onNoteEditListener;
+	private OnNumberEditListener mOnNumberEditListener;
+	private OnNoteEditListener mOnNoteEditListener;
 	
 	public EditCellDialog(Context context) {
-		this.context = context;
-		this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mContext = context;
+		mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
-		this.tabHost = createTabView();
+		mTabHost = createTabView();
 		
 		// TODO: maybe I should just create my own dialog?
-		dialog = new AlertDialog.Builder(context)
-		.setView(this.tabHost)
+		mDialog = new AlertDialog.Builder(context)
+		.setView(mTabHost)
         //.setPositiveButton("Close", closeButtonListener)
        .create();
 	}
@@ -62,7 +59,7 @@ public class EditCellDialog {
 	 * @param l
 	 */
 	public void setOnNumberEditListener(OnNumberEditListener l) {
-		this.onNumberEditListener = l;
+		mOnNumberEditListener = l;
 	}
 	
 	/**
@@ -70,7 +67,7 @@ public class EditCellDialog {
 	 * @param l
 	 */
 	public void setOnNoteEditListener(OnNoteEditListener l) {
-		this.onNoteEditListener = l;
+		mOnNoteEditListener = l;
 	}
 	
 	/**
@@ -78,16 +75,16 @@ public class EditCellDialog {
 	 * @return
 	 */
 	public Dialog getDialog() {
-		return this.dialog;
+		return mDialog;
 	}
 	
 	public void updateNumber(Integer number) {
-		for (Button b : this.numberButtons.values()) {
+		for (Button b : mNumberButtons.values()) {
 			b.setEnabled(true);
 		}
 		
 		if (number != 0) {
-			this.numberButtons.get(number).setEnabled(false);
+			mNumberButtons.get(number).setEnabled(false);
 		}
 	}
 	
@@ -96,16 +93,16 @@ public class EditCellDialog {
 	 * @param numbers
 	 */
 	public void updateNote(Integer[] numbers) {
-		this.noteSelectedNumbers = new HashSet<Integer>();
+		mNoteSelectedNumbers = new HashSet<Integer>();
 		
 		if (numbers != null) {
 			for (int number : numbers) {
-				this.noteSelectedNumbers.add(number);
+				mNoteSelectedNumbers.add(number);
 			}
 		}
 		
-		for (Integer number : noteNumberButtons.keySet()) {
-			noteNumberButtons.get(number).setChecked(noteSelectedNumbers.contains(number));
+		for (Integer number : mNoteNumberButtons.keySet()) {
+			mNoteNumberButtons.get(number).setChecked(mNoteSelectedNumbers.contains(number));
 		}
 	}
 	
@@ -117,19 +114,19 @@ public class EditCellDialog {
 	 * @return
 	 */
 	private TabHost createTabView() {
-		TabHost tabHost = new TabHost(context);
+		TabHost tabHost = new TabHost(mContext);
         //tabHost.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
         tabHost.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         
-        LinearLayout linearLayout = new LinearLayout(context);
+        LinearLayout linearLayout = new LinearLayout(mContext);
         //linearLayout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
         linearLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 		
-		TabWidget tabWidget = new TabWidget(context);
+		TabWidget tabWidget = new TabWidget(mContext);
 		tabWidget.setId(android.R.id.tabs);
 		
-		FrameLayout frameLayout = new FrameLayout(context);
+		FrameLayout frameLayout = new FrameLayout(mContext);
 		frameLayout.setId(android.R.id.tabcontent);
 		
 		linearLayout.addView(tabWidget);
@@ -139,7 +136,7 @@ public class EditCellDialog {
 		tabHost.setup();
 
 		tabHost.addTab(tabHost.newTabSpec("number")
-                .setIndicator(context.getString(R.string.select_number))
+                .setIndicator(mContext.getString(R.string.select_number))
                 .setContent(new TabHost.TabContentFactory() {
 					
                 	@Override
@@ -149,7 +146,7 @@ public class EditCellDialog {
                 	
                 }));
 		tabHost.addTab(tabHost.newTabSpec("note")
-                .setIndicator(context.getString(R.string.edit_note))
+                .setIndicator(mContext.getString(R.string.edit_note))
                 .setContent(new TabHost.TabContentFactory() {
 					
                 	@Override
@@ -167,20 +164,20 @@ public class EditCellDialog {
      * @return
      */
 	private View createEditNumberView() {
-		View v = inflater.inflate(R.layout.edit_cell_select_number, null);
+		View v = mInflater.inflate(R.layout.edit_cell_select_number, null);
 		
-		numberButtons.put(1, (Button)v.findViewById(R.id.button_1));
-		numberButtons.put(2, (Button)v.findViewById(R.id.button_2));
-		numberButtons.put(3, (Button)v.findViewById(R.id.button_3));
-		numberButtons.put(4, (Button)v.findViewById(R.id.button_4));
-		numberButtons.put(5, (Button)v.findViewById(R.id.button_5));
-		numberButtons.put(6, (Button)v.findViewById(R.id.button_6));
-		numberButtons.put(7, (Button)v.findViewById(R.id.button_7));
-		numberButtons.put(8, (Button)v.findViewById(R.id.button_8));
-		numberButtons.put(9, (Button)v.findViewById(R.id.button_9));
+		mNumberButtons.put(1, (Button)v.findViewById(R.id.button_1));
+		mNumberButtons.put(2, (Button)v.findViewById(R.id.button_2));
+		mNumberButtons.put(3, (Button)v.findViewById(R.id.button_3));
+		mNumberButtons.put(4, (Button)v.findViewById(R.id.button_4));
+		mNumberButtons.put(5, (Button)v.findViewById(R.id.button_5));
+		mNumberButtons.put(6, (Button)v.findViewById(R.id.button_6));
+		mNumberButtons.put(7, (Button)v.findViewById(R.id.button_7));
+		mNumberButtons.put(8, (Button)v.findViewById(R.id.button_8));
+		mNumberButtons.put(9, (Button)v.findViewById(R.id.button_9));
 		
-		for (Integer num : numberButtons.keySet()) {
-			Button b = numberButtons.get(num);
+		for (Integer num : mNumberButtons.keySet()) {
+			Button b = mNumberButtons.get(num);
 			b.setTag(num);
 			b.setOnClickListener(editNumberButtonClickListener);
 		}
@@ -199,20 +196,20 @@ public class EditCellDialog {
      * @return
      */
 	private View createEditNoteView() {
-		View v = inflater.inflate(R.layout.edit_cell_edit_note, null);
+		View v = mInflater.inflate(R.layout.edit_cell_edit_note, null);
 		
-		noteNumberButtons.put(1, (ToggleButton)v.findViewById(R.id.button_1));
-		noteNumberButtons.put(2, (ToggleButton)v.findViewById(R.id.button_2));
-		noteNumberButtons.put(3, (ToggleButton)v.findViewById(R.id.button_3));
-		noteNumberButtons.put(4, (ToggleButton)v.findViewById(R.id.button_4));
-		noteNumberButtons.put(5, (ToggleButton)v.findViewById(R.id.button_5));
-		noteNumberButtons.put(6, (ToggleButton)v.findViewById(R.id.button_6));
-		noteNumberButtons.put(7, (ToggleButton)v.findViewById(R.id.button_7));
-		noteNumberButtons.put(8, (ToggleButton)v.findViewById(R.id.button_8));
-		noteNumberButtons.put(9, (ToggleButton)v.findViewById(R.id.button_9));
+		mNoteNumberButtons.put(1, (ToggleButton)v.findViewById(R.id.button_1));
+		mNoteNumberButtons.put(2, (ToggleButton)v.findViewById(R.id.button_2));
+		mNoteNumberButtons.put(3, (ToggleButton)v.findViewById(R.id.button_3));
+		mNoteNumberButtons.put(4, (ToggleButton)v.findViewById(R.id.button_4));
+		mNoteNumberButtons.put(5, (ToggleButton)v.findViewById(R.id.button_5));
+		mNoteNumberButtons.put(6, (ToggleButton)v.findViewById(R.id.button_6));
+		mNoteNumberButtons.put(7, (ToggleButton)v.findViewById(R.id.button_7));
+		mNoteNumberButtons.put(8, (ToggleButton)v.findViewById(R.id.button_8));
+		mNoteNumberButtons.put(9, (ToggleButton)v.findViewById(R.id.button_9));
 		
-		for (Integer num : noteNumberButtons.keySet()) {
-			ToggleButton b = noteNumberButtons.get(num);
+		for (Integer num : mNoteNumberButtons.keySet()) {
+			ToggleButton b = mNoteNumberButtons.get(num);
 			b.setTag(num);
 			b.setOnCheckedChangeListener(editNoteCheckedChangeListener);
 		}
@@ -223,53 +220,7 @@ public class EditCellDialog {
 		clearButton.setOnClickListener(clearButtonListener);
 		
 		return v;
-        
-//		
-//		TableLayout editNumberView = new TableLayout(context);
-//        
-//        // create 3x3 table with numbers 1 - 9
-//        for (int x=0; x<3; x++) {
-//        	TableRow row = new TableRow(context);
-//            for (int y=0; y<3; y++) {
-//            	ToggleButton numberButton = new ToggleButton(context);
-//            	numberButton.setWidth(NUMBER_BUTTON_WIDTH);
-//            	numberButton.setHeight(NUMBER_BUTTON_HEIGHT);
-//            	
-//            	Integer number = (x * 3) + (y + 1);
-//            	
-//            	numberButton.setTextOn(number.toString());
-//            	numberButton.setTextOff(number.toString());
-//            	numberButton.setChecked(this.noteSelectedNumbers.contains(number));
-//            	numberButton.setTag(number);
-//            	numberButton.setOnCheckedChangeListener(editNoteCheckedChangeListener);
-//            	
-//            	noteNumberButtons.put(number, numberButton);
-//            	
-//            	row.addView(numberButton);
-//            }
-//            editNumberView.addView(row);
-//        }
-//        
-//        // Add clear button to the end
-//        TableRow row = new TableRow(context);
-//        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams();
-//        layoutParams.column = 2;
-//        layoutParams.topMargin = CLEAR_BUTTON_MARGIN;
-//        row.addView(createClearButton(), layoutParams);
-//        editNumberView.addView(row);
-//        
-//        editNumberView.setShrinkAllColumns(true);
-//        
-//        return editNumberView;
     }
-	
-//	private View createClearButton() {
-//        Button clearButton = new Button(context);
-//        clearButton.setText("Clear");
-//        clearButton.setWidth(NUMBER_BUTTON_WIDTH);
-//        clearButton.setOnClickListener(clearButtonListener);
-//		return clearButton;
-//	}
 	
 	/**
 	 * Occurs when user selects number in "Select number" tab.
@@ -279,11 +230,11 @@ public class EditCellDialog {
 		public void onClick(View v) {
 			Integer number = (Integer)v.getTag();
 			
-			if (onNumberEditListener != null) {
-				onNumberEditListener.onNumberEdit(number);
+			if (mOnNumberEditListener != null) {
+				mOnNumberEditListener.onNumberEdit(number);
 			}
 			
-			dialog.dismiss();
+			mDialog.dismiss();
 		}
 	};
 
@@ -297,9 +248,9 @@ public class EditCellDialog {
 				boolean isChecked) {
 			Integer number = (Integer)buttonView.getTag();
 			if (isChecked) {
-				noteSelectedNumbers.add(number);
+				mNoteSelectedNumbers.add(number);
 			} else {
-				noteSelectedNumbers.remove(number);
+				mNoteSelectedNumbers.remove(number);
 			}
 		}
 	
@@ -311,17 +262,17 @@ public class EditCellDialog {
 	private OnClickListener clearButtonListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			String currentTab = tabHost.getCurrentTabTag();
+			String currentTab = mTabHost.getCurrentTabTag();
 			
 			if (currentTab.equals("number")) {
-				if (onNumberEditListener != null) {
-					onNumberEditListener.onNumberEdit(0); // 0 as clear
+				if (mOnNumberEditListener != null) {
+					mOnNumberEditListener.onNumberEdit(0); // 0 as clear
 				}
-				dialog.dismiss();
+				mDialog.dismiss();
 			} else {
-				for (ToggleButton b : noteNumberButtons.values()) {
+				for (ToggleButton b : mNoteNumberButtons.values()) {
 					b.setChecked(false);
-					noteSelectedNumbers.remove(b.getTag());
+					mNoteSelectedNumbers.remove(b.getTag());
 				}
 			}
 		}
@@ -334,11 +285,11 @@ public class EditCellDialog {
 
 		@Override
 		public void onClick(View v) {
-			if (onNoteEditListener != null) {
-				Integer[] numbers = new Integer[noteSelectedNumbers.size()];
-				onNoteEditListener.onNoteEdit(noteSelectedNumbers.toArray(numbers));
+			if (mOnNoteEditListener != null) {
+				Integer[] numbers = new Integer[mNoteSelectedNumbers.size()];
+				mOnNoteEditListener.onNoteEdit(mNoteSelectedNumbers.toArray(numbers));
 			}
-			dialog.dismiss();
+			mDialog.dismiss();
 		}
 	};
 	

@@ -18,12 +18,12 @@ import java.util.Map.Entry;
  *
  */
 public class SudokuCellGroup {
-	private SudokuCell[] cells = new SudokuCell[SudokuCellCollection.SUDOKU_SIZE];
-	private int pos = 0;
+	private SudokuCell[] mCells = new SudokuCell[SudokuCellCollection.SUDOKU_SIZE];
+	private int mPos = 0;
 	
 	public void addCell(SudokuCell cell) {
-		cells[pos] = cell;
-		pos++;
+		mCells[mPos] = cell;
+		mPos++;
 	}
 	
 
@@ -43,14 +43,14 @@ public class SudokuCellGroup {
 		// count number of occurences of numbers in group
 		Map<Integer, List<SudokuCell>> cellsByValue = 
 			new HashMap<Integer, List<SudokuCell>>();
-		for (int i=0; i<cells.length; i++) {
-			int value = cells[i].getValue();
+		for (int i=0; i<mCells.length; i++) {
+			int value = mCells[i].getValue();
 			
 			if (value != 0) {
 				if (!cellsByValue.containsKey(value)) {
 					cellsByValue.put(value, new ArrayList<SudokuCell>());
 				}
-				cellsByValue.get(value).add(cells[i]);
+				cellsByValue.get(value).add(mCells[i]);
 			}
 		}
 		

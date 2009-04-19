@@ -35,7 +35,7 @@ public class FolderListActivity extends ListActivity {
     
     private static final String TAG = "FolderListActivity";
     
-    private FolderListAdapter listAdapter;
+    private FolderListAdapter mListAdapter;
     
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +49,8 @@ public class FolderListActivity extends ListActivity {
         getListView().setOnCreateContextMenuListener(this);
 
         
-        listAdapter = new FolderListAdapter(this);
-        setListAdapter(listAdapter);
+        mListAdapter = new FolderListAdapter(this);
+        setListAdapter(mListAdapter);
 	}
 	
 	@Override
@@ -65,7 +65,7 @@ public class FolderListActivity extends ListActivity {
 	private void fillData() {
         SudokuDatabase sudokuDB = new SudokuDatabase(this);
         FolderInfo[] folderList = sudokuDB.getFolderList();
-        listAdapter.setFolders(folderList);
+        mListAdapter.setFolders(folderList);
 	}
 	
 	@Override

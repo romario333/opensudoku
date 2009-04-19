@@ -1,13 +1,15 @@
-package cz.romario.opensudoku.game;
+package cz.romario.opensudoku.game.command;
+
+import cz.romario.opensudoku.game.SudokuCellCollection;
 
 // TODO: complete
 public class ClearAllNotesCommand implements Command {
 
-	private SudokuCellCollection cells;
+	private SudokuCellCollection mCells;
 	
 	
 	public ClearAllNotesCommand(SudokuCellCollection cells) {
-		this.cells = cells;
+		this.mCells = cells;
 	}
 	
 	@Override

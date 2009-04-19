@@ -3,6 +3,10 @@ package cz.romario.opensudoku.game;
 import java.util.Date;
 import java.util.Stack;
 
+import cz.romario.opensudoku.game.command.Command;
+import cz.romario.opensudoku.game.command.EditCellNoteCommand;
+import cz.romario.opensudoku.game.command.SetCellValueCommand;
+
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -14,56 +18,53 @@ public class SudokuGame implements Parcelable {
 	public static final int GAME_STATE_NOT_STARTED = 1;
 	public static final int GAME_STATE_COMPLETED = 2;
 	
-	private long id;
-	private Date created;
-	private int state;
-	private long time;
-	private Date lastPlayed;
-	private String note;
+	private long mId;
+	private Date mCreated;
+	private int mState;
+	private long mTime;
+	private Date mLastPlayed;
+	private String mNote;
+	private SudokuCellCollection mCells;
 	
-	private OnPuzzleSolvedListener onPuzzleSolvedListener;
-	
-	private SudokuCellCollection cells;
-	
+	private OnPuzzleSolvedListener mOnPuzzleSolvedListener;
 	// very basic implementation of undo
-	private Stack<Command> undoStack = new Stack<Command>();
-	
+	private Stack<Command> mUndoStack = new Stack<Command>();
 	// Time when current activity has become active. 
-	private long activeFromTime = -1; 
+	private long mActiveFromTime = -1; 
 
-	private boolean highlightWrongVals = true;
+	private boolean mHighlightWrongVals = true;
 	
 	public SudokuGame() {
 		
 	}
 	
 	public void setOnPuzzleSolvedListener(OnPuzzleSolvedListener l) {
-		this.onPuzzleSolvedListener = l;
+		mOnPuzzleSolvedListener = l;
 	}
 	
 	public void setNote(String note) {
-		this.note = note;
+		mNote = note;
 		
 	}
 
 	public String getNote() {
-		return note;
+		return mNote;
 	}
 
 	public void setCreated(Date created) {
-		this.created = created;
+		mCreated = created;
 	}
 
 	public Date getCreated() {
-		return created;
+		return mCreated;
 	}
 
 	public void setState(int state) {
-		this.state = state;
+		mState = state;
 	}
 
 	public int getState() {
-		return state;
+		return mState;
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class SudokuGame implements Parcelable {
 	 * @param time
 	 */
 	public void setTime(long time) {
-		this.time = time;
+		mTime = time;
 	}
 
 	/**
@@ -79,35 +80,35 @@ public class SudokuGame implements Parcelable {
 	 * @return
 	 */
 	public long getTime() {
-		if (activeFromTime != -1) {
-			return time + SystemClock.uptimeMillis() - activeFromTime;
+		if (mActiveFromTime != -1) {
+			return mTime + SystemClock.uptimeMillis() - mActiveFromTime;
 		} else {
-			return time;
+			return mTime;
 		}
 	}
 
 	public void setLastPlayed(Date lastPlayed) {
-		this.lastPlayed = lastPlayed;
+		mLastPlayed = lastPlayed;
 	}
 
 	public Date getLastPlayed() {
-		return lastPlayed;
+		return mLastPlayed;
 	}
 
 	public void setCells(SudokuCellCollection cells) {
-		this.cells = cells;
+		mCells = cells;
 	}
 	
 	public SudokuCellCollection getCells() {
-		return cells;
+		return mCells;
 	}
 
 	public void setId(long id) {
-		this.id = id;
+		mId = id;
 	}
 
 	public long getId() {
-		return id;
+		return mId;
 	}
 	
 	/**
@@ -119,13 +120,13 @@ public class SudokuGame implements Parcelable {
 	public void setCellValue(SudokuCell cell, int value) {
 		SetCellValueCommand c = new SetCellValueCommand(cell, value);
 		c.execute();
-		undoStack.push(c);
+		mUndoStack.push(c);
 		
 		validate();
 		if (isCompleted()) {
 			finish();
-			if (onPuzzleSolvedListener != null) {
-				onPuzzleSolvedListener.onPuzzleSolved();
+			if (mOnPuzzleSolvedListener != null) {
+				mOnPuzzleSolvedListener.onPuzzleSolved();
 			}
 		}
 	}
@@ -139,36 +140,36 @@ public class SudokuGame implements Parcelable {
 	public void setCellNote(SudokuCell cell, String note) {
 		EditCellNoteCommand c = new EditCellNoteCommand(cell, note);
 		c.execute();
-		undoStack.push(c);
+		mUndoStack.push(c);
 	}
 	
 	/** 
 	 * Undo last command.
 	 */
 	public void undo() {
-		if (!undoStack.empty()) {
-			Command c = undoStack.pop();
+		if (!mUndoStack.empty()) {
+			Command c = mUndoStack.pop();
 			c.undo();
 			validate();
 		}
 	}
 	
 	public boolean hasSomethingToUndo() {
-		return undoStack.size() != 0;
+		return mUndoStack.size() != 0;
 	}
 	
 	/**
 	 * Start game-play.
 	 */
 	public void start() {
-		state = GAME_STATE_PLAYING;
+		mState = GAME_STATE_PLAYING;
 		resume();
 	}
 	
 	public void resume() {
 		// reset time we have spent playing so far, so time when activity was not active
 		// will not be part of the game play time
-		activeFromTime = SystemClock.uptimeMillis();
+		mActiveFromTime = SystemClock.uptimeMillis();
 	}
 	
 	/**
@@ -176,8 +177,8 @@ public class SudokuGame implements Parcelable {
 	 */
 	public void pause() {
 		// save time we have spent playing so far - it will be reseted after resuming 
-		time += SystemClock.uptimeMillis() - activeFromTime;
-		activeFromTime = -1;
+		mTime += SystemClock.uptimeMillis() - mActiveFromTime;
+		mActiveFromTime = -1;
 		
 		setLastPlayed(new Date(System.currentTimeMillis()));
 	}
@@ -187,7 +188,7 @@ public class SudokuGame implements Parcelable {
 	 */
 	private void finish() {
 		pause();
-		state = GAME_STATE_COMPLETED;
+		mState = GAME_STATE_COMPLETED;
 	}
 	
 	/**
@@ -197,7 +198,7 @@ public class SudokuGame implements Parcelable {
 		// TODO: iterator
 		for (int r=0; r<SudokuCellCollection.SUDOKU_SIZE; r++) {
 			for (int c=0; c<SudokuCellCollection.SUDOKU_SIZE; c++) {
-				SudokuCell cell = cells.getCell(r, c);
+				SudokuCell cell = mCells.getCell(r, c);
 				if (cell.getEditable()) {
 					cell.setValue(0);
 					cell.setNote("");
@@ -207,7 +208,7 @@ public class SudokuGame implements Parcelable {
 		validate();
 		setTime(0);
 		setLastPlayed(new Date(0));
-		state = GAME_STATE_NOT_STARTED;
+		mState = GAME_STATE_NOT_STARTED;
 	}
 	
 	/**
@@ -216,44 +217,42 @@ public class SudokuGame implements Parcelable {
 	 * @return
 	 */
 	public boolean isCompleted() {
-		return cells.isCompleted();
+		return mCells.isCompleted();
 	}
 	
 	public void clearAllNotes() {
-		cells.clearAllNotes();
+		mCells.clearAllNotes();
 	}
 	
 	public void setHighlightWrongVals(boolean highlightWrongVals) {
-		this.highlightWrongVals = highlightWrongVals;
-		cells.markAllCellsAsValid();
+		mHighlightWrongVals = highlightWrongVals;
+		mCells.markAllCellsAsValid();
 		
-		if (this.highlightWrongVals) {
+		if (mHighlightWrongVals) {
 			validate();
 		}
 	}
 
 	public boolean getHighlightWrongVals() {
-		return highlightWrongVals;
+		return mHighlightWrongVals;
 	}
 	
 	private void validate() {
-		if (highlightWrongVals) {
-			cells.validate();
+		if (mHighlightWrongVals) {
+			mCells.validate();
 		}
 	}
 	
-	
-	
 	// constructor for Parcelable
 	private SudokuGame(Parcel in) {
-		id = in.readLong();
-		note = in.readString();
-		created = new Date(in.readLong());
-		state = in.readInt();
-		time = in.readLong();
-		lastPlayed = new Date(in.readLong());
+		mId = in.readLong();
+		mNote = in.readString();
+		mCreated = new Date(in.readLong());
+		mState = in.readInt();
+		mTime = in.readLong();
+		mLastPlayed = new Date(in.readLong());
 		
-		cells = (SudokuCellCollection) in.readParcelable(SudokuCellCollection.class.getClassLoader());
+		mCells = (SudokuCellCollection) in.readParcelable(SudokuCellCollection.class.getClassLoader());
 	}
 	
 	public static final Parcelable.Creator<SudokuGame> CREATOR = new Parcelable.Creator<SudokuGame>() {
@@ -273,14 +272,14 @@ public class SudokuGame implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeLong(id);
-		dest.writeString(note);
-		dest.writeLong(created.getTime());
-		dest.writeInt(state);
-		dest.writeLong(time);
-		dest.writeLong(lastPlayed.getTime());
+		dest.writeLong(mId);
+		dest.writeString(mNote);
+		dest.writeLong(mCreated.getTime());
+		dest.writeInt(mState);
+		dest.writeLong(mTime);
+		dest.writeLong(mLastPlayed.getTime());
 		// TODO: zas ty flags co nevim k cemu jsou
-		dest.writeParcelable(cells, flags);
+		dest.writeParcelable(mCells, flags);
 	}
 
 	public interface OnPuzzleSolvedListener

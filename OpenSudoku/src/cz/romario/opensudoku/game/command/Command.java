@@ -1,4 +1,4 @@
-package cz.romario.opensudoku.game;
+package cz.romario.opensudoku.game.command;
 
 /**
  * Generic interface for command in application.

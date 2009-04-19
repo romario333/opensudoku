@@ -17,13 +17,13 @@ public class SudokuCellCollection  implements Parcelable {
 	
 	// TODO: An array of ints is a much better than an array of Integers, but this also generalizes to the fact that two parallel arrays of ints are also a lot more efficient than an array of (int,int) objects
 	// Cell's data.
-	private SudokuCell[][] cells;
+	private SudokuCell[][] mCells;
 	
 	// Helper arrays, contains references to the groups of cells, which should contain unique
 	// numbers.
-	private SudokuCellGroup[] sectors;
-	private SudokuCellGroup[] rows;
-	private SudokuCellGroup[] columns;
+	private SudokuCellGroup[] mSectors;
+	private SudokuCellGroup[] mRows;
+	private SudokuCellGroup[] mColumns;
 	
 	public static final int SUDOKU_SIZE = 9;
 	
@@ -71,7 +71,7 @@ public class SudokuCellCollection  implements Parcelable {
 
 	// TODO: SudokuCellCollection should be collection, implement Enumerable or something like that
 	public SudokuCell[][] getCells() {
-		return cells;
+		return mCells;
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class SudokuCellCollection  implements Parcelable {
 	private SudokuCellCollection(SudokuCell[][] cells)
 	{
 		
-		this.cells = cells;
+		mCells = cells;
 		initCollection();
 	}
 	
@@ -92,7 +92,7 @@ public class SudokuCellCollection  implements Parcelable {
 	 * @return
 	 */
 	public SudokuCell getCell(int rowIndex, int colIndex) {
-		return cells[rowIndex][colIndex];
+		return mCells[rowIndex][colIndex];
 	}
 	
 	public void markAllCellsAsValid() {
@@ -100,7 +100,7 @@ public class SudokuCellCollection  implements Parcelable {
 		{
 			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				cells[r][c].setInvalid(false);
+				mCells[r][c].setInvalid(false);
 			}
 		}
 	}
@@ -119,17 +119,17 @@ public class SudokuCellCollection  implements Parcelable {
 		markAllCellsAsValid();
 		
 		// run validation in groups
-		for (SudokuCellGroup row : rows) {
+		for (SudokuCellGroup row : mRows) {
 			if (!row.validate()) {
 				valid = false;
 			}
 		}
-		for (SudokuCellGroup column : columns) {
+		for (SudokuCellGroup column : mColumns) {
 			if (!column.validate()) {
 				valid = false;
 			}
 		}
-		for (SudokuCellGroup sector : sectors) {
+		for (SudokuCellGroup sector : mSectors) {
 			if (!sector.validate()) {
 				valid = false;
 			}
@@ -143,7 +143,7 @@ public class SudokuCellCollection  implements Parcelable {
 		{
 			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				SudokuCell cell = cells[r][c]; 
+				SudokuCell cell = mCells[r][c]; 
 				if (cell.getValue() == 0 || cell.getInvalid()) {
 					return false;
 				}
@@ -194,7 +194,7 @@ public class SudokuCellCollection  implements Parcelable {
 		// TODO: iterator
 		for (int r=0; r<SUDOKU_SIZE; r++) {
 			for (int c=0; c<SUDOKU_SIZE; c++){
-				SudokuCell cell = cells[r][c];
+				SudokuCell cell = mCells[r][c];
 				cell.setEditable(true);
 			}
 		}
@@ -207,7 +207,7 @@ public class SudokuCellCollection  implements Parcelable {
 		// TODO: iterator
 		for (int r=0; r<SUDOKU_SIZE; r++) {
 			for (int c=0; c<SUDOKU_SIZE; c++){
-				SudokuCell cell = cells[r][c];
+				SudokuCell cell = mCells[r][c];
 				cell.setEditable(cell.getValue() == 0);
 			}
 		}
@@ -220,7 +220,7 @@ public class SudokuCellCollection  implements Parcelable {
 		// TODO: iterator
 		for (int r=0; r<SUDOKU_SIZE; r++) {
 			for (int c=0; c<SUDOKU_SIZE; c++){
-				SudokuCell cell = cells[r][c];
+				SudokuCell cell = mCells[r][c];
 				cell.setNote(null);
 			}
 		}
@@ -232,26 +232,26 @@ public class SudokuCellCollection  implements Parcelable {
 	 * 2) Row and column index for each cell is set.
 	 */
 	private void initCollection() {
-		rows = new SudokuCellGroup[SUDOKU_SIZE];
-		columns = new SudokuCellGroup[SUDOKU_SIZE];
-		sectors = new SudokuCellGroup[SUDOKU_SIZE];
+		mRows = new SudokuCellGroup[SUDOKU_SIZE];
+		mColumns = new SudokuCellGroup[SUDOKU_SIZE];
+		mSectors = new SudokuCellGroup[SUDOKU_SIZE];
 
 		for (int i=0; i<SUDOKU_SIZE; i++) {
-			rows[i] = new SudokuCellGroup();
-			columns[i] = new SudokuCellGroup();
-			sectors[i] = new SudokuCellGroup();
+			mRows[i] = new SudokuCellGroup();
+			mColumns[i] = new SudokuCellGroup();
+			mSectors[i] = new SudokuCellGroup();
 		}
 		
 		for (int r=0; r<SUDOKU_SIZE; r++)
 		{
 			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				SudokuCell cell = cells[r][c];
+				SudokuCell cell = mCells[r][c];
 				
 				cell.initCollection(r, c,
-						sectors[((c/3) * 3) + (r/3)],
-						rows[c],
-						columns[r]
+						mSectors[((c/3) * 3) + (r/3)],
+						mRows[c],
+						mColumns[r]
 						);
 			}
 		}
@@ -264,11 +264,11 @@ public class SudokuCellCollection  implements Parcelable {
 	 */
 	private SudokuCellCollection(Parcel in) {
 		
-		cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
+		mCells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
 		for (int row=0; row<SUDOKU_SIZE; row++) {
 			Parcelable[] rowData = (Parcelable[])in.readParcelableArray(SudokuCell.class.getClassLoader());
 			for (int col=0; col < rowData.length; col++) {
-				cells[row][col] = (SudokuCell)rowData[col];
+				mCells[row][col] = (SudokuCell)rowData[col];
 			}
 		}
 		initCollection();
@@ -291,7 +291,7 @@ public class SudokuCellCollection  implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		for (SudokuCell[] cols : cells) {
+		for (SudokuCell[] cols : mCells) {
 			dest.writeParcelableArray(cols, flags);
 		}
 	}
@@ -304,7 +304,7 @@ public class SudokuCellCollection  implements Parcelable {
 		{
 			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				sb.append(cells[r][c].getValue());
+				sb.append(mCells[r][c].getValue());
 			}
 			sb.append("\n");
 		}
@@ -365,7 +365,7 @@ public class SudokuCellCollection  implements Parcelable {
         {
                 for (int c=0; c<SUDOKU_SIZE; c++)
                 {
-                        SudokuCell cell = cells[r][c];
+                        SudokuCell cell = mCells[r][c];
                         sb.append(cell.getValue()).append("|");
                         if (cell.getNote() == null || cell.getNote().equals("")) {
                         	sb.append("-").append("|");

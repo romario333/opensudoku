@@ -44,51 +44,51 @@ public class SudokuPlayActivity extends Activity{
 	private static final int DIALOG_WELL_DONE = 2;
 	private static final int DIALOG_CLEAR_NOTES = 3;
 	
-	private long sudokuGameID;
-	private SudokuGame sudokuGame;
+	private long mSudokuGameID;
+	private SudokuGame mSudokuGame;
 	
-	private SudokuBoardView sudokuBoard;
+	private SudokuBoardView mSudokuBoard;
 	
-	private StringBuilder timeText;
-	private Formatter timeFormatter;
+	private StringBuilder mTimeText;
+	private Formatter mTimeFormatter;
 	
-	private GameTimer gameTimer;
+	private GameTimer mGameTimer;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sudoku_play);
         
-        sudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
-        timeText = new StringBuilder(5);
-        timeFormatter = new Formatter(timeText);
-        gameTimer = new GameTimer();
+        mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
+        mTimeText = new StringBuilder(5);
+        mTimeFormatter = new Formatter(mTimeText);
+        mGameTimer = new GameTimer();
         
         // create sudoku game instance
         if (savedInstanceState == null) {
         	// activity runs for the first time, read game from database
-        	sudokuGameID = getIntent().getLongExtra(EXTRAS_SUDOKU_ID, 0);
+        	mSudokuGameID = getIntent().getLongExtra(EXTRAS_SUDOKU_ID, 0);
         	SudokuDatabase sudokuDB = new SudokuDatabase(this);
-        	sudokuGame = sudokuDB.getSudoku(sudokuGameID);
+        	mSudokuGame = sudokuDB.getSudoku(mSudokuGameID);
         	//gameTimer.setTime(sudokuGame.getTime());
         } else {
         	// activity has been running before, restore its state
-        	sudokuGame = (SudokuGame)savedInstanceState.getParcelable("sudoku_game");
-        	gameTimer.restoreState(savedInstanceState);
+        	mSudokuGame = (SudokuGame)savedInstanceState.getParcelable("sudoku_game");
+        	mGameTimer.restoreState(savedInstanceState);
         }
         
-        if (sudokuGame.getState() == SudokuGame.GAME_STATE_NOT_STARTED) {
-        	sudokuGame.start();
-        } else if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-        	sudokuGame.resume();
+        if (mSudokuGame.getState() == SudokuGame.GAME_STATE_NOT_STARTED) {
+        	mSudokuGame.start();
+        } else if (mSudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+        	mSudokuGame.resume();
         } 
         
-        if (sudokuGame.getState() == SudokuGame.GAME_STATE_COMPLETED) {
-        	sudokuBoard.setReadOnly(true);
+        if (mSudokuGame.getState() == SudokuGame.GAME_STATE_COMPLETED) {
+        	mSudokuBoard.setReadOnly(true);
         }
 
-        sudokuBoard.setGame(sudokuGame);
-		sudokuGame.setOnPuzzleSolvedListener(onSolvedListener);
+        mSudokuBoard.setGame(mSudokuGame);
+		mSudokuGame.setOnPuzzleSolvedListener(onSolvedListener);
 		
 		updateTime();
     }
@@ -97,15 +97,15 @@ public class SudokuPlayActivity extends Activity{
 	protected void onResume() {
 		super.onResume();
 		
-		if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-			sudokuGame.resume();
-			gameTimer.start();
+		if (mSudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			mSudokuGame.resume();
+			mGameTimer.start();
 		}
 		
         // read game settings
 		SharedPreferences gameSettings = PreferenceManager.getDefaultSharedPreferences(this);
         boolean highlightWrongValues = gameSettings.getBoolean("highlight_wrong_values", true);
-        sudokuGame.setHighlightWrongVals(highlightWrongValues);
+        mSudokuGame.setHighlightWrongVals(highlightWrongValues);
 		
 	}
 	
@@ -113,24 +113,24 @@ public class SudokuPlayActivity extends Activity{
     protected void onPause() {
     	super.onPause();
 		
-    	if (sudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-			sudokuGame.pause();
+    	if (mSudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			mSudokuGame.pause();
 		}
     	
     	// we will save game to the database as we might not be able to get back
 		SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
-		sudokuDB.updateSudoku(sudokuGame);
+		sudokuDB.updateSudoku(mSudokuGame);
 		
-		gameTimer.stop();
+		mGameTimer.stop();
     }
     
     @Override
     protected void onSaveInstanceState(Bundle outState) {
     	super.onSaveInstanceState(outState);
 		
-    	gameTimer.stop();
-    	outState.putParcelable("sudoku_game", sudokuGame);
-    	gameTimer.saveState(outState);
+    	mGameTimer.stop();
+    	outState.putParcelable("sudoku_game", mSudokuGame);
+    	mGameTimer.saveState(outState);
     }	
 	
 	@Override
@@ -174,7 +174,7 @@ public class SudokuPlayActivity extends Activity{
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		
-		menu.findItem(MENU_ITEM_UNDO).setEnabled(sudokuGame.hasSomethingToUndo());
+		menu.findItem(MENU_ITEM_UNDO).setEnabled(mSudokuGame.hasSomethingToUndo());
 		
 		return true;
 	}
@@ -189,8 +189,8 @@ public class SudokuPlayActivity extends Activity{
         	showDialog(DIALOG_CLEAR_NOTES);
         	return true;
         case MENU_ITEM_UNDO:
-        	sudokuGame.undo();
-        	sudokuBoard.postInvalidate();
+        	mSudokuGame.undo();
+        	mSudokuBoard.postInvalidate();
         	return true;
         case MENU_ITEM_SETTINGS:
         	Intent i = new Intent();
@@ -223,11 +223,11 @@ public class SudokuPlayActivity extends Activity{
             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     // Restart game
-                	sudokuGame.reset();
-                	sudokuGame.start();
-                	sudokuBoard.setReadOnly(false);
-                	sudokuBoard.postInvalidate();
-                	gameTimer.start();
+                	mSudokuGame.reset();
+                	mSudokuGame.start();
+                	mSudokuBoard.setReadOnly(false);
+                	mSudokuBoard.postInvalidate();
+                	mGameTimer.start();
                 }
             })
             .setNegativeButton(android.R.string.no, null)
@@ -239,8 +239,8 @@ public class SudokuPlayActivity extends Activity{
             .setMessage(R.string.clear_all_notes_confirm)
             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	sudokuGame.clearAllNotes();
-                	sudokuBoard.postInvalidate();
+                	mSudokuGame.clearAllNotes();
+                	mSudokuBoard.postInvalidate();
                 }
             })
             .setNegativeButton(android.R.string.no, null)
@@ -256,8 +256,8 @@ public class SudokuPlayActivity extends Activity{
 
 		@Override
 		public void onPuzzleSolved() {
-			sudokuBoard.setReadOnly(true);
-			sudokuBoard.postInvalidate();
+			mSudokuBoard.setReadOnly(true);
+			mSudokuBoard.postInvalidate();
 			showDialog(DIALOG_WELL_DONE);
 		}
     	
@@ -272,10 +272,10 @@ public class SudokuPlayActivity extends Activity{
 	}
 	
 	public String getTime() {
-		long time = sudokuGame.getTime();
-		timeText.setLength(0);
-		timeFormatter.format("%02d:%02d", time / 60000, time / 1000 % 60);
-		return timeText.toString();
+		long time = mSudokuGame.getTime();
+		mTimeText.setLength(0);
+		mTimeFormatter.format("%02d:%02d", time / 60000, time / 1000 % 60);
+		return mTimeText.toString();
 	}
 	
 	// This class implements the game clock.  All it does is update the
