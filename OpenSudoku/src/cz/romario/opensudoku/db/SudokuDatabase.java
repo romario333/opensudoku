@@ -47,7 +47,7 @@ public class SudokuDatabase {
         qb.setTables(FOLDER_TABLE_NAME);
         
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        return qb.query(db, null, null, null, null, null, "created DESC");
+        return qb.query(db, null, null, null, null, null, "created ASC");
     }
     
     /**
@@ -254,10 +254,16 @@ public class SudokuDatabase {
         values.put(SudokuColumns.FOLDER_ID, folderID);
         values.put(SudokuColumns.DATA, sudoku.serialize());
 
-        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        long rowId = db.insert(SUDOKU_TABLE_NAME, FolderColumns.NAME, values);
-        if (rowId > 0) {
-            return rowId;
+        SQLiteDatabase db = null;
+        try {
+	        db = mOpenHelper.getWritableDatabase();
+	        long rowId = db.insert(SUDOKU_TABLE_NAME, FolderColumns.NAME, values);
+	        if (rowId > 0) {
+	            return rowId;
+	        }
+        } finally {
+        	if (db != null)
+        		db.close();
         }
 
         throw new SQLException("Failed to insert sudoku.");

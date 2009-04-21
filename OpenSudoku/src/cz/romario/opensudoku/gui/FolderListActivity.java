@@ -157,7 +157,7 @@ public class FolderListActivity extends ListActivity {
         .setIcon(android.R.drawable.ic_menu_info_details);
 
         // TODO: visible only in debug mode
-        menu.add(0, MENU_ITEM_DEBUG, 2, "debug");
+        //menu.add(0, MENU_ITEM_DEBUG, 2, "debug");
         
         // Generate any additional actions that can be performed on the
         // overall list.  In a normal install, there are no additional
@@ -224,7 +224,8 @@ public class FolderListActivity extends ListActivity {
 	 * 
 	 */
     private void showAddFolderDialog() {
-		LayoutInflater factory = LayoutInflater.from(this);
+		// TODO: if I change orientation with dialog visible, WindowLeaked exception is logged
+    	LayoutInflater factory = LayoutInflater.from(this);
         final View nameView = factory.inflate(R.layout.folder_name, null);
         final TextView nameInput = (TextView)nameView.findViewById(R.id.name);
         final Dialog dialog = new AlertDialog.Builder(this)
