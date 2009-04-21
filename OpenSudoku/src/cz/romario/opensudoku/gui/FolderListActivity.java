@@ -45,8 +45,9 @@ public class FolderListActivity extends ListActivity {
     private static final String TAG = "FolderListActivity";
     
     private Handler mGuiHandler;
-    private TaskQueue mBackgroundTaskQueue;
+    //private TaskQueue mBackgroundTaskQueue;
     private Cursor mCursor;
+    private SudokuDatabase mSudokuDB;
     
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +58,14 @@ public class FolderListActivity extends ListActivity {
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 		
 		mGuiHandler = new Handler();
-		mBackgroundTaskQueue = new TaskQueue();
+		//mBackgroundTaskQueue = new TaskQueue();
+		
+		mSudokuDB = new SudokuDatabase(this);
 		
 		// Inform the list we provide context menus for items
         getListView().setOnCreateContextMenuListener(this);
 
-        // TODO: it is important that only getFolderList is called on this instance.
+        // TODO: it is important that only getFolderList is called on this instance of SudokuDatabase.
         mCursor = new SudokuDatabase(this).getFolderList();
 		startManagingCursor(mCursor);
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.folder_list_item,
@@ -80,29 +83,30 @@ public class FolderListActivity extends ListActivity {
 				case R.id.detail:
 					final long folderID = c.getLong(columnIndex);
 					final TextView detailView = (TextView)view;
-					final Handler guiHandler = mGuiHandler;
-					detailView.setText("");
-					detailView.setTag(folderID);
-					// folder detail will be loaded asynchronously
-					// TODO: read something about multithreading in java, android and do this properly
-					mBackgroundTaskQueue.addTask(new Runnable() {
-						@Override
-						public void run() {
-							final String detail = new SudokuDatabase(FolderListActivity.this).getFolderInfo(folderID).getDetail(FolderListActivity.this);
-							
-							guiHandler.post(new Runnable() {
-								@Override
-								public void run() {
-									synchronized (detailView) {
-										// check that view still contains same data
-										if (detailView.getTag() != null && (Long)detailView.getTag() == folderID) {
-											detailView.setText(detail);
-										}
-									}
-								}
-							});
-						}
-					});
+					//final Handler guiHandler = mGuiHandler;
+					// TODO: lazy load detail or improve detail loading performance
+					String detail = mSudokuDB.getFolderInfo(folderID).getDetail(FolderListActivity.this);
+					detailView.setText(detail);
+//					detailView.setTag(folderID);
+//					// folder detail will be loaded asynchronously
+//					mBackgroundTaskQueue.addTask(new Runnable() {
+//						@Override
+//						public void run() {
+//							final String detail = mSudokuDB.getFolderInfo(folderID).getDetail(FolderListActivity.this);
+//							
+//							guiHandler.post(new Runnable() {
+//								@Override
+//								public void run() {
+//									synchronized (detailView) {
+//										// check that view still contains same data
+//										if (detailView.getTag() != null && (Long)detailView.getTag() == folderID) {
+//											detailView.setText(detail);
+//										}
+//									}
+//								}
+//							});
+//						}
+//					});
 				}
 				
 				return true;
@@ -126,13 +130,13 @@ public class FolderListActivity extends ListActivity {
     @Override
     protected void onResume() {
     	super.onResume();
-    	mBackgroundTaskQueue.start();
+    	//mBackgroundTaskQueue.start();
     }
     
     @Override
     protected void onPause() {
     	super.onPause();
-    	mBackgroundTaskQueue.stop();
+    	//mBackgroundTaskQueue.stop();
     }
 	
 	private void update() {
@@ -183,8 +187,8 @@ public class FolderListActivity extends ListActivity {
             // For some reason the requested item isn't available, do nothing
             return;
         }
-        // TODO: I assume that first column in cursor is folder name, maybe I should create my own adapter
-        menu.setHeaderTitle(cursor.getString(0));
+        // TODO: don't assume that second column is name
+        menu.setHeaderTitle(cursor.getString(2));
 
         // Add a menu item to delete the note
         menu.add(0, MENU_ITEM_RENAME, 0, R.string.rename_folder);
@@ -245,9 +249,10 @@ public class FolderListActivity extends ListActivity {
 	 * I don't use onCreateDialog for this, because I need to change some
 	 * dialog attributes on each show.
 	 * 
-	 * @param folder
+	 * @param folderID
 	 */
-    private void showRenameFolderDialog(FolderInfo folder) {
+    private void showRenameFolderDialog(long folderID) {
+    	FolderInfo folder = mSudokuDB.getFolderInfo(folderID);
         LayoutInflater factory = LayoutInflater.from(this);
         final View nameView = factory.inflate(R.layout.folder_name, null);
         final TextView nameInput = (TextView)nameView.findViewById(R.id.name);
@@ -280,7 +285,8 @@ public class FolderListActivity extends ListActivity {
 	 * 
 	 * @param folder
 	 */
-    private void showDeleteFolderDialog(FolderInfo folder) {
+    private void showDeleteFolderDialog(long folderID) {
+    	FolderInfo folder = mSudokuDB.getFolderInfo(folderID);
         final long folderToDeleteId = folder.id;
     	final Dialog dialog = new AlertDialog.Builder(this)
         .setIcon(android.R.drawable.ic_delete)
@@ -311,17 +317,15 @@ public class FolderListActivity extends ListActivity {
             Log.e(TAG, "bad menuInfo", e);
             return false;
         }
+        
 
         FolderInfo folder;
         switch (item.getItemId()) {
         case MENU_ITEM_RENAME:
-        	folder = (FolderInfo)getListAdapter().getItem(info.position);
-        	//showDialog(DIALOG_RENAME_FOLDER, folder);
-        	showRenameFolderDialog(folder);
+        	showRenameFolderDialog(info.id);
         	return true;
         case MENU_ITEM_DELETE:
-        	folder = (FolderInfo)getListAdapter().getItem(info.position);
-        	showDeleteFolderDialog(folder);
+        	showDeleteFolderDialog(info.id);
         	return true;
         }
         return false;

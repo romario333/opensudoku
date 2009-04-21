@@ -94,6 +94,7 @@ public class SudokuDatabase {
         	if (c != null) {
         		c.close();
         	}
+        	// TODO: I think that db should be closed explicitly by client
         	if (db != null) {
         		db.close();
         	}

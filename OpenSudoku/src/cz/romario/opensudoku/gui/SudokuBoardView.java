@@ -422,18 +422,22 @@ public class SudokuBoardView extends View {
 	};
 	
 	private void setCellValue(SudokuCell cell, int value) {
-		if (mGame != null) {
-			mGame.setCellValue(cell, value);
-		} else {
-			cell.setValue(value);
+		if (cell.getEditable()) {
+			if (mGame != null) {
+				mGame.setCellValue(cell, value);
+			} else {
+				cell.setValue(value);
+			}
 		}
 	}
 	
 	private void setCellNote(SudokuCell cell, String note) {
-		if (mGame != null) {
-			mGame.setCellNote(cell, note);
-		} else {
-			cell.setNote(note);
+		if (cell.getEditable()) {
+			if (mGame != null) {
+				mGame.setCellNote(cell, note);
+			} else {
+				cell.setNote(note);
+			}
 		}
 	}
 	
