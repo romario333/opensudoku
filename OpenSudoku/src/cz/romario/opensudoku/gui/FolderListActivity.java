@@ -8,7 +8,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -20,10 +23,16 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 import cz.romario.opensudoku.R;
+import cz.romario.opensudoku.db.FolderColumns;
+import cz.romario.opensudoku.db.SudokuColumns;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.FolderInfo;
+import cz.romario.opensudoku.game.SudokuCellCollection;
+import cz.romario.opensudoku.game.SudokuGame;
 
 public class FolderListActivity extends ListActivity {
     
@@ -35,7 +44,9 @@ public class FolderListActivity extends ListActivity {
     
     private static final String TAG = "FolderListActivity";
     
-    private FolderListAdapter mListAdapter;
+    private Handler mGuiHandler;
+    private TaskQueue mBackgroundTaskQueue;
+    private Cursor mCursor;
     
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,27 +56,87 @@ public class FolderListActivity extends ListActivity {
 		
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 		
-        // Inform the list we provide context menus for items
+		mGuiHandler = new Handler();
+		mBackgroundTaskQueue = new TaskQueue();
+		
+		// Inform the list we provide context menus for items
         getListView().setOnCreateContextMenuListener(this);
 
+        // TODO: it is important that only getFolderList is called on this instance.
+        mCursor = new SudokuDatabase(this).getFolderList();
+		startManagingCursor(mCursor);
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.folder_list_item,
+				mCursor, new String[] { FolderColumns.NAME, FolderColumns._ID},
+				new int[] { R.id.name, R.id.detail});
+
+		adapter.setViewBinder(new ViewBinder() {
+			@Override
+			public boolean setViewValue(View view, Cursor c, int columnIndex) {
+
+				switch (view.getId()) {
+				case R.id.name:
+					((TextView)view).setText(c.getString(columnIndex));
+					break;
+				case R.id.detail:
+					final long folderID = c.getLong(columnIndex);
+					final TextView detailView = (TextView)view;
+					final Handler guiHandler = mGuiHandler;
+					detailView.setText("");
+					detailView.setTag(folderID);
+					// folder detail will be loaded asynchronously
+					// TODO: read something about multithreading in java, android and do this properly
+					mBackgroundTaskQueue.addTask(new Runnable() {
+						@Override
+						public void run() {
+							final String detail = new SudokuDatabase(FolderListActivity.this).getFolderInfo(folderID).getDetail(FolderListActivity.this);
+							
+							guiHandler.post(new Runnable() {
+								@Override
+								public void run() {
+									synchronized (detailView) {
+										// check that view still contains same data
+										if (detailView.getTag() != null && (Long)detailView.getTag() == folderID) {
+											detailView.setText(detail);
+										}
+									}
+								}
+							});
+						}
+					});
+				}
+				
+				return true;
+			}
+		});
+		
+		// TODO: pravdepodobne se nebude aktualizovat se zmenou stavu
         
-        mListAdapter = new FolderListAdapter(this);
-        setListAdapter(mListAdapter);
+        
+        setListAdapter(adapter);
 	}
+    
+    @Override
+    protected void onStart() {
+    	// TODO Auto-generated method stub
+    	super.onStart();
+    	
+    	update();
+    }
+    
+    @Override
+    protected void onResume() {
+    	super.onResume();
+    	mBackgroundTaskQueue.start();
+    }
+    
+    @Override
+    protected void onPause() {
+    	super.onPause();
+    	mBackgroundTaskQueue.stop();
+    }
 	
-	@Override
-	protected void onStart() {
-		super.onStart();
-
-		// we will load current folders data on every start
-		fillData();
-
-	}
-	
-	private void fillData() {
-        SudokuDatabase sudokuDB = new SudokuDatabase(this);
-        FolderInfo[] folderList = sudokuDB.getFolderList();
-        mListAdapter.setFolders(folderList);
+	private void update() {
+		mCursor.requery();
 	}
 	
 	@Override
@@ -107,8 +178,13 @@ public class FolderListActivity extends ListActivity {
             return;
         }
 
-        FolderInfo f = (FolderInfo)getListAdapter().getItem(info.position);
-        menu.setHeaderTitle(f.name);
+        Cursor cursor = (Cursor) getListAdapter().getItem(info.position);
+        if (cursor == null) {
+            // For some reason the requested item isn't available, do nothing
+            return;
+        }
+        // TODO: I assume that first column in cursor is folder name, maybe I should create my own adapter
+        menu.setHeaderTitle(cursor.getString(0));
 
         // Add a menu item to delete the note
         menu.add(0, MENU_ITEM_RENAME, 0, R.string.rename_folder);
@@ -155,7 +231,7 @@ public class FolderListActivity extends ListActivity {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
                 	db.insertFolder(nameInput.getText().toString().trim());
-                	fillData();
+                	update();
                 }
             })
             .setNegativeButton(android.R.string.cancel, null)
@@ -186,7 +262,7 @@ public class FolderListActivity extends ListActivity {
             public void onClick(DialogInterface dialog, int whichButton) {
             	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
             	db.updateFolder(folderToEditId, nameInput.getText().toString().trim());
-            	fillData();
+            	update();
             	//dialog.dismiss();
             }
         })
@@ -215,7 +291,7 @@ public class FolderListActivity extends ListActivity {
             	// TODO: this could take a while, I should show progress dialog
             	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
             	db.deleteFolder(folderToDeleteId);
-            	fillData();
+            	update();
             }
         })
         .setNegativeButton(android.R.string.no, null)
@@ -275,53 +351,4 @@ public class FolderListActivity extends ListActivity {
 		i.putExtra(SudokuListActivity.EXTRAS_FOLDER_ID, id);
 		startActivity(i);
 	}
-	
-	private class FolderListAdapter extends BaseAdapter {
-
-		private LayoutInflater inflater;
-		private FolderInfo[] folders = new FolderInfo[0];
-		
-		public FolderListAdapter(Context context) {
-			this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		}
-		
-		public FolderInfo[] getFolders() {
-			return folders;			
-		}
-		
-		public void setFolders(FolderInfo[] folders) {
-			this.folders = folders;
-			notifyDataSetChanged();
-		}
-		
-		@Override
-		public int getCount() {
-			return folders.length;
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return folders[position];
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return folders[position].id;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View itemView = inflater.inflate(R.layout.folder_list_item, parent, false);
-			TextView nameLabel = (TextView) itemView.findViewById(R.id.name);
-			TextView detailLabel = (TextView) itemView.findViewById(R.id.detail);
-			
-			FolderInfo folder = folders[position];
-			nameLabel.setText(folder.name);
-			
-			detailLabel.setText(folder.getDetail(FolderListActivity.this));
-			
-			return itemView;
-		}
-	}
-
 }

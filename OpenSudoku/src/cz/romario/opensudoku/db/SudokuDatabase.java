@@ -14,6 +14,11 @@ import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 
+/**
+ * 
+ * @author romario
+ *
+ */
 public class SudokuDatabase {
 	public static final String DATABASE_NAME = "opensudoku";
     public static final int DATABASE_VERSION = 7;
@@ -29,56 +34,20 @@ public class SudokuDatabase {
     public SudokuDatabase(Context context) {
     	mOpenHelper = new DatabaseHelper(context);
     }
-    
 
     /**
      * Returns list of puzzle folders.
+     * TODO: Other methods are closing database attached to cursor, which this method returns.
+     * 
      * @return
      */
-    public FolderInfo[] getFolderList() {
-    	Map<Long, FolderInfo> folders = new HashMap<Long, FolderInfo>();
-    	
-    	SQLiteDatabase db = null;
-    	Cursor c = null;
-    	try
-        {
-	    	db = mOpenHelper.getReadableDatabase();
-	        
-	        // selectionArgs: You may include ?s in where clause in the query, which will be replaced by the values from selectionArgs. The values will be bound as Strings.
-	        c = db.rawQuery("select folder._id as _id, folder.name as name, sudoku.state as state, count(sudoku.state) as count from folder left join sudoku on folder._id = sudoku.folder_id group by folder._id, sudoku.state;", null);
-	        
-	        while (c.moveToNext()) {
-	        	long id = c.getLong(c.getColumnIndex(FolderColumns._ID));
-	        	String name = c.getString(c.getColumnIndex(FolderColumns.NAME));
-	        	int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
-	        	int count = c.getInt(c.getColumnIndex("count"));
-	        	
-	        	if (!folders.containsKey(id)) {
-	        		folders.put(id, new FolderInfo(id, name));
-	        	}
-	        	FolderInfo folder = folders.get(id);
-	        	folder.puzzleCount += count;
-	        	if (state == SudokuGame.GAME_STATE_COMPLETED) {
-	        		folder.solvedCount += count;
-	        	}
-	        	if (state == SudokuGame.GAME_STATE_PLAYING) {
-	        		folder.playingCount += count;
-	        	}
-	        }
-        }
-        finally {
-        	if (c != null) {
-        		c.close();
-        	}
-        	if (db != null) {
-        		db.close();
-        	}
-        }
+    public Cursor getFolderList() {
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        qb.setTables(FOLDER_TABLE_NAME);
         
-        FolderInfo[] foldersArray = new FolderInfo[folders.size()];
-        folders.values().toArray(foldersArray);
-        
-        return foldersArray;
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        return qb.query(db, null, null, null, null, null, "created DESC");
     }
     
     /**
@@ -87,7 +56,7 @@ public class SudokuDatabase {
      * @param folderID Primary key of folder.
      * @return
      */
-    public FolderInfo getFolder(long folderID) {
+    public FolderInfo getFolderInfo(long folderID) {
     	FolderInfo folder = null;
     	
     	SQLiteDatabase db = null;
@@ -99,7 +68,7 @@ public class SudokuDatabase {
 	    	db = mOpenHelper.getReadableDatabase();
 	        
 	        // selectionArgs: You may include ?s in where clause in the query, which will be replaced by the values from selectionArgs. The values will be bound as Strings.
-	    	String q = "select folder._id as _id, folder.name as name, sudoku.state as state, count(sudoku.state) as count from folder left join sudoku on folder._id = sudoku.folder_id where folder._id = " + folderID + " group by sudoku.state;";
+	    	String q = "select folder._id as _id, folder.name as name, sudoku.state as state, count(sudoku.state) as count from folder left join sudoku on folder._id = sudoku.folder_id where folder._id = " + folderID + " group by sudoku.state";
 	        c = db.rawQuery(q, null);
 	        
 	        while (c.moveToNext()) {
@@ -201,6 +170,8 @@ public class SudokuDatabase {
     
     /**
      * Returns list of puzzles in the given folder.
+     * 
+     * TODO: Other methods are closing database attached to cursor, which this method returns.
      * 
      * @param folderID Primary key of folder.
      * @return

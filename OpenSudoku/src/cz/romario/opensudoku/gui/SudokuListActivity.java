@@ -53,7 +53,6 @@ public class SudokuListActivity extends ListActivity {
 	private DateFormat mTimeFormatter = DateFormat
 			.getTimeInstance(DateFormat.SHORT);
 
-	private SimpleCursorAdapter mAdapter;
 	private Cursor mCursor;
 
 	private long mFolderID;
@@ -83,14 +82,14 @@ public class SudokuListActivity extends ListActivity {
 
 		mCursor = sudokuDB.getSudokuList(mFolderID);
 		startManagingCursor(mCursor);
-		mAdapter = new SimpleCursorAdapter(this, R.layout.sudoku_list_item,
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.sudoku_list_item,
 				mCursor, new String[] { SudokuColumns.DATA, SudokuColumns.STATE,
 						SudokuColumns.TIME, SudokuColumns.LAST_PLAYED,
 						SudokuColumns.CREATED, SudokuColumns.PUZZLE_NOTE },
 				new int[] { R.id.sudoku_board, R.id.state, R.id.time,
 						R.id.last_played, R.id.created, R.id.note });
 
-		mAdapter.setViewBinder(new ViewBinder() {
+		adapter.setViewBinder(new ViewBinder() {
 			@Override
 			public boolean setViewValue(View view, Cursor c, int columnIndex) {
 
@@ -190,7 +189,7 @@ public class SudokuListActivity extends ListActivity {
 			}
 		});
 
-		setListAdapter(mAdapter);
+		setListAdapter(adapter);
 	}
 
 	@Override
@@ -213,8 +212,8 @@ public class SudokuListActivity extends ListActivity {
 	
 	private void updateTitle() {
 		SudokuDatabase sudokuDB = new SudokuDatabase(this);
-		FolderInfo folder = sudokuDB.getFolder(mFolderID);
-		setTitle(folder.name + " - " + sudokuDB.getFolder(mFolderID).getDetail(this));
+		FolderInfo folder = sudokuDB.getFolderInfo(mFolderID);
+		setTitle(folder.name + " - " + folder.getDetail(this));
 	}
 
 	private String getTime(long time) {
