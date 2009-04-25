@@ -9,7 +9,7 @@
 	    android:layout_width="wrap_content"
 	    android:layout_height="fill_parent"
 	     />
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:orientation="vertical"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent">
@@ -17,13 +17,15 @@
 		    android:id="@+id/button_save"
 		    android:layout_width="fill_parent" 
 		    android:layout_height="wrap_content"
+		    android:layout_alignParentTop="true"
 		    android:text="@string/save" 
 			/> 
 	    <Button
 		    android:id="@+id/button_cancel"
 		    android:layout_width="fill_parent" 
 		    android:layout_height="wrap_content"
+		    android:layout_alignParentBottom="true"
 		    android:text="@android:string/cancel" 
 			/> 
-	</LinearLayout>
+	</RelativeLayout>
 </LinearLayout>
