@@ -224,7 +224,7 @@ public class SudokuBoardView extends View {
 		int paddingTop = getPaddingTop();
 		
 		// draw cells
-		float cellLeft, cellTop;
+		int cellLeft, cellTop;
 		if (mCells != null) {
 			
 			// TODO: why?
@@ -235,8 +235,8 @@ public class SudokuBoardView extends View {
 				for (int col=0; col<9; col++) {
 					SudokuCell cell = mCells.getCell(row, col);
 					
-					cellLeft = (col * mCellWidth) + paddingLeft;
-					cellTop = (row * mCellHeight) + paddingTop;
+					cellLeft = Math.round((col * mCellWidth) + paddingLeft);
+					cellTop = Math.round((row * mCellHeight) + paddingTop);
 
 					// draw read-only field background
 					if (!cell.getEditable()) {
@@ -252,7 +252,7 @@ public class SudokuBoardView extends View {
 						mNumberPaint.setColor(cell.getInvalid() ? Color.RED : Color.BLACK);
 						canvas.drawText(new Integer(value).toString(),
 								cellLeft + mNumberLeft, 
-								cellTop + mNumberTop - numberAscent, 
+								Math.round(cellTop) + mNumberTop - numberAscent, 
 								mNumberPaint);
 					} else {
 						
@@ -282,8 +282,8 @@ public class SudokuBoardView extends View {
 			
 			// highlight selected cell
 			if (!mReadonly && mSelectedCell != null) {
-				cellLeft = mSelectedCell.getColumnIndex() * mCellWidth;
-				cellTop = mSelectedCell.getRowIndex() * mCellHeight;
+				cellLeft = Math.round(mSelectedCell.getColumnIndex() * mCellWidth);
+				cellTop = Math.round(mSelectedCell.getRowIndex() * mCellHeight);
 				canvas.drawRect(
 						cellLeft, cellTop, 
 						cellLeft + mCellWidth, cellTop + mCellHeight,
@@ -293,8 +293,8 @@ public class SudokuBoardView extends View {
 			// visually highlight cell under the finger (to cope with touch screen
 			// imprecision)
 			if (mTouchedCell != null) {
-				cellLeft = mTouchedCell.getColumnIndex() * mCellWidth;
-				cellTop = mTouchedCell.getRowIndex() * mCellHeight;
+				cellLeft = Math.round(mTouchedCell.getColumnIndex() * mCellWidth);
+				cellTop = Math.round(mTouchedCell.getRowIndex() * mCellHeight);
 				canvas.drawRect(
 						cellLeft, 0,
 						cellLeft + mCellWidth, height,
