@@ -6,8 +6,8 @@
     android:padding="4sp">
 	<cz.romario.opensudoku.gui.SudokuBoardView
 		android:id="@+id/sudoku_board"
-	    android:layout_width="100sp"
-	    android:layout_height="100sp"
+	    android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content"
 	    android:layout_marginRight="4sp"
 	     />
 	<TextView

@@ -126,6 +126,7 @@ public class SudokuListActivity extends ListActivity {
 						// TODO: read colors from android resources
 						label.setTextColor(Color.rgb(187, 187, 187));
 					} else {
+						label.setTextColor(Color.rgb(255, 255, 255));
 						//label.setTextColor(SudokuListActivity.this.getResources().getColor(R.));
 					}
 					break;

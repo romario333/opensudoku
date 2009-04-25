@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,8 +25,12 @@ import android.view.WindowManager;
  */
 public class SudokuBoardView extends View {
 
-	private int mCellWidth;
-	private int mCellHeight;
+	public static final int DEFAULT_BOARD_SIZE = 100;
+	
+	private static final String TAG = "SudokuBoardView";
+	
+	private float mCellWidth;
+	private float mCellHeight;
 	
 	private Paint mLinePaint;
 	private Paint mNumberPaint;
@@ -147,40 +152,53 @@ public class SudokuBoardView extends View {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
         
-        int width;
-        int height;
         
+        Log.d(TAG, "widthMode=" + getMeasureSpecModeString(widthMode));
+        Log.d(TAG, "widthSize=" + widthSize);
+        Log.d(TAG, "heightMode=" + getMeasureSpecModeString(heightMode));
+        Log.d(TAG, "heightSize=" + heightSize);
+        
+        int width = -1, height = -1;
         if (widthMode == MeasureSpec.EXACTLY) {
-        	// Parent has told us how big to be.
         	width = widthSize;
         } else {
-        	// TOOD: jaky dat default?
-        	width = 100;
+        	width = DEFAULT_BOARD_SIZE;
+        	if (widthMode == MeasureSpec.AT_MOST && width > widthSize ) {
+        		width = widthSize;
+        	}
         }
-        
         if (heightMode == MeasureSpec.EXACTLY) {
-        	// Parent has told us how big to be.
         	height = heightSize;
         } else {
-        	// TOOD: jaky dat default?
-        	height = 100;
+        	height = DEFAULT_BOARD_SIZE;
+        	if (heightMode == MeasureSpec.AT_MOST && height > heightSize ) {
+        		height = heightSize;
+        	}
         }
         
-        // sudoku will always be square
-        // TODO: I'm expecting pixel's width to be same as height
-        int size = Math.min(width, height);
-        width = size;
-        height = size;
+        if (widthMode != MeasureSpec.EXACTLY) {
+        	width = height;
+        }
         
-        mCellWidth = width / 9;
-        mCellHeight = height / 9;
+        if (heightMode != MeasureSpec.EXACTLY) {
+        	height = width;
+        }
+        
+    	if (widthMode == MeasureSpec.AT_MOST && width > widthSize ) {
+    		width = widthSize;
+    	}
+    	if (heightMode == MeasureSpec.AT_MOST && height > heightSize ) {
+    		height = heightSize;
+    	}
+        
+    	mCellWidth = (width - getPaddingLeft() - getPaddingRight()) / 9.0f;
+        mCellHeight = (height - getPaddingTop() - getPaddingBottom()) / 9.0f;
 
-        // TODO: padding should not be hardcoded (+ 1)
-        setMeasuredDimension(mCellWidth * 9 + 1, mCellHeight * 9 + 1);
+        setMeasuredDimension(width, height);
         
         mNumberPaint.setTextSize(mCellHeight * 0.75f);
         mNotePaint.setTextSize(mCellHeight / 3f);
@@ -193,11 +211,20 @@ public class SudokuBoardView extends View {
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		
-		int width = getMeasuredWidth();
-		int height = getMeasuredHeight();
+		// some notes:
+		// Drawable has its own draw() method that takes your Canvas as an arguement
+		
+//		int width = getMeasuredWidth();
+//		int height = getMeasuredHeight();
+		// TODO: padding?
+		int width = getWidth() - getPaddingLeft() - getPaddingRight();
+		int height = getHeight() - getPaddingTop() - getPaddingBottom();
+		
+		int paddingLeft = getPaddingLeft();
+		int paddingTop = getPaddingTop();
 		
 		// draw cells
-		int cellLeft, cellTop;
+		float cellLeft, cellTop;
 		if (mCells != null) {
 			
 			// TODO: why?
@@ -208,8 +235,8 @@ public class SudokuBoardView extends View {
 				for (int col=0; col<9; col++) {
 					SudokuCell cell = mCells.getCell(row, col);
 					
-					cellLeft = col * mCellWidth;
-					cellTop = row * mCellHeight;
+					cellLeft = (col * mCellWidth) + paddingLeft;
+					cellTop = (row * mCellHeight) + paddingTop;
 
 					// draw read-only field background
 					if (!cell.getEditable()) {
@@ -252,7 +279,7 @@ public class SudokuBoardView extends View {
 						
 				}
 			}
-
+			
 			// highlight selected cell
 			if (!mReadonly && mSelectedCell != null) {
 				cellLeft = mSelectedCell.getColumnIndex() * mCellWidth;
@@ -281,8 +308,8 @@ public class SudokuBoardView extends View {
 		}
 		
 		// draw vertical lines
-		for (int c=0; c < 9; c++) {
-			int x = c * mCellWidth;
+		for (int c=0; c <= 9; c++) {
+			float x = c * mCellWidth;
 			if (c % 3 == 0) {
 				canvas.drawRect(x-1, 0, x+1, height, mLinePaint);
 			} else {
@@ -291,8 +318,8 @@ public class SudokuBoardView extends View {
 		}
 		
 		// draw horizontal lines
-		for (int r=0; r < 9; r++) {
-			int y = r * mCellHeight;
+		for (int r=0; r <= 9; r++) {
+			float y = r * mCellHeight;
 			if (r % 3 == 0) {
 				canvas.drawRect(0, y-1, width, y+1, mLinePaint);
 			} else {
@@ -502,8 +529,8 @@ public class SudokuBoardView extends View {
 	private SudokuCell getCellAtPoint(int x, int y) {
 		// TODO: this is not nice, col/row vs x/y
 		
-		int row = y / mCellHeight;
-		int col = x / mCellWidth;
+		int row = (int) (y / mCellHeight);
+		int col = (int) (x / mCellWidth);
 		
 		if(col >= 0 && col < SudokuCellCollection.SUDOKU_SIZE 
 				&& row >= 0 && row < SudokuCellCollection.SUDOKU_SIZE) {
@@ -561,6 +588,26 @@ public class SudokuBoardView extends View {
 		void onCellTap(SudokuCell cell);
 	}
 
+	private String getMeasureSpecModeString(int mode) {
+		String modeString = null;
+		switch (mode) {
+		case MeasureSpec.AT_MOST:
+			modeString = "MeasureSpec.AT_MOST";
+			break;
+		case MeasureSpec.EXACTLY:
+			modeString = "MeasureSpec.EXACTLY";
+			break;
+		case MeasureSpec.UNSPECIFIED:
+			modeString = "MeasureSpec.UNSPECIFIED";
+			break;
+		}
+		
+		if (modeString == null)
+			modeString = new Integer(mode).toString();
+		
+		return modeString;
+	}
+	
 
 
 }

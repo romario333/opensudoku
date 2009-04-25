@@ -6,13 +6,13 @@
 	<LinearLayout 
 	    android:orientation="vertical"
 	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
+	    android:layout_height="wrap_content"
 	    android:gravity="center_horizontal">
 		<!-- TODO: ten muj measure je divnej, proc tady musim nastavovat velikost natvrdo? -->
 		<cz.romario.opensudoku.gui.SudokuBoardView
 			android:id="@+id/sudoku_board"
-		    android:layout_width="210sp"
-		    android:layout_height="210sp"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
 		     />
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		    android:orientation="horizontal"

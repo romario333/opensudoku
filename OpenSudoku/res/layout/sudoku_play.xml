@@ -7,7 +7,7 @@
 	<cz.romario.opensudoku.gui.SudokuBoardView
 		android:id="@+id/sudoku_board"
 	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
+	    android:layout_height="wrap_content"
 	    android:keepScreenOn="true"
 	     />
 </LinearLayout>
