@@ -5,11 +5,11 @@ import cz.romario.opensudoku.game.SudokuCellCollection;
 // TODO: complete this
 public class ClearAllNotesCommand implements Command {
 
-	private SudokuCellCollection mCells;
+	//private SudokuCellCollection mCells;
 	
 	
 	public ClearAllNotesCommand(SudokuCellCollection cells) {
-		this.mCells = cells;
+		//this.mCells = cells;
 	}
 	
 	@Override

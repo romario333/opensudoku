@@ -1,8 +1,6 @@
 package cz.romario.opensudoku.db;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;

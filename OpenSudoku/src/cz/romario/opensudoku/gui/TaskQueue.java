@@ -1,10 +1,10 @@
 package cz.romario.opensudoku.gui;
 
-import java.util.LinkedList;
-
-import android.util.Log;
-
-
+//import java.util.LinkedList;
+//
+//import android.util.Log;
+//
+//
 //public class TaskQueue {
 //	   private LinkedList<Runnable> tasks;
 //	   private Thread thread;

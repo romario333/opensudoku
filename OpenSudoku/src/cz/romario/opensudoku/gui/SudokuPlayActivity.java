@@ -14,15 +14,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Chronometer;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuDatabase;
-import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.SudokuGame.OnPuzzleSolvedListener;
-import cz.romario.opensudoku.gui.EditCellDialog.OnNoteEditListener;
-import cz.romario.opensudoku.gui.EditCellDialog.OnNumberEditListener;
-import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 
 /*
  */

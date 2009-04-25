@@ -4,35 +4,27 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.FolderColumns;
-import cz.romario.opensudoku.db.SudokuColumns;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.FolderInfo;
-import cz.romario.opensudoku.game.SudokuCellCollection;
-import cz.romario.opensudoku.game.SudokuGame;
 
 public class FolderListActivity extends ListActivity {
     
@@ -44,7 +36,7 @@ public class FolderListActivity extends ListActivity {
     
     private static final String TAG = "FolderListActivity";
     
-    private Handler mGuiHandler;
+    //private Handler mGuiHandler;
     //private TaskQueue mBackgroundTaskQueue;
     private Cursor mCursor;
     private SudokuDatabase mSudokuDB;
@@ -57,7 +49,7 @@ public class FolderListActivity extends ListActivity {
 		
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 		
-		mGuiHandler = new Handler();
+		//mGuiHandler = new Handler();
 		//mBackgroundTaskQueue = new TaskQueue();
 		
 		mSudokuDB = new SudokuDatabase(this);
@@ -320,7 +312,6 @@ public class FolderListActivity extends ListActivity {
         }
         
 
-        FolderInfo folder;
         switch (item.getItemId()) {
         case MENU_ITEM_RENAME:
         	showRenameFolderDialog(info.id);
