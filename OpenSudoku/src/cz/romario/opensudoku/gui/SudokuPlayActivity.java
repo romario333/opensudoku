@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -54,7 +55,13 @@ public class SudokuPlayActivity extends Activity{
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sudoku_play);
+        
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			setContentView(R.layout.sudoku_play_landscape);
+		} else {
+			setContentView(R.layout.sudoku_play);
+		}
         
         mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
         mTimeText = new StringBuilder(5);

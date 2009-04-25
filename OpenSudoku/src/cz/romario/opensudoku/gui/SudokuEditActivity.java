@@ -6,6 +6,7 @@ import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -36,7 +37,12 @@ public class SudokuEditActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.sudoku_edit);
+		int orientation = getResources().getConfiguration().orientation;
+		if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			setContentView(R.layout.sudoku_edit_landscape);
+		} else {
+			setContentView(R.layout.sudoku_edit);
+		}
 
 		Button buttonSave = (Button)findViewById(R.id.button_save);
 		Button buttonCancel = (Button)findViewById(R.id.button_cancel);
