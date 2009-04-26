@@ -149,7 +149,7 @@ public class FolderListActivity extends ListActivity {
         .setIcon(android.R.drawable.ic_menu_info_details);
 
         // TODO: visible only in debug mode
-        //menu.add(0, MENU_ITEM_DEBUG, 2, "debug");
+        menu.add(0, MENU_ITEM_DEBUG, 2, "debug");
         
         // Generate any additional actions that can be performed on the
         // overall list.  In a normal install, there are no additional
