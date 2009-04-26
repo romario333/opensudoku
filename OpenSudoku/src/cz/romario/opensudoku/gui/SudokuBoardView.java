@@ -156,10 +156,10 @@ public class SudokuBoardView extends View {
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
         
         
-        Log.d(TAG, "widthMode=" + getMeasureSpecModeString(widthMode));
-        Log.d(TAG, "widthSize=" + widthSize);
-        Log.d(TAG, "heightMode=" + getMeasureSpecModeString(heightMode));
-        Log.d(TAG, "heightSize=" + heightSize);
+//        Log.d(TAG, "widthMode=" + getMeasureSpecModeString(widthMode));
+//        Log.d(TAG, "widthSize=" + widthSize);
+//        Log.d(TAG, "heightMode=" + getMeasureSpecModeString(heightMode));
+//        Log.d(TAG, "heightSize=" + heightSize);
         
         int width = -1, height = -1;
         if (widthMode == MeasureSpec.EXACTLY) {
