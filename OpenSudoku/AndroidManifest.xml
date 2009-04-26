@@ -3,7 +3,7 @@
       package="cz.romario.opensudoku"
       android:versionCode="2"
       android:versionName="0.5.0">
-    <!-- TODO: z release verze bych mel asi debuggable odstranit -->
+    <uses-sdk minSdkVersion="2" />
     <application android:icon="@drawable/opensudoku" android:label="@string/app_name">
         <activity android:name=".gui.SudokuListActivity"
                   android:label="@string/app_name">
