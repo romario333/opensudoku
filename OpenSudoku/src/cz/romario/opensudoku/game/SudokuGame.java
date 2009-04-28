@@ -3,6 +3,7 @@ package cz.romario.opensudoku.game;
 import java.util.Date;
 import java.util.Stack;
 
+import cz.romario.opensudoku.game.command.ClearAllNotesCommand;
 import cz.romario.opensudoku.game.command.Command;
 import cz.romario.opensudoku.game.command.EditCellNoteCommand;
 import cz.romario.opensudoku.game.command.SetCellValueCommand;
@@ -222,7 +223,9 @@ public class SudokuGame implements Parcelable {
 	}
 	
 	public void clearAllNotes() {
-		mCells.clearAllNotes();
+		ClearAllNotesCommand c = new ClearAllNotesCommand(mCells);
+		c.execute();
+		mUndoStack.push(c);
 	}
 	
 	public void setHighlightWrongVals(boolean highlightWrongVals) {

@@ -209,18 +209,6 @@ public class SudokuCellCollection  implements Parcelable {
 	}
 	
 	/**
-	 * Clears all notes attached to cells in the collection.
-	 */
-	public void clearAllNotes() {
-		for (int r=0; r<SUDOKU_SIZE; r++) {
-			for (int c=0; c<SUDOKU_SIZE; c++){
-				SudokuCell cell = mCells[r][c];
-				cell.setNote(null);
-			}
-		}
-	}
-	
-	/**
 	 * Initializes collection, initialization has two steps:
 	 * 1) Groups of cells which must contain unique numbers are created.
 	 * 2) Row and column index for each cell is set.
