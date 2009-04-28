@@ -255,20 +255,16 @@ public class SudokuBoardView extends View {
 								mNumberPaint);
 					} else {
 						
-						// TODO: this is ugly temporary version
 						if (cell.hasNote()) {
 							Integer[] numbers = getNoteNumbers(cell.getNote());
-							int r = 0, c = 0;
 							if (numbers != null) {
 								for (Integer number : numbers) {
-									if (c == 3) {
-										r++;
-										c = 0;
+									if (number >= 1 && number <= 9) {
+										int n = number - 1;
+										int c = n % 3;
+										int r = n / 3;
+										canvas.drawText(number.toString(), cellLeft + c*noteWidth + 2, cellTop - noteAscent + r*noteWidth - 1, mNotePaint);
 									}
-									
-									canvas.drawText(number.toString(), cellLeft + c*noteWidth + 2, cellTop - noteAscent + r*noteWidth - 1, mNotePaint);
-									
-									c++;
 								}
 							}
 						}
