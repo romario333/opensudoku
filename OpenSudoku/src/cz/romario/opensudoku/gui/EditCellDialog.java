@@ -135,13 +135,16 @@ public class EditCellDialog {
 
 		tabHost.setup();
 
+		final View editNumberView = createEditNumberView();
+		final View editNoteView = createEditNoteView();
+		
 		tabHost.addTab(tabHost.newTabSpec("number")
                 .setIndicator(mContext.getString(R.string.select_number))
                 .setContent(new TabHost.TabContentFactory() {
 					
                 	@Override
 					public View createTabContent(String tag) {
-						return createEditNumberView();
+						return editNumberView;
 					}
                 	
                 }));
@@ -151,7 +154,7 @@ public class EditCellDialog {
 					
                 	@Override
 					public View createTabContent(String tag) {
-						return createEditNoteView();
+						return editNoteView;
 					}
                 	
                 }));
