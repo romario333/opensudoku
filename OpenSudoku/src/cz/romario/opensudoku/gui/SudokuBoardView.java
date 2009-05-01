@@ -3,8 +3,6 @@ package cz.romario.opensudoku.gui;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
-import cz.romario.opensudoku.gui.EditCellDialog.OnNoteEditListener;
-import cz.romario.opensudoku.gui.EditCellDialog.OnNumberEditListener;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
@@ -43,8 +41,6 @@ public class SudokuBoardView extends View {
 	private SudokuCell mTouchedCell;
 	private SudokuCell mSelectedCell;
 	public boolean mReadonly = false;
-	
-	private EditCellDialog mEditCellDialog;
 	
 	private SudokuGame mGame;
 	private SudokuCellCollection mCells;
@@ -127,27 +123,6 @@ public class SudokuBoardView extends View {
 		mSelectedPaint.setAlpha(100);
 	}
 
-	/**
-	 * Ensures that editCellDialog exists and is properly initialized.
-	 * 
-	 * @return
-	 */
-	private void ensureEditCellDialog() {
-		if (mEditCellDialog == null) {
-			if (mScreenOrientation == -1) {
-				mScreenOrientation = getResources().getConfiguration().orientation;
-			}
-			
-			// TODO: EditCellDialog is not ready for landscape
-			if (mScreenOrientation != Configuration.ORIENTATION_LANDSCAPE) {
-				mEditCellDialog = new EditCellDialog(getContext());
-		        mEditCellDialog.setOnNumberEditListener(onNumberEditListener);
-		        mEditCellDialog.setOnNoteEditListener(onNoteEditListener);
-			}
-		}
-		
-	}
-	
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
@@ -256,7 +231,7 @@ public class SudokuBoardView extends View {
 					} else {
 						
 						if (cell.hasNote()) {
-							Integer[] numbers = getNoteNumbers(cell.getNote());
+							Integer[] numbers = SudokuCell.getNoteNumbers(cell.getNote());
 							if (numbers != null) {
 								for (Integer number : numbers) {
 									if (number >= 1 && number <= 9) {
@@ -343,13 +318,6 @@ public class SudokuBoardView extends View {
 					if (mOnCellTapListener != null) {
 						mOnCellTapListener.onCellTap(mSelectedCell);
 					}
-					ensureEditCellDialog();
-					if (mSelectedCell.getEditable() && mEditCellDialog != null) {
-						mEditCellDialog.updateNumber(mSelectedCell.getValue());
-						mEditCellDialog.updateNote(getNoteNumbers(mSelectedCell.getNote()));
-						mEditCellDialog.getDialog().show();
-						selectNumberShowed = true;
-					}
 				}
 				
 				// If select number dialog wasn't showed, clear touched cell highlight, if dialog
@@ -410,40 +378,8 @@ public class SudokuBoardView extends View {
 		return false;
 	}
 	
-	/**
-	 * Occurs when user selects number in EditCellDialog.
-	 */
-    private OnNumberEditListener onNumberEditListener = new OnNumberEditListener() {
-		@Override
-		public boolean onNumberEdit(int number) {
-    		SudokuCell selectedCell = getSelectedCell();
-    		if (number != -1) {
-                // set cell number selected by user
-				setCellValue(selectedCell, number);
-				mTouchedCell = null;
-				invalidate();
-    		}
-			return true;
-		}
-	};
 	
-	/**
-	 * Occurs when user edits note in EditCellDialog
-	 */
-	private OnNoteEditListener onNoteEditListener = new OnNoteEditListener() {
-		@Override
-		public boolean onNoteEdit(Integer[] numbers) {
-			SudokuCell selectedCell = getSelectedCell();
-			if (selectedCell != null) {
-				setCellNote(selectedCell, setNoteNumbers(numbers));
-				mTouchedCell = null;
-				invalidate();
-			}
-			return true;
-		}
-	};
-	
-	private void setCellValue(SudokuCell cell, int value) {
+	public void setCellValue(SudokuCell cell, int value) {
 		if (cell.getEditable()) {
 			if (mGame != null) {
 				mGame.setCellValue(cell, value);
@@ -453,7 +389,7 @@ public class SudokuBoardView extends View {
 		}
 	}
 	
-	private void setCellNote(SudokuCell cell, String note) {
+	public void setCellNote(SudokuCell cell, String note) {
 		if (cell.getEditable()) {
 			if (mGame != null) {
 				mGame.setCellNote(cell, note);
@@ -534,44 +470,6 @@ public class SudokuBoardView extends View {
 			return null;
 		}
 	}
-	
-	/**
-	 * Returns content of note as array of numbers. Note is expected to be
-	 * in format "n,n,n".
-	 * 
-	 * @return
-	 */
-	private Integer[] getNoteNumbers(String note) {
-		if (note == null || note.equals(""))
-			return null;
-		
-		String[] numberStrings = note.split(",");
-		Integer[] numbers = new Integer[numberStrings.length];
-		for (int i=0; i<numberStrings.length; i++) {
-			numbers[i] = Integer.parseInt(numberStrings[i]);
-		}
-		
-		return numbers;
-	}
-	
-	/**
-	 * Creates content of note from array of numbers. Note will be stored
-	 * in "n,n,n" format.
-	 * 
-	 * TODO: find better name for this method
-	 * 
-	 * @param numbers
-	 */
-	private String setNoteNumbers(Integer[] numbers) {
-		StringBuffer sb = new StringBuffer();
-		
-		for (Integer number : numbers) {
-			sb.append(number).append(",");
-		}
-		
-		return sb.toString();
-	}
-	
 	
 	public interface OnCellTapListener
 	{

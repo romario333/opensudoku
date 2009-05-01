@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <!-- TODO: add to strings.xml -->
     <PreferenceCategory
             android:title="Game Helpers">
-            
         <CheckBoxPreference
                 android:key="highlight_wrong_values"
                 android:title="Highlight wrong values"
                 android:summary="Highlight values which break rules of sudoku."
                 android:defaultValue="true" />
-            
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="Input Methods">
+        <CheckBoxPreference
+                android:key="input_method_popup"
+                android:title="Popup"
+                android:summary="Edit cell value and note in popup."
+                android:defaultValue="true" />
+        <CheckBoxPreference
+                android:key="input_method_sidebar_number"
+                android:title="Single number"
+                android:summary="Select number, then just tap on cell to set its value."
+                android:defaultValue="false" />
+        <CheckBoxPreference
+                android:key="input_method_sidebar_note"
+                android:title="Single number note"
+                android:summary="Select number, then just tap on cell to note this number."
+                android:defaultValue="true" />
     </PreferenceCategory>
 </PreferenceScreen>

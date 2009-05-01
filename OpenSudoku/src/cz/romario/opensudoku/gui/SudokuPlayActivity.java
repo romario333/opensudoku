@@ -1,11 +1,15 @@
 package cz.romario.opensudoku.gui;
 
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,10 +18,18 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuDatabase;
+import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.SudokuGame.OnPuzzleSolvedListener;
+import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
+import cz.romario.opensudoku.gui.inputmethod.IMControlPanel;
+import cz.romario.opensudoku.gui.inputmethod.IMPopup;
 
 /*
  */
@@ -41,12 +53,14 @@ public class SudokuPlayActivity extends Activity{
 	private SudokuGame mSudokuGame;
 	
 	private SudokuBoardView mSudokuBoard;
+	private IMControlPanel mInputMethods;
 	
 	private StringBuilder mTimeText;
 	private Formatter mTimeFormatter;
 	
 	private GameTimer mGameTimer;
-
+	
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,9 +73,12 @@ public class SudokuPlayActivity extends Activity{
 		}
         
         mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
+        
         mTimeText = new StringBuilder(5);
         mTimeFormatter = new Formatter(mTimeText);
         mGameTimer = new GameTimer();
+        
+        
         
         // create sudoku game instance
         if (savedInstanceState == null) {
@@ -89,6 +106,12 @@ public class SudokuPlayActivity extends Activity{
         mSudokuBoard.setGame(mSudokuGame);
 		mSudokuGame.setOnPuzzleSolvedListener(onSolvedListener);
 		
+        mInputMethods = (IMControlPanel)findViewById(R.id.input_methods);
+        mInputMethods.setBoard(mSudokuBoard);
+        mInputMethods.setGame(mSudokuGame);
+        mInputMethods.initialize();
+		
+		
 		updateTime();
     }
 	
@@ -103,10 +126,24 @@ public class SudokuPlayActivity extends Activity{
 		
         // read game settings
 		SharedPreferences gameSettings = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean highlightWrongValues = gameSettings.getBoolean("highlight_wrong_values", true);
-        mSudokuGame.setHighlightWrongVals(highlightWrongValues);
-		
+        mSudokuGame.setHighlightWrongVals(gameSettings.getBoolean("highlight_wrong_values", true));
+        
+        mInputMethods.setInputMethodEnabled(
+        		IMControlPanel.INPUT_METHOD_POPUP, 
+        		gameSettings.getBoolean("input_method_popup", true));
+        mInputMethods.setInputMethodEnabled(
+        		IMControlPanel.INPUT_METHOD_SIDEBAR_NUMBER, 
+        		gameSettings.getBoolean("input_method_sidebar_number", true));
+        mInputMethods.setInputMethodEnabled(
+        		IMControlPanel.INPUT_METHOD_SIDEBAR_NOTE, 
+        		gameSettings.getBoolean("input_method_sidebar_note", true));
+        
+        if (mInputMethods.getActiveMethodIndex() == -1) {
+        	mInputMethods.activateInputMethod(0);
+        }
 	}
+	
+	
 	
     @Override
     protected void onPause() {
@@ -293,5 +330,4 @@ public class SudokuPlayActivity extends Activity{
         }
         
 	}
-	
 }

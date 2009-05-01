@@ -10,4 +10,9 @@
 	    android:layout_height="wrap_content"
 	    android:keepScreenOn="true"
 	     />
+	<cz.romario.opensudoku.gui.inputmethod.IMControlPanel
+		android:id="@+id/input_methods"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" />
+	
 </LinearLayout>
