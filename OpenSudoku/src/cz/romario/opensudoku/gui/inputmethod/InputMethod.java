@@ -2,6 +2,7 @@ package cz.romario.opensudoku.gui.inputmethod;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import cz.romario.opensudoku.R;

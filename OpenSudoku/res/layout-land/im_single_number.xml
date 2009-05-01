@@ -12,13 +12,11 @@
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
-	   		android:background="@drawable/group_button"
 	    	android:text="1" />
 	   <Button android:id="@+id/button_2"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
-	   		android:background="@drawable/group_button"
 	    	android:text="2" />
 	</LinearLayout>
 	<LinearLayout
@@ -30,13 +28,11 @@
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
-	   		android:background="@drawable/group_button"
 	    	android:text="3" />
 	   <Button android:id="@+id/button_4"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
-	   		android:background="@drawable/group_button"
 	    	android:text="4" />
 	</LinearLayout>
 	
@@ -49,13 +45,11 @@
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
-	   		android:background="@drawable/group_button"
 	    	android:text="5" />
 	   <Button android:id="@+id/button_6"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
-	   		android:background="@drawable/group_button"
 	    	android:text="6" />
 	</LinearLayout>
 	<LinearLayout
@@ -67,13 +61,11 @@
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
-	   		android:background="@drawable/group_button"
 	    	android:text="7" />
 	   <Button android:id="@+id/button_8"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
-	   		android:background="@drawable/group_button"
 	    	android:text="8" />
 	</LinearLayout>
 	<LinearLayout
@@ -85,7 +77,6 @@
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
-	   		android:background="@drawable/group_button"
 	    	android:text="9" />
 	   <Button android:id="@+id/switch_input_mode"
 		    android:layout_width="0dip"

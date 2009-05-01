@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,9 +31,9 @@ public abstract class IMSingleNumber extends InputMethod {
 	
 	private Context mContext;
 	private Handler mGuiHandler;
-	private Drawable mSelectedBackground;
+//	private Drawable mSelectedBackground;
 	private Map<Integer,Button> mNumberButtons;
-	private Map<Integer,Drawable> mNumberButtonsBackgrounds;
+//	private Map<Integer,Drawable> mNumberButtonsBackgrounds;
 	
 	
 	
@@ -57,11 +58,11 @@ public abstract class IMSingleNumber extends InputMethod {
 		mNumberButtons.put(8, (Button)controlPanel.findViewById(R.id.button_8));
 		mNumberButtons.put(9, (Button)controlPanel.findViewById(R.id.button_9));
 		
-		mSelectedBackground = mContext.getResources().getDrawable(R.drawable.group_button_selected);
-		mNumberButtonsBackgrounds = new HashMap<Integer, Drawable>();
+//		mSelectedBackground = mContext.getResources().getDrawable(R.drawable.group_button_selected);
+//		mNumberButtonsBackgrounds = new HashMap<Integer, Drawable>();
 		for (Integer num : mNumberButtons.keySet()) {
 			Button b = mNumberButtons.get(num);
-			mNumberButtonsBackgrounds.put(num, b.getBackground());
+//			mNumberButtonsBackgrounds.put(num, b.getBackground());
 			b.setTag(num);
 			b.setOnClickListener(new OnClickListener() {
 				@Override
@@ -83,9 +84,9 @@ public abstract class IMSingleNumber extends InputMethod {
 			public void run() {
 				for (Button b : mNumberButtons.values()) {
 					if (b.getTag().equals(mSelectedNumber)) {
-						b.setBackgroundDrawable(mSelectedBackground);
+						b.setTextAppearance(mContext, android.R.style.TextAppearance_Large_Inverse);
 					} else {
-						b.setBackgroundDrawable(mNumberButtonsBackgrounds.get(b.getTag()));
+						b.setTextAppearance(mContext, android.R.style.TextAppearance_Widget_Button);
 					}
 				}
 			}
