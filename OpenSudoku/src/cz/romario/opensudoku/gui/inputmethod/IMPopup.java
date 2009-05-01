@@ -36,6 +36,16 @@ public class IMPopup extends InputMethod {
 	}
 	
 	@Override
+	protected void onActivated() {
+		mBoard.setAutoHideTouchedCellHint(false);
+	}
+	
+	@Override
+	protected void onDeactivated() {
+		mBoard.setAutoHideTouchedCellHint(true);
+	}
+	
+	@Override
 	protected void onCellSelected(SudokuCell cell){
 		mSelectedCell = cell;
 		if (cell.getEditable() && mEditCellDialog != null) {
@@ -59,7 +69,7 @@ public class IMPopup extends InputMethod {
 		public boolean onNumberEdit(int number) {
     		if (number != -1 && mSelectedCell != null) {
     			mGame.setCellValue(mSelectedCell, number);
-				mBoard.postInvalidate();
+    			mBoard.hideTouchedCellHint();
     		}
 			return true;
 		}
@@ -73,7 +83,7 @@ public class IMPopup extends InputMethod {
 		public boolean onNoteEdit(Integer[] numbers) {
 			if (mSelectedCell != null) {
 				mGame.setCellNote(mSelectedCell, SudokuCell.setNoteNumbers(numbers));
-				mBoard.postInvalidate();
+				mBoard.hideTouchedCellHint();
 			}
 			return true;
 		}

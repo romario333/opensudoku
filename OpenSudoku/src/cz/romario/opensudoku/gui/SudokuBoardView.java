@@ -40,7 +40,9 @@ public class SudokuBoardView extends View {
 	
 	private SudokuCell mTouchedCell;
 	private SudokuCell mSelectedCell;
-	public boolean mReadonly = false;
+	private boolean mReadonly = false;
+	
+	private boolean mAutoHideTouchedCellHint = true;
 	
 	private SudokuGame mGame;
 	private SudokuCellCollection mCells;
@@ -85,7 +87,7 @@ public class SudokuBoardView extends View {
 		mReadonly = readonly;
 	}
 	
-	public boolean getReadOnly() {
+	public boolean isReadOnly() {
 		return mReadonly;
 	}
 	
@@ -313,16 +315,13 @@ public class SudokuBoardView extends View {
 			case MotionEvent.ACTION_UP:
 				mSelectedCell = getCellAtPoint(x, y);
 				
-				boolean selectNumberShowed = false;
 				if (mSelectedCell != null) {
 					if (mOnCellTapListener != null) {
 						mOnCellTapListener.onCellTap(mSelectedCell);
 					}
 				}
 				
-				// If select number dialog wasn't showed, clear touched cell highlight, if dialog
-				// is visible, highlight will be cleared after dialog is dismissed.
-				if (!selectNumberShowed) {
+				if (mAutoHideTouchedCellHint) {
 					mTouchedCell = null;
 				}
 				break;
@@ -499,6 +498,19 @@ public class SudokuBoardView extends View {
 			modeString = new Integer(mode).toString();
 		
 		return modeString;
+	}
+
+	public void setAutoHideTouchedCellHint(boolean autoHideTouchedCellHint) {
+		mAutoHideTouchedCellHint = autoHideTouchedCellHint;
+	}
+
+	public boolean getAutoHideTouchedCellHint() {
+		return mAutoHideTouchedCellHint;
+	}
+	
+	public void hideTouchedCellHint() {
+		mTouchedCell = null;
+		invalidate();
 	}
 	
 

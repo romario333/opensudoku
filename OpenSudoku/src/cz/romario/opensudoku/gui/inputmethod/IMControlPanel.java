@@ -128,6 +128,10 @@ public class IMControlPanel extends LinearLayout {
 	public void activateInputMethod(int methodID) {
 		assert methodID >= -1 && methodID < INPUT_METHODS_COUNT;
 		
+		if (mActiveMethodIndex != -1) {
+			mInputMethods[mActiveMethodIndex].onDeactivated();
+		}
+		
 		boolean idFound = false;
 		int id = methodID;
 		int numOfCycles = 0;
@@ -160,6 +164,7 @@ public class IMControlPanel extends LinearLayout {
 		}
 		
 		mActiveMethodIndex = id;
+		mInputMethods[mActiveMethodIndex].onActivated();
 	}
 	
 	public void activateNextInputMethod() {

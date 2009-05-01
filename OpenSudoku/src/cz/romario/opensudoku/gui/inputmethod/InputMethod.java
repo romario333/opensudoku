@@ -42,6 +42,14 @@ public abstract class InputMethod {
 		
 	}
 	
+	protected void onActivated() {
+		
+	}
+	
+	protected void onDeactivated() {
+		
+	}
+	
 	protected void onCellSelected(SudokuCell cell) {
 		
 	}
