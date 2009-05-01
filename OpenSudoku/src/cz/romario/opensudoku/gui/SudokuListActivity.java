@@ -40,7 +40,11 @@ public class SudokuListActivity extends ListActivity {
 	public static final int MENU_ITEM_PLAY = Menu.FIRST + 3;
 	public static final int MENU_ITEM_RESET = Menu.FIRST + 4;
 	public static final int MENU_ITEM_EDIT_NOTE = Menu.FIRST + 5;
-
+	
+	private static final int DIALOG_DELETE_PUZZLE = 0;
+	private static final int DIALOG_RESET_PUZZLE = 1;
+	private static final int DIALOG_EDIT_NOTE = 2;
+	
 	public static final String EXTRAS_FOLDER_ID = "folder_id";
 	private static final String TAG = "SudokuListActivity";
 
@@ -55,6 +59,12 @@ public class SudokuListActivity extends ListActivity {
 	private Cursor mCursor;
 
 	private long mFolderID;
+	
+	// input parameters for dialogs
+	private long mDeletePuzzleID;
+	private long mResetPuzzleID;
+	private long mEditNotePuzzleID;
+	private TextView mEditNoteInput;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -264,93 +274,86 @@ public class SudokuListActivity extends ListActivity {
 
 	}
 
-	/**
-	 * Shows dialog confirming deletion of selected puzzle.
-	 * 
-	 * @param sudokuId
-	 *            Id of selected puzzle.
-	 */
-	private void showDeleteDialog(long sudokuId) {
-		final long sudokuToDeleteId = sudokuId;
-		Dialog dialog = new AlertDialog.Builder(this).setIcon(
-				android.R.drawable.ic_delete).setTitle("Puzzle").setMessage(
-				R.string.delete_puzzle_confirm)
-				.setPositiveButton(android.R.string.yes,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								SudokuDatabase db = new SudokuDatabase(
-										SudokuListActivity.this);
-								db.deleteSudoku(sudokuToDeleteId);
-								update();
-							}
-						}).setNegativeButton(android.R.string.no, null).create();
-
-		dialog.show();
-	}
-
-	/**
-	 * Shows dialog confirming resetting of selected puzzle.
-	 * 
-	 * @param sudokuId
-	 *            Id of selected puzzle.
-	 */
-	private void showResetDialog(long sudokuId) {
-		final long sudokuToResetId = sudokuId;
-		Dialog dialog = new AlertDialog.Builder(this).setIcon(
-				android.R.drawable.ic_menu_rotate).setTitle("Puzzle")
-				.setMessage(R.string.reset_puzzle_confirm)
-				.setPositiveButton(android.R.string.yes,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								SudokuDatabase db = new SudokuDatabase(
-										SudokuListActivity.this);
-								SudokuGame game = db.getSudoku(sudokuToResetId);
-								if (game != null) {
-									game.reset();
-									db.updateSudoku(game);
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case DIALOG_DELETE_PUZZLE:
+			return new AlertDialog.Builder(this).setIcon(
+					android.R.drawable.ic_delete).setTitle("Puzzle").setMessage(
+					R.string.delete_puzzle_confirm)
+					.setPositiveButton(android.R.string.yes,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									SudokuDatabase db = new SudokuDatabase(
+											SudokuListActivity.this);
+									db.deleteSudoku(mDeletePuzzleID);
+									update();
 								}
-								update();
-							}
-						}).setNegativeButton(android.R.string.no, null).create();
+							}).setNegativeButton(android.R.string.no, null).create();
+		case DIALOG_EDIT_NOTE:
 
-		dialog.show();
+			LayoutInflater factory = LayoutInflater.from(this);
+			final View noteView = factory.inflate(R.layout.sudoku_list_item_note,
+					null);
+			mEditNoteInput = (TextView) noteView.findViewById(R.id.note);
+			return new AlertDialog.Builder(this).setIcon(
+					android.R.drawable.ic_menu_add).setTitle(R.string.edit_note)
+					.setView(noteView).setPositiveButton(R.string.save,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									SudokuDatabase db = new SudokuDatabase(
+											SudokuListActivity.this);
+									
+									SudokuGame game = db.getSudoku(mEditNotePuzzleID);
+									game.setNote(mEditNoteInput.getText()
+											.toString());
+									db.updateSudoku(game);
+									update();
+								}
+							}).setNegativeButton(android.R.string.cancel, null).create();
+		case DIALOG_RESET_PUZZLE:
+			return new AlertDialog.Builder(this).setIcon(
+					android.R.drawable.ic_menu_rotate).setTitle("Puzzle")
+					.setMessage(R.string.reset_puzzle_confirm)
+					.setPositiveButton(android.R.string.yes,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									SudokuDatabase db = new SudokuDatabase(
+											SudokuListActivity.this);
+									SudokuGame game = db.getSudoku(mResetPuzzleID);
+									if (game != null) {
+										game.reset();
+										db.updateSudoku(game);
+									}
+									update();
+								}
+							}).setNegativeButton(android.R.string.no, null).create();
+			
+		}
+		return null;
 	}
-
-	/**
-	 * Shows dialog which allows user to edit note attached to selected puzzle.
-	 * 
-	 * @param sudokuId
-	 *            Id of selected puzzle.
-	 */
-	private void showEditNoteDialog(long sudokuId) {
-		SudokuDatabase db = new SudokuDatabase(this);
-		final SudokuGame gameToUpdate = db.getSudoku(sudokuId);
-
-		LayoutInflater factory = LayoutInflater.from(this);
-		final View noteView = factory.inflate(R.layout.sudoku_list_item_note,
-				null);
-		final TextView noteInput = (TextView) noteView.findViewById(R.id.note);
-
-		noteInput.setText(gameToUpdate.getNote());
-
-		Dialog dialog = new AlertDialog.Builder(this).setIcon(
-				android.R.drawable.ic_menu_add).setTitle(R.string.edit_note)
-				.setView(noteView).setPositiveButton(R.string.save,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								SudokuDatabase db = new SudokuDatabase(
-										SudokuListActivity.this);
-								gameToUpdate.setNote(noteInput.getText()
-										.toString());
-								db.updateSudoku(gameToUpdate);
-								update();
-							}
-						}).setNegativeButton(android.R.string.cancel, null).create();
-
-		dialog.show();
+	
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		super.onPrepareDialog(id, dialog);
+		
+		switch (id) {
+		case DIALOG_DELETE_PUZZLE: {
+			SudokuDatabase db = new SudokuDatabase(this);
+			SudokuGame game = db.getSudoku(mEditNotePuzzleID);
+			mEditNoteInput.setText(game.getNote());
+			break;
+		}
+		case DIALOG_EDIT_NOTE: {
+			SudokuDatabase db = new SudokuDatabase(this);
+			SudokuGame game = db.getSudoku(mEditNotePuzzleID);
+			mEditNoteInput.setText(game.getNote());
+			break;
+		}
+		}
 	}
 
 	@Override
@@ -401,15 +404,17 @@ public class SudokuListActivity extends ListActivity {
 			startActivity(i);
 			return true;
 		case MENU_ITEM_DELETE:
-			showDeleteDialog(info.id);
+			mDeletePuzzleID = info.id;
+			showDialog(DIALOG_DELETE_PUZZLE);
 			return true;
 		case MENU_ITEM_EDIT_NOTE:
-			showEditNoteDialog(info.id);
+			mEditNotePuzzleID = info.id;
+			showDialog(DIALOG_EDIT_NOTE);
 			return true;
 		case MENU_ITEM_RESET:
-			showResetDialog(info.id);
+			mResetPuzzleID = info.id;
+			showDialog(DIALOG_RESET_PUZZLE);
 			return true;
-
 		}
 		return false;
 	}
