@@ -1,7 +1,5 @@
 package cz.romario.opensudoku.gui.inputmethod;
 
-import java.util.zip.Inflater;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +7,8 @@ import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.SudokuBoardView;
-import cz.romario.opensudoku.gui.inputmethod.EditCellDialog.OnNoteEditListener;
-import cz.romario.opensudoku.gui.inputmethod.EditCellDialog.OnNumberEditListener;
+import cz.romario.opensudoku.gui.inputmethod.IMPopupDialog.OnNoteEditListener;
+import cz.romario.opensudoku.gui.inputmethod.IMPopupDialog.OnNumberEditListener;
 
 public class IMPopup extends InputMethod {
 
@@ -18,7 +16,7 @@ public class IMPopup extends InputMethod {
 	private SudokuGame mGame;
 	private SudokuBoardView mBoard;
 	
-	private EditCellDialog mEditCellDialog;
+	private IMPopupDialog mEditCellDialog;
 	private SudokuCell mSelectedCell;
 	
 	public IMPopup(Context context, SudokuGame game, SudokuBoardView board) {
@@ -28,7 +26,7 @@ public class IMPopup extends InputMethod {
 		mGame = game;
 		mBoard = board;
 		
-		mEditCellDialog = new EditCellDialog(mContext);
+		mEditCellDialog = new IMPopupDialog(mContext);
         mEditCellDialog.setOnNumberEditListener(onNumberEditListener);
         mEditCellDialog.setOnNoteEditListener(onNoteEditListener);
 
@@ -51,7 +49,7 @@ public class IMPopup extends InputMethod {
 		if (cell.isEditable() && mEditCellDialog != null) {
 			mEditCellDialog.updateNumber(cell.getValue());
 			mEditCellDialog.updateNote(SudokuCell.getNoteNumbers(cell.getNote()));
-			mEditCellDialog.getDialog().show();
+			mEditCellDialog.show();
 		} else {
 			mBoard.hideTouchedCellHint();
 		}

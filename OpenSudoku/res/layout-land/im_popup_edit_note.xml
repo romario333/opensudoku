@@ -59,11 +59,13 @@
    <Button android:id="@+id/button_close"
    		style="@style/edit_cell_close_button"
     	android:text="@string/close"
-    	android:layout_below="@+id/button_7" />
-
+    	android:layout_toRightOf="@+id/button_9"
+    	android:layout_alignBottom="@+id/button_9"
+    	android:layout_alignParentRight="true"
+	   	 />
    <Button android:id="@+id/button_clear"
    		style="@style/edit_cell_clear_button"
     	android:text="@string/clear"
-    	android:layout_toRightOf="@+id/button_close"
-    	android:layout_alignBottom="@+id/button_close" />
+    	android:layout_toRightOf="@+id/button_3"
+    	android:layout_alignParentRight="true" />
  </RelativeLayout>

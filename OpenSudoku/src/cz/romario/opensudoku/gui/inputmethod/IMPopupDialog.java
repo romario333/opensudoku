@@ -6,30 +6,28 @@ import java.util.Map;
 import java.util.Set;
 
 import cz.romario.opensudoku.R;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout.LayoutParams;
 
-public class EditCellDialog {
+public class IMPopupDialog extends Dialog {
+
 	private Context mContext;
 	private LayoutInflater mInflater;
-	// TODO: extend dialog
-	private Dialog mDialog;
 	private TabHost mTabHost;
-	
 	
 	// buttons from "Select number" tab
 	private Map<Integer,Button> mNumberButtons = new HashMap<Integer, Button>();
@@ -41,17 +39,18 @@ public class EditCellDialog {
 	private OnNumberEditListener mOnNumberEditListener;
 	private OnNoteEditListener mOnNoteEditListener;
 	
-	public EditCellDialog(Context context) {
+	public IMPopupDialog(Context context) {
+		super(context);
 		mContext = context;
 		mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
 		mTabHost = createTabView();
 		
-		// TODO: maybe I should just create my own dialog?
-		mDialog = new AlertDialog.Builder(context)
-		.setView(mTabHost)
-        //.setPositiveButton("Close", closeButtonListener)
-       .create();
+		// hide dialog's title
+		TextView title = (TextView)findViewById(android.R.id.title);
+		title.setVisibility(View.GONE);
+		
+		setContentView(mTabHost);
 	}
 	
 	/**
@@ -68,14 +67,6 @@ public class EditCellDialog {
 	 */
 	public void setOnNoteEditListener(OnNoteEditListener l) {
 		mOnNoteEditListener = l;
-	}
-	
-	/**
-	 * Returns dialog instance.
-	 * @return
-	 */
-	public Dialog getDialog() {
-		return mDialog;
 	}
 	
 	public void updateNumber(Integer number) {
@@ -228,7 +219,7 @@ public class EditCellDialog {
 	/**
 	 * Occurs when user selects number in "Select number" tab.
 	 */
-	private OnClickListener editNumberButtonClickListener = new OnClickListener() {
+	private View.OnClickListener editNumberButtonClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			Integer number = (Integer)v.getTag();
@@ -237,7 +228,7 @@ public class EditCellDialog {
 				mOnNumberEditListener.onNumberEdit(number);
 			}
 			
-			mDialog.dismiss();
+			dismiss();
 		}
 	};
 
@@ -262,7 +253,7 @@ public class EditCellDialog {
 	/**
 	 * Occurs when user presses "Clear" button.
 	 */
-	private OnClickListener clearButtonListener = new OnClickListener() {
+	private View.OnClickListener clearButtonListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			String currentTab = mTabHost.getCurrentTabTag();
@@ -271,7 +262,7 @@ public class EditCellDialog {
 				if (mOnNumberEditListener != null) {
 					mOnNumberEditListener.onNumberEdit(0); // 0 as clear
 				}
-				mDialog.dismiss();
+				dismiss();
 			} else {
 				for (ToggleButton b : mNoteNumberButtons.values()) {
 					b.setChecked(false);
@@ -284,7 +275,7 @@ public class EditCellDialog {
 	/**
 	 * Occurs when user presses "Close" button.
 	 */
-	private OnClickListener closeButtonListener = new OnClickListener() {
+	private View.OnClickListener closeButtonListener = new View.OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
@@ -292,7 +283,7 @@ public class EditCellDialog {
 				Integer[] numbers = new Integer[mNoteSelectedNumbers.size()];
 				mOnNoteEditListener.onNoteEdit(mNoteSelectedNumbers.toArray(numbers));
 			}
-			mDialog.dismiss();
+			dismiss();
 		}
 	};
 	
@@ -319,7 +310,5 @@ public class EditCellDialog {
 	{
 		boolean onNoteEdit(Integer[] number);
 	}
-}
-	
-	
 
+}
