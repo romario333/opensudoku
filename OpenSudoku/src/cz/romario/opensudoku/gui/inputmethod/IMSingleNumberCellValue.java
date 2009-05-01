@@ -44,7 +44,7 @@ public class IMSingleNumberCellValue extends IMSingleNumber {
 	}
 
 	@Override
-	protected void onCellSelected(SudokuCell cell) {
+	protected void onCellTapped(SudokuCell cell) {
 		int selNumber = getSelectedNumber();
 		
 		if (selNumber >= 0 && selNumber <= 9) {

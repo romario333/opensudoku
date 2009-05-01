@@ -8,7 +8,8 @@ import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.SudokuBoardView;
-import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
+import cz.romario.opensudoku.gui.SudokuBoardView.OnCellSelectedListener;
+import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTappedListener;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -31,10 +32,11 @@ public class IMControlPanel extends LinearLayout {
 
 	// TODO: find better names
 	public static final int INPUT_METHOD_POPUP = 0;
-	public static final int INPUT_METHOD_SIDEBAR_NUMBER = 1;
-	public static final int INPUT_METHOD_SIDEBAR_NOTE = 2;
+	public static final int INPUT_METHOD_SINGLE_NUMBER = 1;
+	public static final int INPUT_METHOD_SINGLE_NUMBER_NOTE = 2;
+	public static final int INPUT_METHOD_NUMPAD = 3; 
 	
-	private static final int INPUT_METHODS_COUNT = 3;
+	private static final int INPUT_METHODS_COUNT = 4;
 	
 	private Context mContext;
 	private SudokuBoardView mBoard;
@@ -65,8 +67,9 @@ public class IMControlPanel extends LinearLayout {
 		
 		mInputMethods = new InputMethod[INPUT_METHODS_COUNT];
 		mInputMethods[INPUT_METHOD_POPUP] = new IMPopup(mContext, mGame, mBoard);
-		mInputMethods[INPUT_METHOD_SIDEBAR_NUMBER] = new IMSingleNumberCellValue(mContext, mGame, mBoard);
-		mInputMethods[INPUT_METHOD_SIDEBAR_NOTE] = new IMSingleNumberCellNote(mContext, mGame, mBoard);
+		mInputMethods[INPUT_METHOD_SINGLE_NUMBER] = new IMSingleNumberCellValue(mContext, mGame, mBoard);
+		mInputMethods[INPUT_METHOD_SINGLE_NUMBER_NOTE] = new IMSingleNumberCellNote(mContext, mGame, mBoard);
+		mInputMethods[INPUT_METHOD_NUMPAD] = new IMNumpad(mContext, mGame, mBoard);
 		
 		activateInputMethod(0);
 	}
@@ -83,7 +86,8 @@ public class IMControlPanel extends LinearLayout {
 	public void setBoard(SudokuBoardView board) {
 		mBoard = board;
 		// TODO: only one observer can be registered, implement observer pattern properly
-		mBoard.setOnCellTapListener(mOnCellTapListener);
+		mBoard.setOnCellTappedListener(mOnCellTapListener);
+		mBoard.setOnCellSelectedListener(mOnCellSelected);
 	}
 	
 	public SudokuGame getGame() {
@@ -193,11 +197,19 @@ public class IMControlPanel extends LinearLayout {
 		}
 	}
 	
-	private OnCellTapListener mOnCellTapListener = new OnCellTapListener() {
+	private OnCellTappedListener mOnCellTapListener = new OnCellTappedListener() {
 		@Override
-		public void onCellTap(SudokuCell cell) {
+		public void onCellTapped(SudokuCell cell) {
 			if (mActiveMethodIndex != -1 && mInputMethods != null) {
-				// TODO: tap vs select
+				mInputMethods[mActiveMethodIndex].onCellTapped(cell);
+			}
+		}
+	};
+	
+	private OnCellSelectedListener mOnCellSelected = new OnCellSelectedListener() {
+		@Override
+		public void onCellSelected(SudokuCell cell) {
+			if (mActiveMethodIndex != -1 && mInputMethods != null) {
 				mInputMethods[mActiveMethodIndex].onCellSelected(cell);
 			}
 		}

@@ -49,7 +49,8 @@ public class SudokuBoardView extends View {
 	
 	private int mScreenOrientation = -1;
 	
-	private OnCellTapListener mOnCellTapListener;
+	private OnCellTappedListener mOnCellTappedListener;
+	private OnCellSelectedListener mOnCellSelectedListener;
 	
 	public SudokuBoardView(Context context) {
 		super(context);
@@ -71,6 +72,7 @@ public class SudokuBoardView extends View {
 		mCells = cells;
 		if (!mReadonly) {
 			mSelectedCell = mCells.getCell(0, 0); // first cell will be selected by default
+			onCellSelected(mSelectedCell);
 		}
 		invalidate();
 	}
@@ -91,9 +93,38 @@ public class SudokuBoardView extends View {
 		return mReadonly;
 	}
 	
-	public void setOnCellTapListener(OnCellTapListener l) {
-		mOnCellTapListener = l;
+	/**
+	 * Registers callback which will be invoked when user taps the cell.
+	 * 
+	 * @param l
+	 */
+	public void setOnCellTappedListener(OnCellTappedListener l) {
+		mOnCellTappedListener = l;
 	}
+	
+	protected void onCellTapped(SudokuCell cell) {
+		if (mOnCellTappedListener != null) {
+			mOnCellTappedListener.onCellTapped(cell);
+		}
+	}
+	
+	/**
+	 * Registers callback which will be invoked when cell is selected. Cell selection
+	 * can change without user interaction.
+	 * 
+	 * @param l
+	 */
+	public void setOnCellSelectedListener(OnCellSelectedListener l) {
+		mOnCellSelectedListener = l;
+	}
+	
+	protected void onCellSelected(SudokuCell cell) {
+		if (mOnCellSelectedListener != null) {
+			mOnCellSelectedListener.onCellSelected(cell);
+		}
+	}
+	
+	
 	
 	private void initWidget() {
 		setFocusable(true);
@@ -316,9 +347,8 @@ public class SudokuBoardView extends View {
 				mSelectedCell = getCellAtPoint(x, y);
 				
 				if (mSelectedCell != null) {
-					if (mOnCellTapListener != null) {
-						mOnCellTapListener.onCellTap(mSelectedCell);
-					}
+					onCellTapped(mSelectedCell);
+					onCellSelected(mSelectedCell);
 				}
 				
 				if (mAutoHideTouchedCellHint) {
@@ -403,7 +433,7 @@ public class SudokuBoardView extends View {
 	 * Moves selected cell by one cell to the right. If edge is reached, selection
 	 * skips on beginning of another line. 
 	 */
-	private void moveCellSelectionRight() {
+	public void moveCellSelectionRight() {
 		if (!moveCellSelection(1, 0)) {
 			int selRow = mSelectedCell.getRowIndex();
 			selRow++;
@@ -443,6 +473,8 @@ public class SudokuBoardView extends View {
 		if(col >= 0 && col < SudokuCellCollection.SUDOKU_SIZE 
 				&& row >= 0 && row < SudokuCellCollection.SUDOKU_SIZE) {
 			mSelectedCell = mCells.getCell(row, col);
+			onCellSelected(mSelectedCell);
+			
 			postInvalidate();
 			return true;
 		}
@@ -470,14 +502,24 @@ public class SudokuBoardView extends View {
 		}
 	}
 	
-	public interface OnCellTapListener
-	{
-		/**
-		 * Called when a cell is tapped (by finger).
-		 * @param cell
-		 * @return
-		 */
-		void onCellTap(SudokuCell cell);
+	/**
+	 * Occurs when user tap the cell.
+	 * 
+	 * @author romario
+	 *
+	 */
+	public interface OnCellTappedListener {
+		void onCellTapped(SudokuCell cell);
+	}
+	
+	/**
+	 * Occurs when user selects the cell.
+	 * 
+	 * @author romario
+	 *
+	 */
+	public interface OnCellSelectedListener {
+		void onCellSelected(SudokuCell cell);
 	}
 
 	private String getMeasureSpecModeString(int mode) {

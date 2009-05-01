@@ -8,7 +8,7 @@ import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.SudokuBoardView;
-import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
+import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTappedListener;
 
 /**
  * Base class for several input methods used to edit sudoku contents. 
@@ -64,7 +64,22 @@ public abstract class InputMethod {
 		
 	}
 	
+	/**
+	 * Called when cell is selected. Please note that cell selection can
+	 * change without direct user interaction.
+	 * 
+	 * @param cell
+	 */
 	protected void onCellSelected(SudokuCell cell) {
+		
+	}
+	
+	/**
+	 * Called when cell is tapped.
+	 * 
+	 * @param cell
+	 */
+	protected void onCellTapped(SudokuCell cell) {
 		
 	}
 	

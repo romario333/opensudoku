@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- TODO: add to strings.xml -->
     <PreferenceCategory
-            android:title="Game Helpers">
+            android:title="@string/game_helpers">
         <CheckBoxPreference
                 android:key="highlight_wrong_values"
-                android:title="Highlight wrong values"
-                android:summary="Highlight values which break rules of sudoku."
+                android:title="@string/highlight_wrong_values"
+                android:summary="@string/highlight_wrong_values_summary"
                 android:defaultValue="true" />
     </PreferenceCategory>
     <PreferenceCategory
-            android:title="Input Methods">
+            android:title="@string/input_methods">
         <CheckBoxPreference
-                android:key="input_method_popup"
-                android:title="Popup"
-                android:summary="Edit cell value and note in popup."
+                android:key="im_popup"
+                android:title="@string/popup"
+                android:summary="@string/popup_summary"
                 android:defaultValue="true" />
         <CheckBoxPreference
-                android:key="input_method_sidebar_number"
-                android:title="Single number"
-                android:summary="Select number, then just tap on cell to set its value."
-                android:defaultValue="false" />
+                android:key="im_single_number"
+                android:title="@string/single_number"
+                android:summary="@string/single_number_summary"
+                android:defaultValue="true" />
         <CheckBoxPreference
-                android:key="input_method_sidebar_note"
-                android:title="Single number note"
-                android:summary="Select number, then just tap on cell to note this number."
+                android:key="im_single_number_note"
+                android:title="@string/single_number_note"
+                android:summary="@string/single_number_note_summary"
+                android:defaultValue="true" />
+        <CheckBoxPreference
+                android:key="im_numpad"
+                android:title="@string/numpad"
+                android:summary="@string/numpad_summary"
                 android:defaultValue="true" />
     </PreferenceCategory>
 </PreferenceScreen>

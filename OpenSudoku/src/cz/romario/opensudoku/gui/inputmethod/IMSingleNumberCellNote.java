@@ -56,7 +56,7 @@ public class IMSingleNumberCellNote extends IMSingleNumber {
 	}
 	
 	@Override
-	protected void onCellSelected(SudokuCell cell) {
+	protected void onCellTapped(SudokuCell cell) {
 		Integer selNumber = getSelectedNumber();
 		
 		if (selNumber == 0){

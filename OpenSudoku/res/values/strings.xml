@@ -64,4 +64,17 @@
 	<string name="settings">Settings</string>
 	<string name="game_settings">Game settings</string>
 	
+	<string name="game_helpers">Game Helpers</string>
+	<string name="highlight_wrong_values">Highlight wrong values</string>
+	<string name="highlight_wrong_values_summary">Highlight values which break rules of sudoku.</string>
+	<string name="input_methods">Input Methods</string>
+	<string name="popup">Popup</string>
+	<string name="popup_summary">Edit cell value and note in popup.</string>
+	<string name="single_number">Single number</string>
+	<string name="single_number_summary">Select number, then just tap on cell to set its value.</string>
+	<string name="single_number_note">Single number note</string>
+	<string name="single_number_note_summary">Select number, then just tap on cell to note this number.</string>
+	<string name="numpad">Numpad</string>
+	<string name="numpad_summary">Show numpad which acts as standard numeric keyobard.</string>
+	
 </resources>

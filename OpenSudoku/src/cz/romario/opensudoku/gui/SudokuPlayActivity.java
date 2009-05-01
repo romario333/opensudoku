@@ -27,7 +27,7 @@ import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.SudokuGame.OnPuzzleSolvedListener;
-import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
+import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTappedListener;
 import cz.romario.opensudoku.gui.inputmethod.IMControlPanel;
 import cz.romario.opensudoku.gui.inputmethod.IMPopup;
 
@@ -125,13 +125,16 @@ public class SudokuPlayActivity extends Activity{
         
         mInputMethods.setInputMethodEnabled(
         		IMControlPanel.INPUT_METHOD_POPUP, 
-        		gameSettings.getBoolean("input_method_popup", true));
+        		gameSettings.getBoolean("im_popup", true));
         mInputMethods.setInputMethodEnabled(
-        		IMControlPanel.INPUT_METHOD_SIDEBAR_NUMBER, 
-        		gameSettings.getBoolean("input_method_sidebar_number", true));
+        		IMControlPanel.INPUT_METHOD_SINGLE_NUMBER, 
+        		gameSettings.getBoolean("im_single_number", true));
         mInputMethods.setInputMethodEnabled(
-        		IMControlPanel.INPUT_METHOD_SIDEBAR_NOTE, 
-        		gameSettings.getBoolean("input_method_sidebar_note", true));
+        		IMControlPanel.INPUT_METHOD_SINGLE_NUMBER_NOTE, 
+        		gameSettings.getBoolean("im_single_number_note", true));
+        mInputMethods.setInputMethodEnabled(
+        		IMControlPanel.INPUT_METHOD_NUMPAD, 
+        		gameSettings.getBoolean("im_numpad", true));
         
         if (mInputMethods.getActiveMethodIndex() == -1) {
         	mInputMethods.activateInputMethod(0);
