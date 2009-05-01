@@ -1,6 +1,7 @@
 package cz.romario.opensudoku.gui.inputmethod;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
@@ -19,9 +20,11 @@ public abstract class InputMethod {
 	
 	private View mControlPanel;
 	private int mScreenOrientation;
+	private String mInputMethodName;
 
 	public InputMethod(Context context, SudokuGame game, SudokuBoardView board) {
 		mScreenOrientation = context.getResources().getConfiguration().orientation;
+		mInputMethodName = this.getClass().getSimpleName();
 	}
 	
 	public boolean isControlPanelCreated() {
@@ -34,6 +37,10 @@ public abstract class InputMethod {
 		}
 		onControlPanelCreated(mControlPanel);
 		return mControlPanel;
+	}
+	
+	protected String getInputMethodName() {
+		return mInputMethodName;
 	}
 	
 	protected abstract View createControlPanel(int screenOrientation);
@@ -51,6 +58,14 @@ public abstract class InputMethod {
 	}
 	
 	protected void onCellSelected(SudokuCell cell) {
+		
+	}
+	
+	protected void onSaveInstanceState(Bundle outState) {
+		
+	}
+	
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		
 	}
 	

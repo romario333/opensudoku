@@ -5,7 +5,9 @@ import java.util.Map;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,7 +25,6 @@ import cz.romario.opensudoku.gui.SudokuBoardView;
  */
 public abstract class IMSingleNumber extends InputMethod {
 
-	// TODO: I should keep input method's state
 	private int mSelectedNumber = 0;
 	
 	private Context mContext;
@@ -67,27 +68,55 @@ public abstract class IMSingleNumber extends InputMethod {
 					Integer num = (Integer)v.getTag();
 					mSelectedNumber = mSelectedNumber == num ? 0 : num;
 					
-					// TODO: sometimes I change background too early and button stays in pressed state
-					// this is just ugly workaround
-					mGuiHandler.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							for (Button b : mNumberButtons.values()) {
-								if (b.getTag().equals(mSelectedNumber)) {
-									b.setBackgroundDrawable(mSelectedBackground);
-								} else {
-									b.setBackgroundDrawable(mNumberButtonsBackgrounds.get(b.getTag()));
-								}
-							}
-						}
-					}, 100);
+					update();
 				}
 			});
 		}
 	}
+	
+	private void update() {
+		// TODO: sometimes I change background too early and button stays in pressed state
+		// this is just ugly workaround
+		mGuiHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				for (Button b : mNumberButtons.values()) {
+					if (b.getTag().equals(mSelectedNumber)) {
+						b.setBackgroundDrawable(mSelectedBackground);
+					} else {
+						b.setBackgroundDrawable(mNumberButtonsBackgrounds.get(b.getTag()));
+					}
+				}
+			}
+		}, 100);
+		
+	}
 
 	protected int getSelectedNumber() {
 		return mSelectedNumber;
+	}
+	
+	@Override
+	protected void onActivated() {
+		update();
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		outState.putInt(getInputMethodName() + ".sel_number", mSelectedNumber);
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onRestoreInstanceState(savedInstanceState);
+		
+		mSelectedNumber = savedInstanceState.getInt(getInputMethodName() + ".sel_number");
+		if (isControlPanelCreated()) {
+			update();
+		}
 	}
 
 }

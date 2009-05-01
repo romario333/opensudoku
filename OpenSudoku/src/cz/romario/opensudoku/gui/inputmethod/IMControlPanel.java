@@ -10,6 +10,7 @@ import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.SudokuBoardView;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTapListener;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.Parcelable.Creator;
@@ -212,7 +213,7 @@ public class IMControlPanel extends LinearLayout {
 	@Override
 	protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
-        return new SavedState(superState, mActiveMethodIndex);
+        return new SavedState(superState, mActiveMethodIndex, mInputMethods);
 	}
 	
 	@Override
@@ -220,32 +221,49 @@ public class IMControlPanel extends LinearLayout {
         SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
         activateInputMethod(ss.getActiveMethodIndex());
+        ss.restoreInputMethodsState(mInputMethods);
 	}
 	
     /**
      * Used to save / restore state of time picker
      */
     private static class SavedState extends BaseSavedState {
-        private final int mActiveMethodIndex;
+    	private final int mActiveMethodIndex;
+        private final Bundle mInputMethodsState;
     	
-    	private SavedState(Parcelable superState, int activeMethodIndex) {
+    	private SavedState(Parcelable superState, int activeMethodIndex, InputMethod[] inputMethods) {
             super(superState);
             mActiveMethodIndex = activeMethodIndex;
+            
+            // TODO: consider thread-safety
+            
+            mInputMethodsState = new Bundle();
+            for (InputMethod im : inputMethods) {
+            	im.onSaveInstanceState(mInputMethodsState);
+            }
         }
         
         private SavedState(Parcel in) {
             super(in);
             mActiveMethodIndex = in.readInt();
+            mInputMethodsState = in.readBundle();
         }
 
         public int getActiveMethodIndex() {
             return mActiveMethodIndex;
+        }
+        
+        public void restoreInputMethodsState(InputMethod[] inputMethods) {
+        	for (InputMethod im : inputMethods) {
+        		im.onRestoreInstanceState(mInputMethodsState);
+        	}
         }
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
             dest.writeInt(mActiveMethodIndex);
+            dest.writeBundle(mInputMethodsState);
         }
 
         public static final Parcelable.Creator<SavedState> CREATOR
