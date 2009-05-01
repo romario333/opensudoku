@@ -39,8 +39,9 @@ public abstract class InputMethod {
 				// TODO: exception
 			}
 			((Button)switchModeButton).setText(getAbbrName());
+			onControlPanelCreated(mControlPanel);
 		}
-		onControlPanelCreated(mControlPanel);
+		
 		return mControlPanel;
 	}
 	
