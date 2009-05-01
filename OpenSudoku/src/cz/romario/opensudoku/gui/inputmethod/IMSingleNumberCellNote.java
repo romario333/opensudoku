@@ -45,11 +45,16 @@ public class IMSingleNumberCellNote extends IMSingleNumber {
 	}
 
 	@Override
-	protected View createControlPanel(int screenOrientation) {
-		LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		return inflater.inflate(R.layout.input_mode_note, null);
+	public String getAbbrName() {
+		return "Note";
 	}
-
+	
+	@Override
+	protected View createControlPanel() {
+		LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		return inflater.inflate(R.layout.im_single_number, null);
+	}
+	
 	@Override
 	protected void onCellSelected(SudokuCell cell) {
 		Integer selNumber = getSelectedNumber();

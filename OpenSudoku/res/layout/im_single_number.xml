@@ -71,7 +71,6 @@
 	   <Button android:id="@+id/switch_input_mode"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
-	   		android:layout_weight="1"
-	    	android:text="Num" />
+	   		android:layout_weight="1" />
 	</LinearLayout>
 </LinearLayout>

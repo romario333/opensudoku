@@ -39,7 +39,8 @@ public class SudokuEditActivity extends Activity {
 
 		int orientation = getResources().getConfiguration().orientation;
 		if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			setContentView(R.layout.sudoku_edit_landscape);
+			// TODO: landscape
+			setContentView(R.layout.sudoku_edit);
 		} else {
 			setContentView(R.layout.sudoku_edit);
 		}

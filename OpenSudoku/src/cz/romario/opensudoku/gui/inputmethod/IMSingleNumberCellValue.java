@@ -33,9 +33,14 @@ public class IMSingleNumberCellValue extends IMSingleNumber {
 	}
 
 	@Override
-	protected View createControlPanel(int screenOrientation) {
+	public String getAbbrName() {
+		return "Num";
+	}
+	
+	@Override
+	protected View createControlPanel() {
 		LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		return inflater.inflate(R.layout.input_mode_number, null);
+		return inflater.inflate(R.layout.im_single_number, null);
 	}
 
 	@Override

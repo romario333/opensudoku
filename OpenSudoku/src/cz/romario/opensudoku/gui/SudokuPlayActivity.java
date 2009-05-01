@@ -65,12 +65,7 @@ public class SudokuPlayActivity extends Activity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        int orientation = getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			setContentView(R.layout.sudoku_play_landscape);
-		} else {
-			setContentView(R.layout.sudoku_play);
-		}
+		setContentView(R.layout.sudoku_play);
         
         mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
         

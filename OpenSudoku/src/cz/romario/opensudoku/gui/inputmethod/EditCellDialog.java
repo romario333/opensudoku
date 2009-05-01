@@ -167,7 +167,7 @@ public class EditCellDialog {
      * @return
      */
 	private View createEditNumberView() {
-		View v = mInflater.inflate(R.layout.edit_cell_select_number, null);
+		View v = mInflater.inflate(R.layout.im_popup_edit_value, null);
 		
 		mNumberButtons.put(1, (Button)v.findViewById(R.id.button_1));
 		mNumberButtons.put(2, (Button)v.findViewById(R.id.button_2));
@@ -199,7 +199,7 @@ public class EditCellDialog {
      * @return
      */
 	private View createEditNoteView() {
-		View v = mInflater.inflate(R.layout.edit_cell_edit_note, null);
+		View v = mInflater.inflate(R.layout.im_popup_edit_note, null);
 		
 		mNoteNumberButtons.put(1, (ToggleButton)v.findViewById(R.id.button_1));
 		mNoteNumberButtons.put(2, (ToggleButton)v.findViewById(R.id.button_2));

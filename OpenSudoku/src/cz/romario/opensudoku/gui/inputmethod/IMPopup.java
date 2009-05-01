@@ -56,9 +56,15 @@ public class IMPopup extends InputMethod {
 	}
 
 	@Override
-	protected View createControlPanel(int screenOrientation) {
+	public String getAbbrName() {
+		// TODO: Icon would be better?
+		return "Pop";
+	}
+	
+	@Override
+	protected View createControlPanel() {
 		LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		return inflater.inflate(R.layout.input_mode_popup, null);
+		return inflater.inflate(R.layout.im_popup, null);
 	}
 	
 	/**
@@ -88,5 +94,4 @@ public class IMPopup extends InputMethod {
 			return true;
 		}
 	};
-	
 }
