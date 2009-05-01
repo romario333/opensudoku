@@ -176,7 +176,8 @@ public class SudokuListActivity extends ListActivity {
 						createdString = getString(R.string.created_at,
 								getDateAndTimeForHumans(created));
 					}
-					label.setVisibility(createdString == null ? View.GONE
+					// TODO: when GONE, note is not correctly aligned below last_played
+					label.setVisibility(createdString == null ? View.INVISIBLE
 							: View.VISIBLE);
 					label.setText(createdString);
 					break;
