@@ -215,7 +215,7 @@ public class SudokuBoardView extends View {
 					cellTop = Math.round((row * mCellHeight) + paddingTop);
 
 					// draw read-only field background
-					if (!cell.getEditable()) {
+					if (!cell.isEditable()) {
 						canvas.drawRect(
 								cellLeft, cellTop, 
 								cellLeft + mCellWidth, cellTop + mCellHeight,
@@ -225,7 +225,7 @@ public class SudokuBoardView extends View {
 					// draw cell Text
 					int value = cell.getValue();
 					if (value != 0) {
-						mNumberPaint.setColor(cell.getInvalid() ? Color.RED : Color.BLACK);
+						mNumberPaint.setColor(cell.isInvalid() ? Color.RED : Color.BLACK);
 						canvas.drawText(new Integer(value).toString(),
 								cellLeft + mNumberLeft, 
 								Math.round(cellTop) + mNumberTop - numberAscent, 
@@ -379,7 +379,7 @@ public class SudokuBoardView extends View {
 	
 	
 	public void setCellValue(SudokuCell cell, int value) {
-		if (cell.getEditable()) {
+		if (cell.isEditable()) {
 			if (mGame != null) {
 				mGame.setCellValue(cell, value);
 			} else {
@@ -389,7 +389,7 @@ public class SudokuBoardView extends View {
 	}
 	
 	public void setCellNote(SudokuCell cell, String note) {
-		if (cell.getEditable()) {
+		if (cell.isEditable()) {
 			if (mGame != null) {
 				mGame.setCellNote(cell, note);
 			} else {

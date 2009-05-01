@@ -119,15 +119,18 @@ public class SudokuGame implements Parcelable {
 	 * @param value
 	 */
 	public void setCellValue(SudokuCell cell, int value) {
-		SetCellValueCommand c = new SetCellValueCommand(cell, value);
-		c.execute();
-		mUndoStack.push(c);
+		assert cell != null;
+		assert value >= 0 && value <= 9;
 		
-		validate();
-		if (isCompleted()) {
-			finish();
-			if (mOnPuzzleSolvedListener != null) {
-				mOnPuzzleSolvedListener.onPuzzleSolved();
+		if (cell.isEditable()) {
+			executeCommand(new SetCellValueCommand(cell, value));
+			
+			validate();
+			if (isCompleted()) {
+				finish();
+				if (mOnPuzzleSolvedListener != null) {
+					mOnPuzzleSolvedListener.onPuzzleSolved();
+				}
 			}
 		}
 	}
@@ -139,7 +142,14 @@ public class SudokuGame implements Parcelable {
 	 * @param note
 	 */
 	public void setCellNote(SudokuCell cell, String note) {
-		EditCellNoteCommand c = new EditCellNoteCommand(cell, note);
+		assert cell != null;
+
+		if (cell.isEditable()) {
+			executeCommand(new EditCellNoteCommand(cell, note));
+		}
+	}
+	
+	private void executeCommand(Command c) {
 		c.execute();
 		mUndoStack.push(c);
 	}
@@ -201,7 +211,7 @@ public class SudokuGame implements Parcelable {
 		for (int r=0; r<SudokuCellCollection.SUDOKU_SIZE; r++) {
 			for (int c=0; c<SudokuCellCollection.SUDOKU_SIZE; c++) {
 				SudokuCell cell = mCells.getCell(r, c);
-				if (cell.getEditable()) {
+				if (cell.isEditable()) {
 					cell.setValue(0);
 					cell.setNote("");
 				}
@@ -223,9 +233,7 @@ public class SudokuGame implements Parcelable {
 	}
 	
 	public void clearAllNotes() {
-		ClearAllNotesCommand c = new ClearAllNotesCommand(mCells);
-		c.execute();
-		mUndoStack.push(c);
+		executeCommand(new ClearAllNotesCommand(mCells));
 	}
 	
 	public void setHighlightWrongVals(boolean highlightWrongVals) {

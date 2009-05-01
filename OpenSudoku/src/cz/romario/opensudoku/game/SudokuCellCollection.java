@@ -140,7 +140,7 @@ public class SudokuCellCollection  implements Parcelable {
 			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
 				SudokuCell cell = mCells[r][c]; 
-				if (cell.getValue() == 0 || cell.getInvalid()) {
+				if (cell.getValue() == 0 || cell.isInvalid()) {
 					return false;
 				}
 			}
@@ -354,7 +354,7 @@ public class SudokuCellCollection  implements Parcelable {
                         } else {
                         	sb.append(cell.getNote()).append("|");
                         }
-                        sb.append(cell.getEditable() ? "1" : "0").append("|");
+                        sb.append(cell.isEditable() ? "1" : "0").append("|");
                 }
         }
         

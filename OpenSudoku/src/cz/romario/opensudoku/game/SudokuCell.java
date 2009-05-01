@@ -22,8 +22,8 @@ public class SudokuCell implements Parcelable {
 	
 	private int mValue;
 	private String mNote = "";
-	private Boolean mEditable = false;
-	private Boolean mInvalid = false;
+	private boolean mEditable = false;
+	private boolean mInvalid = false;
 	
 	public SudokuCell() {
 		mNote = "";
@@ -187,7 +187,7 @@ public class SudokuCell implements Parcelable {
 	}
 	
 
-	public Boolean getEditable() {
+	public boolean isEditable() {
 		return mEditable;
 	}
 	
@@ -199,7 +199,7 @@ public class SudokuCell implements Parcelable {
 		mInvalid = invalid;
 	}
 
-	public Boolean getInvalid() {
+	public boolean isInvalid() {
 		return mInvalid;
 	}
 	
