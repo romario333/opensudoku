@@ -242,16 +242,18 @@ public class SudokuDatabase {
      * @param sudoku 
      * @return
      */
-    public long insertSudoku(long folderID, SudokuCellCollection sudoku) {
+    public long insertSudoku(long folderID, SudokuGame sudoku) {
         Long created = Long.valueOf(System.currentTimeMillis());
 
         ContentValues values = new ContentValues();
-        values.put(SudokuColumns.CREATED, created);
-        values.put(SudokuColumns.TIME, 0);
-        values.put(SudokuColumns.STATE, SudokuGame.GAME_STATE_NOT_STARTED);
+        values.put(SudokuColumns.DATA, sudoku.getCells().serialize());
+        values.put(SudokuColumns.CREATED, sudoku.getCreated().getTime());
+        values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
+        values.put(SudokuColumns.STATE, sudoku.getState());
+        values.put(SudokuColumns.TIME, sudoku.getTime());
+        values.put(SudokuColumns.PUZZLE_NOTE, sudoku.getNote());
         values.put(SudokuColumns.FOLDER_ID, folderID);
-        values.put(SudokuColumns.DATA, sudoku.serialize());
-
+        
         SQLiteDatabase db = null;
         try {
 	        db = mOpenHelper.getWritableDatabase();
@@ -260,8 +262,7 @@ public class SudokuDatabase {
 	            return rowId;
 	        }
         } finally {
-        	if (db != null)
-        		db.close();
+        	if (db != null) db.close();
         }
 
         throw new SQLException("Failed to insert sudoku.");
@@ -309,7 +310,9 @@ public class SudokuDatabase {
     	for (int f=0; f<numOfFolders; f++) {
     		long folderID = insertFolder("debug" + f);
     		for (int p=0; p<puzzlesPerFolder; p++) {
-    			insertSudoku(folderID, SudokuCellCollection.createDebugGame());
+    			SudokuGame game = new SudokuGame();
+    			game.setCells(SudokuCellCollection.createDebugGame());
+    			insertSudoku(folderID, game);
     		}
     	}
     }

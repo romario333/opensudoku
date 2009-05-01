@@ -70,8 +70,6 @@ public class IMControlPanel extends LinearLayout {
 		mInputMethods[INPUT_METHOD_SINGLE_NUMBER] = new IMSingleNumberCellValue(mContext, mGame, mBoard);
 		mInputMethods[INPUT_METHOD_SINGLE_NUMBER_NOTE] = new IMSingleNumberCellNote(mContext, mGame, mBoard);
 		mInputMethods[INPUT_METHOD_NUMPAD] = new IMNumpad(mContext, mGame, mBoard);
-		
-		activateInputMethod(0);
 	}
 	
 	public SudokuBoardView getBoard() {

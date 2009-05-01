@@ -9,23 +9,8 @@
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	     />
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:orientation="horizontal"
+	<cz.romario.opensudoku.gui.inputmethod.IMControlPanel
+		android:id="@+id/input_methods"
 	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent">
-	    <Button
-		    android:id="@+id/button_save"
-		    android:layout_width="0dip" 
-		    android:layout_height="wrap_content"
-		    android:layout_weight="1"
-		    android:text="@string/save" 
-			/> 
-	    <Button
-		    android:id="@+id/button_cancel"
-		    android:layout_width="0dip" 
-		    android:layout_height="wrap_content"
-		    android:layout_weight="1"
-		    android:text="@android:string/cancel" 
-			/> 
-	</LinearLayout>
+	    android:layout_height="fill_parent" />
 </LinearLayout>

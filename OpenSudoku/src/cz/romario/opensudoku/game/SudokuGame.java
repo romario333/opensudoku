@@ -34,9 +34,20 @@ public class SudokuGame implements Parcelable {
 	private long mActiveFromTime = -1; 
 
 	private boolean mHighlightWrongVals = true;
+
+	public static SudokuGame createEmptyGame() {
+		SudokuGame game = new SudokuGame();
+		game.setCells(SudokuCellCollection.createEmpty());
+		return game;
+	}
 	
 	public SudokuGame() {
+		mTime = 0;
+		// TODO: check that this does not mean any performance impact in sudoku list
+		mLastPlayed = new Date(0);
+		mCreated = new Date(0);
 		
+		mState = GAME_STATE_NOT_STARTED;
 	}
 	
 	public void setOnPuzzleSolvedListener(OnPuzzleSolvedListener l) {

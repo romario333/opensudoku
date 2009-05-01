@@ -1,14 +1,20 @@
 package cz.romario.opensudoku.gui;
 
+import java.util.Date;
+
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.gui.inputmethod.IMControlPanel;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -22,6 +28,9 @@ public class SudokuEditActivity extends Activity {
 	public static final String EXTRAS_FOLDER_ID = "folder_id";
 	public static final String EXTRAS_SUDOKU_ID = "sudoku_id";
 	
+	public static final int MENU_ITEM_SAVE = Menu.FIRST;
+	public static final int MENU_ITEM_CANCEL = Menu.FIRST + 1;
+	
 	// The different distinct states the activity can be run in.
     private static final int STATE_EDIT = 0;
     private static final int STATE_INSERT = 1;
@@ -31,7 +40,9 @@ public class SudokuEditActivity extends Activity {
     private long mSudokuID;
     
     private SudokuDatabase mSudokuDB;
+    private SudokuGame mGame;
     private SudokuBoardView mBoard;
+    private IMControlPanel mInputMethods;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +56,7 @@ public class SudokuEditActivity extends Activity {
 			setContentView(R.layout.sudoku_edit);
 		}
 
-		Button buttonSave = (Button)findViewById(R.id.button_save);
-		Button buttonCancel = (Button)findViewById(R.id.button_cancel);
 		mBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
-		
-		buttonSave.setOnClickListener(buttonSaveClickListener);
-		buttonCancel.setOnClickListener(buttonCancelClickListener);
 		
         mSudokuDB = new SudokuDatabase(this);
 		
@@ -82,62 +88,82 @@ public class SudokuEditActivity extends Activity {
         }
         
         if (savedInstanceState != null) {
-        	mBoard.setCells((SudokuCellCollection)savedInstanceState.getParcelable("cells"));
+        	mGame = (SudokuGame)savedInstanceState.getParcelable("game");
         } else {
         	if (mSudokuID != 0) {
         		// existing sudoku, read it from database
-        		SudokuGame sudoku = mSudokuDB.getSudoku(mSudokuID);
-        		SudokuCellCollection cells = sudoku.getCells();
-        		cells.markAllCellsAsEditable();
-        		mBoard.setCells(cells);
+        		mGame = mSudokuDB.getSudoku(mSudokuID);
+        		mGame.getCells().markAllCellsAsEditable();
         	} else {
-        		// new sudoku
-        		mBoard.setCells(SudokuCellCollection.createEmpty());
+        		mGame = SudokuGame.createEmptyGame();
         	}
         }
+        mBoard.setGame(mGame);
         
+        // TODO: OMG, rethink input methods initialization !
+        mInputMethods = (IMControlPanel)findViewById(R.id.input_methods);
+        mInputMethods.setGame(mGame);
+        mInputMethods.setBoard(mBoard);
+        mInputMethods.initialize();
+        mInputMethods.setInputMethodEnabled(IMControlPanel.INPUT_METHOD_NUMPAD, true);
+        mInputMethods.setInputMethodEnabled(IMControlPanel.INPUT_METHOD_POPUP, false);
+        mInputMethods.setInputMethodEnabled(IMControlPanel.INPUT_METHOD_SINGLE_NUMBER, false);
+        mInputMethods.setInputMethodEnabled(IMControlPanel.INPUT_METHOD_SINGLE_NUMBER_NOTE, false);
+        mInputMethods.activateInputMethod(0);
 	}
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		
-		outState.putParcelable("cells", mBoard.getCells());
+		outState.putParcelable("game", mGame);
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+        // This is our one standard application action -- inserting a
+        // new note into the list.
+		menu.add(0, MENU_ITEM_SAVE, 0, R.string.save)
+                .setShortcut('1', 's')
+                .setIcon(android.R.drawable.ic_menu_save);
+        menu.add(0, MENU_ITEM_CANCEL, 1, android.R.string.cancel)
+	        .setShortcut('3', 'c')
+	        .setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 
-	private OnClickListener buttonSaveClickListener = new OnClickListener() {
+        // Generate any additional actions that can be performed on the
+        // overall list.  In a normal install, there are no additional
+        // actions found here, but this allows other applications to extend
+        // our menu with their own actions.
+        Intent intent = new Intent(null, getIntent().getData());
+        intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
+        menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0,
+                new ComponentName(this, FolderListActivity.class), null, intent, 0, null);
 
-		@Override
-		public void onClick(View v) {
-			
-			SudokuCellCollection cells = mBoard.getCells();
-			cells.markFilledCellsAsNotEditable();
+        return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+        case MENU_ITEM_SAVE:
+			mGame.getCells().markFilledCellsAsNotEditable();
 			
 			switch (mState) {
 			case STATE_EDIT:
-				// TODO: figure out how to handle edit properly - what to do with cell's editable state?
-				SudokuGame game = mSudokuDB.getSudoku(mSudokuID);
-				game.setCells(cells);
-				mSudokuDB.updateSudoku(game);
+				mSudokuDB.updateSudoku(mGame);
 				break;
 			case STATE_INSERT:
-				mSudokuDB.insertSudoku(mFolderID, cells);
+				mGame.setCreated(new Date());
+				mSudokuDB.insertSudoku(mFolderID, mGame);
 				break;
 			}
 			
 			finish();
-		}
-		
-	};
-
-	private OnClickListener buttonCancelClickListener = new OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			finish();
-		}
-		
-	};
-
-	
+            return true;
+        case MENU_ITEM_CANCEL:
+        	finish();
+        	return true;
+        }
+        return super.onOptionsItemSelected(item);
+	}
 }

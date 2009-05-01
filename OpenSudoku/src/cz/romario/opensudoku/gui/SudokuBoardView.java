@@ -68,6 +68,7 @@ public class SudokuBoardView extends View {
 		setCells(game.getCells());
 	}
 
+	// TODO: not used
 	public void setCells(SudokuCellCollection cells) {
 		mCells = cells;
 		if (!mReadonly) {
