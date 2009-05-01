@@ -58,7 +58,7 @@ public class IMPopup extends InputMethod {
 	@Override
 	public String getAbbrName() {
 		// TODO: Icon would be better?
-		return "Pop";
+		return "Popup";
 	}
 	
 	@Override
