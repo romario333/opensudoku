@@ -18,29 +18,22 @@
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
 	    	android:text="2" />
-	</LinearLayout>
-	<LinearLayout
-	    android:layout_width="fill_parent"
-	    android:layout_height="0dip"
-	    android:layout_weight="1"
-	    android:orientation="horizontal">
 	   <Button android:id="@+id/button_3"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
 	    	android:text="3" />
-	   <Button android:id="@+id/button_4"
-		    android:layout_width="0dip"
-		    android:layout_height="fill_parent"
-	   		android:layout_weight="1"
-	    	android:text="4" />
 	</LinearLayout>
-	
 	<LinearLayout
 	    android:layout_width="fill_parent"
 	    android:layout_height="0dip"
 	    android:layout_weight="1"
 	    android:orientation="horizontal">
+	   <Button android:id="@+id/button_4"
+		    android:layout_width="0dip"
+		    android:layout_height="fill_parent"
+	   		android:layout_weight="1"
+	    	android:text="4" />
 	   <Button android:id="@+id/button_5"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
@@ -52,6 +45,7 @@
 	   		android:layout_weight="1"
 	    	android:text="6" />
 	</LinearLayout>
+	
 	<LinearLayout
 	    android:layout_width="fill_parent"
 	    android:layout_height="0dip"
@@ -67,17 +61,27 @@
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
 	    	android:text="8" />
+	   <Button android:id="@+id/button_9"
+		    android:layout_width="0dip"
+		    android:layout_height="fill_parent"
+	   		android:layout_weight="1"
+	    	android:text="9" />
 	</LinearLayout>
 	<LinearLayout
 	    android:layout_width="fill_parent"
 	    android:layout_height="0dip"
 	    android:layout_weight="1"
 	    android:orientation="horizontal">
-	   <Button android:id="@+id/button_9"
+	   <Button android:id="@+id/button_clear"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
-	    	android:text="9" />
+	    	android:text="C" />
+	   <TextView
+		    android:layout_width="0dip"
+		    android:layout_height="fill_parent"
+	   		android:layout_weight="1"
+	    	android:visibility="invisible" />
 	   <Button android:id="@+id/switch_input_mode"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"

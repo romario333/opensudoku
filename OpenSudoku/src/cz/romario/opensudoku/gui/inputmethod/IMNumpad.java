@@ -29,8 +29,6 @@ public class IMNumpad extends InputMethod {
 		mContext = context;
 		mGame = game;
 		mBoard = board;
-		mSelectedCell = mBoard.getSelectedCell();
-		
 	}
 
 	@Override
@@ -48,6 +46,7 @@ public class IMNumpad extends InputMethod {
 		mNumberButtons.put(7, (Button)controlPanel.findViewById(R.id.button_7));
 		mNumberButtons.put(8, (Button)controlPanel.findViewById(R.id.button_8));
 		mNumberButtons.put(9, (Button)controlPanel.findViewById(R.id.button_9));
+		mNumberButtons.put(0, (Button)controlPanel.findViewById(R.id.button_clear));
 		
 		for (Integer num : mNumberButtons.keySet()) {
 			Button b = mNumberButtons.get(num);
@@ -74,13 +73,17 @@ public class IMNumpad extends InputMethod {
 
 	@Override
 	public String getAbbrName() {
-		return "Numpad";
+		return "Num\nPad";
+	}
+	
+	@Override
+	protected void onActivated() {
+		mSelectedCell = mBoard.getSelectedCell();
 	}
 	
 	@Override
 	protected void onCellSelected(SudokuCell cell) {
 		mSelectedCell = cell;
-		mGame.setCellValue(cell, 0);
 	}
 
 }
