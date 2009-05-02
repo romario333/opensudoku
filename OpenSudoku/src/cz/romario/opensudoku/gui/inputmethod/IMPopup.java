@@ -39,7 +39,7 @@ public class IMPopup extends InputMethod {
 	@Override
 	protected void onCellTapped(SudokuCell cell){
 		mSelectedCell = cell;
-		if (cell.isEditable() && mEditCellDialog != null) {
+		if (cell.isEditable()) {
 			ensureEditCellDialog();
 			mEditCellDialog.updateNumber(cell.getValue());
 			mEditCellDialog.updateNote(SudokuCell.getNoteNumbers(cell.getNote()));

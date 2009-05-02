@@ -144,10 +144,8 @@ public class SudokuPlayActivity extends Activity{
         mIMPopup.enabled = gameSettings.getBoolean("im_popup", true);
         mIMSingleNumber.enabled = gameSettings.getBoolean("im_single_number", true);
         mIMNumpad.enabled = gameSettings.getBoolean("im_numpad", true);
-        
-        if (mInputMethods.getActiveMethodIndex() == -1) {
-        	mInputMethods.activateInputMethod(0);
-        }
+
+        mInputMethods.ensureSomethingIsActive();
         
 		mHintsQueue.showOneTimeHint(R.string.welcome, R.string.first_run_hint);
 	}

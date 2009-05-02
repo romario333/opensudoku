@@ -99,6 +99,14 @@ public class IMControlPanel extends LinearLayout {
 		}
 	}
 	
+	// TODO: this is weird, find better solution
+	public void ensureSomethingIsActive() {
+		if (mActiveMethodIndex == -1 || !mInputMethods.get(mActiveMethodIndex).enabled) {
+			activateInputMethod(0);
+		}
+		
+	}
+	
 	/**
 	 * Activates given input method (see INPUT_METHOD_* constants). If the given method is
 	 * not enabled, activates first available method after this method.
@@ -149,14 +157,18 @@ public class IMControlPanel extends LinearLayout {
 			InputMethod activeMethod = mInputMethods.get(mActiveMethodIndex);
 			activeMethod.onActivated();
 			
-			mHintsQueue.showOneTimeHint(activeMethod.getNameResID(), activeMethod.getHelpResID());
+			if (mHintsQueue != null) {
+				mHintsQueue.showOneTimeHint(activeMethod.getNameResID(), activeMethod.getHelpResID());
+			}
 		}
 	}
 	
 	public void activateNextInputMethod() {
 		int id = mActiveMethodIndex + 1;
 		if (id >= mInputMethods.size()) {
-			mHintsQueue.showOneTimeHint(R.string.that_is_all, R.string.im_disable_modes_hint);
+			if (mHintsQueue != null) {
+				mHintsQueue.showOneTimeHint(R.string.that_is_all, R.string.im_disable_modes_hint);
+			}
 			id = 0;
 		}
 		activateInputMethod(id);
