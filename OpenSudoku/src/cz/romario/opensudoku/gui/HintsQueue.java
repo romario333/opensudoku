@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
@@ -51,6 +52,15 @@ public class HintsQueue {
 			.setTitle(R.string.hint)
 			.setMessage("")
 			.setPositiveButton(R.string.close, mHintClosed).create();
+		
+		mHintDialog.setOnDismissListener(new OnDismissListener() {
+
+				@Override
+				public void onDismiss(DialogInterface dialog) {
+					processQueue();					
+				}
+				
+			});
 		
 		mMessages = new LinkedList<Message>();
 	}
@@ -92,7 +102,7 @@ public class HintsQueue {
 
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
-			processQueue();
+			//processQueue();
 		}
 		
 	};

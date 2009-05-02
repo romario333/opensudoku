@@ -115,6 +115,8 @@ public class SudokuPlayActivity extends Activity{
         mSudokuBoard.setGame(mSudokuGame);
 		mSudokuGame.setOnPuzzleSolvedListener(onSolvedListener);
 		
+		mHintsQueue.showOneTimeHint(R.string.welcome, R.string.first_run_hint);		
+		
         mInputMethods = (IMControlPanel)findViewById(R.id.input_methods);
         mInputMethods.setBoard(mSudokuBoard);
         mInputMethods.setGame(mSudokuGame);
@@ -147,7 +149,7 @@ public class SudokuPlayActivity extends Activity{
 
         mInputMethods.ensureSomethingIsActive();
         
-		mHintsQueue.showOneTimeHint(R.string.welcome, R.string.first_run_hint);
+        
 	}
 	
 	

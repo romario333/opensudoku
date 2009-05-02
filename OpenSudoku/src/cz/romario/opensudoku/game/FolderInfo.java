@@ -45,33 +45,37 @@ public class FolderInfo {
 		StringBuilder sb = new StringBuilder();
 		
 		if (puzzleCount == 0) {
+			// no puzzles in folder
 			sb.append(c.getString(R.string.no_puzzles));
 		} else {
+			// there are some puzzles
 			sb.append(puzzleCount == 1 ? c.getString(R.string.one_puzzle) : c.getString(R.string.n_puzzles, puzzleCount));
 			
 			int unsolvedCount = puzzleCount - solvedCount;
 			
+			// if there are any playing or unsolved puzzles, add info about them
 			if (playingCount != 0 || unsolvedCount != 0) {
 				sb.append(" (");
-			}
-			
-			if (playingCount != 0) {
-				sb.append(c.getString(R.string.n_playing, playingCount));
+				
+				if (playingCount != 0) {
+					sb.append(c.getString(R.string.n_playing, playingCount));
+					if (unsolvedCount != 0) {
+						sb.append(", ");
+					}
+				}
+				
 				if (unsolvedCount != 0) {
-					sb.append(", ");
+					sb.append(c.getString(R.string.n_unsolved, unsolvedCount));
 				}
-			}
-			
-			if (unsolvedCount != 0) {
-				if (puzzleCount == solvedCount) {
-					sb.append(c.getString(R.string.all_solved));
-				}
-				sb.append(c.getString(R.string.n_unsolved, unsolvedCount));
-			}
-			
-			if (playingCount != 0 || unsolvedCount != 0) {
+				
 				sb.append(")");
 			}
+			
+			// maybe all puzzles are solved?
+			if (unsolvedCount == 0 && puzzleCount != 0) {
+					sb.append(" (").append(c.getString(R.string.all_solved)).append(")");
+			}
+			
 		}
 		
 		return sb.toString();
