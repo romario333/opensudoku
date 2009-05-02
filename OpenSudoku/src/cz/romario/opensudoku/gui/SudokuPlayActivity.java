@@ -32,7 +32,9 @@ import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.SudokuGame.OnPuzzleSolvedListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTappedListener;
 import cz.romario.opensudoku.gui.inputmethod.IMControlPanel;
+import cz.romario.opensudoku.gui.inputmethod.IMNumpad;
 import cz.romario.opensudoku.gui.inputmethod.IMPopup;
+import cz.romario.opensudoku.gui.inputmethod.IMSingleNumber;
 
 /*
  */
@@ -57,7 +59,11 @@ public class SudokuPlayActivity extends Activity{
 	private SudokuGame mSudokuGame;
 	
 	private SudokuBoardView mSudokuBoard;
+	
 	private IMControlPanel mInputMethods;
+	private IMPopup mIMPopup;
+	private IMSingleNumber mIMSingleNumber;
+	private IMNumpad mIMNumpad;
 	
 	private StringBuilder mTimeText;
 	private Formatter mTimeFormatter;
@@ -112,9 +118,13 @@ public class SudokuPlayActivity extends Activity{
         mInputMethods = (IMControlPanel)findViewById(R.id.input_methods);
         mInputMethods.setBoard(mSudokuBoard);
         mInputMethods.setGame(mSudokuGame);
-        mInputMethods.initialize();
-		
-		
+        mInputMethods.setHintsQueue(mHintsQueue);
+        mIMPopup = new IMPopup();
+        mInputMethods.addInputMethod(mIMPopup);
+        mIMSingleNumber = new IMSingleNumber();
+        mInputMethods.addInputMethod(mIMSingleNumber);
+        mIMNumpad = new IMNumpad();
+        mInputMethods.addInputMethod(mIMNumpad);
 		updateTime();
     }
 	
@@ -131,15 +141,9 @@ public class SudokuPlayActivity extends Activity{
 		SharedPreferences gameSettings = PreferenceManager.getDefaultSharedPreferences(this);
         mSudokuGame.setHighlightWrongVals(gameSettings.getBoolean("highlight_wrong_values", true));
         
-        mInputMethods.setInputMethodEnabled(
-        		IMControlPanel.INPUT_METHOD_POPUP, 
-        		gameSettings.getBoolean("im_popup", true));
-        mInputMethods.setInputMethodEnabled(
-        		IMControlPanel.INPUT_METHOD_SINGLE_NUMBER, 
-        		gameSettings.getBoolean("im_single_number", true));
-        mInputMethods.setInputMethodEnabled(
-        		IMControlPanel.INPUT_METHOD_NUMPAD, 
-        		gameSettings.getBoolean("im_numpad", true));
+        mIMPopup.enabled = gameSettings.getBoolean("im_popup", true);
+        mIMSingleNumber.enabled = gameSettings.getBoolean("im_single_number", true);
+        mIMNumpad.enabled = gameSettings.getBoolean("im_numpad", true);
         
         if (mInputMethods.getActiveMethodIndex() == -1) {
         	mInputMethods.activateInputMethod(0);

@@ -14,25 +14,16 @@ import cz.romario.opensudoku.gui.inputmethod.IMPopupDialog.OnNumberEditListener;
 
 public class IMPopup extends InputMethod {
 
-	private Context mContext;
-	private SudokuGame mGame;
-	private SudokuBoardView mBoard;
-	
 	private IMPopupDialog mEditCellDialog;
 	private SudokuCell mSelectedCell;
 	
-	public IMPopup(Context context, SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
-		super(context, game, board, hintsQueue);
+	private void ensureEditCellDialog() {
+		if (mEditCellDialog == null) {
+			mEditCellDialog = new IMPopupDialog(mContext);
+	        mEditCellDialog.setOnNumberEditListener(onNumberEditListener);
+	        mEditCellDialog.setOnNoteEditListener(onNoteEditListener);
+		}
 		
-		mContext = context;
-		mGame = game;
-		mBoard = board;
-		
-		mEditCellDialog = new IMPopupDialog(mContext);
-        mEditCellDialog.setOnNumberEditListener(onNumberEditListener);
-        mEditCellDialog.setOnNoteEditListener(onNoteEditListener);
-
-        
 	}
 	
 	@Override
@@ -49,6 +40,7 @@ public class IMPopup extends InputMethod {
 	protected void onCellTapped(SudokuCell cell){
 		mSelectedCell = cell;
 		if (cell.isEditable() && mEditCellDialog != null) {
+			ensureEditCellDialog();
 			mEditCellDialog.updateNumber(cell.getValue());
 			mEditCellDialog.updateNote(SudokuCell.getNoteNumbers(cell.getNote()));
 			mEditCellDialog.show();

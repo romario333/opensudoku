@@ -30,21 +30,13 @@ import android.widget.LinearLayout;
  *
  */
 public class IMControlPanel extends LinearLayout {
-
-	// TODO: find better names
-	public static final int INPUT_METHOD_POPUP = 0;
-	public static final int INPUT_METHOD_SINGLE_NUMBER = 1;
-	public static final int INPUT_METHOD_NUMPAD = 2; 
-	
-	private static final int INPUT_METHODS_COUNT = 3;
-	
 	private Context mContext;
 	private SudokuBoardView mBoard;
 	private SudokuGame mGame;
 	private HintsQueue mHintsQueue;
 	private boolean mPopupOneTimeHintShowed = false;
 	
-	private InputMethod[] mInputMethods;
+	private List<InputMethod> mInputMethods = new ArrayList<InputMethod>();
 	private int mActiveMethodIndex = -1;
 	
 	public IMControlPanel(Context context) {
@@ -55,24 +47,6 @@ public class IMControlPanel extends LinearLayout {
 	public IMControlPanel(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mContext = context;
-	}
-	
-	/**
-	 * Initializes input method's control panel. Make sure that setGame and setBoard methods are called first.
-	 * 
-	 * @param context
-	 */
-	public void initialize() {
-		assert mContext != null;
-		assert mGame != null;
-		assert mBoard != null;
-		
-		mHintsQueue = new HintsQueue(mContext);
-		
-		mInputMethods = new InputMethod[INPUT_METHODS_COUNT];
-		mInputMethods[INPUT_METHOD_POPUP] = new IMPopup(mContext, mGame, mBoard, mHintsQueue);
-		mInputMethods[INPUT_METHOD_SINGLE_NUMBER] = new IMSingleNumber(mContext, mGame, mBoard, mHintsQueue);
-		mInputMethods[INPUT_METHOD_NUMPAD] = new IMNumpad(mContext, mGame, mBoard, mHintsQueue);
 	}
 	
 	public SudokuBoardView getBoard() {
@@ -104,25 +78,26 @@ public class IMControlPanel extends LinearLayout {
 		mGame = game;
 	}
 	
-	/**
-	 * Enables or disables given input method. If input method to disable is active,
-	 * the first possible other input method is selected.
-	 * 
-	 * @param methodID
-	 * @param enabled
-	 */
-	public void setInputMethodEnabled(int methodID, boolean enabled) {
-		if (enabled) {
-			mInputMethods[methodID].enabled = true;
-		} else {
-			mInputMethods[methodID].enabled = false;
-			
-			if (methodID == mActiveMethodIndex) {
-				activateInputMethod(0);
-			}
-		}
+	public HintsQueue getHintsQueue() {
+		return mHintsQueue;
 	}
 	
+	public void setHintsQueue(HintsQueue hintsQueue) {
+		mHintsQueue = hintsQueue;
+	}
+	
+	public void addInputMethod(InputMethod im) {
+		assert mContext != null;
+		assert mGame != null;
+		assert mBoard != null;
+		
+		im.initialize(mContext, mGame, mBoard, mHintsQueue);
+		mInputMethods.add(im);
+		
+		if (mActiveMethodIndex == -1 && im.enabled) {
+			activateInputMethod(mInputMethods.size() - 1);
+		}
+	}
 	
 	/**
 	 * Activates given input method (see INPUT_METHOD_* constants). If the given method is
@@ -132,10 +107,10 @@ public class IMControlPanel extends LinearLayout {
 	 * @return
 	 */
 	public void activateInputMethod(int methodID) {
-		assert methodID >= -1 && methodID < INPUT_METHODS_COUNT;
+		assert methodID >= -1 && methodID < mInputMethods.size();
 		
 		if (mActiveMethodIndex != -1) {
-			mInputMethods[mActiveMethodIndex].onDeactivated();
+			mInputMethods.get(mActiveMethodIndex).onDeactivated();
 		}
 		
 		boolean idFound = false;
@@ -143,15 +118,15 @@ public class IMControlPanel extends LinearLayout {
 		int numOfCycles = 0;
 		
 		if (id != -1) {
-			while (!idFound && numOfCycles <= INPUT_METHODS_COUNT) {
-				if (mInputMethods[id].enabled) {
+			while (!idFound && numOfCycles <= mInputMethods.size()) {
+				if (mInputMethods.get(id).enabled) {
 					ensureControlPanel(id);
 					idFound = true;
 					break;
 				}
 				
 				id++;
-				if (id == INPUT_METHODS_COUNT) {
+				if (id == mInputMethods.size()) {
 					id = 0;
 				}
 				numOfCycles++;
@@ -162,8 +137,8 @@ public class IMControlPanel extends LinearLayout {
 			id = -1;
 		}
 		
-		for (int i = 0; i < INPUT_METHODS_COUNT; i++) {
-			InputMethod im = mInputMethods[i];
+		for (int i = 0; i < mInputMethods.size(); i++) {
+			InputMethod im = mInputMethods.get(i);
 			if (im.isControlPanelCreated()) {
 				im.getControlPanel().setVisibility(i == id ? View.VISIBLE : View.GONE);
 			}
@@ -171,7 +146,7 @@ public class IMControlPanel extends LinearLayout {
 		
 		mActiveMethodIndex = id;
 		if (mActiveMethodIndex != -1) {
-			InputMethod activeMethod = mInputMethods[mActiveMethodIndex];
+			InputMethod activeMethod = mInputMethods.get(mActiveMethodIndex);
 			activeMethod.onActivated();
 			
 			mHintsQueue.showOneTimeHint(activeMethod.getNameResID(), activeMethod.getHelpResID());
@@ -180,8 +155,8 @@ public class IMControlPanel extends LinearLayout {
 	
 	public void activateNextInputMethod() {
 		int id = mActiveMethodIndex + 1;
-		if (id >= INPUT_METHODS_COUNT) {
-			mHintsQueue.showOneTimeHint(R.string.popup, R.string.im_disable_modes_hint);
+		if (id >= mInputMethods.size()) {
+			mHintsQueue.showOneTimeHint(R.string.that_is_all, R.string.im_disable_modes_hint);
 			id = 0;
 		}
 		activateInputMethod(id);
@@ -193,7 +168,7 @@ public class IMControlPanel extends LinearLayout {
 	
 	public void showHelpForActiveMethod() {
 		if (mActiveMethodIndex != -1) {
-			InputMethod activeMethod = mInputMethods[mActiveMethodIndex];
+			InputMethod activeMethod = mInputMethods.get(mActiveMethodIndex);
 			activeMethod.onActivated();
 			
 			mHintsQueue.showHint(activeMethod.getNameResID(), activeMethod.getHelpResID());
@@ -201,7 +176,7 @@ public class IMControlPanel extends LinearLayout {
 	}
 	
 	private void ensureControlPanel(int methodID) {
-		InputMethod im = mInputMethods[methodID];
+		InputMethod im = mInputMethods.get(methodID);
 		if (!im.isControlPanelCreated()) {
 			View controlPanel = im.getControlPanel();
 			Button switchModeButton = (Button)controlPanel.findViewById(R.id.switch_input_mode);
@@ -217,7 +192,7 @@ public class IMControlPanel extends LinearLayout {
 		@Override
 		public void onCellTapped(SudokuCell cell) {
 			if (mActiveMethodIndex != -1 && mInputMethods != null) {
-				mInputMethods[mActiveMethodIndex].onCellTapped(cell);
+				mInputMethods.get(mActiveMethodIndex).onCellTapped(cell);
 			}
 		}
 	};
@@ -226,7 +201,7 @@ public class IMControlPanel extends LinearLayout {
 		@Override
 		public void onCellSelected(SudokuCell cell) {
 			if (mActiveMethodIndex != -1 && mInputMethods != null) {
-				mInputMethods[mActiveMethodIndex].onCellSelected(cell);
+				mInputMethods.get(mActiveMethodIndex).onCellSelected(cell);
 			}
 		}
 	};
@@ -259,7 +234,7 @@ public class IMControlPanel extends LinearLayout {
     	private final int mActiveMethodIndex;
         private final Bundle mInputMethodsState;
     	
-    	private SavedState(Parcelable superState, int activeMethodIndex, InputMethod[] inputMethods) {
+    	private SavedState(Parcelable superState, int activeMethodIndex, List<InputMethod> inputMethods) {
             super(superState);
             mActiveMethodIndex = activeMethodIndex;
             
@@ -281,7 +256,7 @@ public class IMControlPanel extends LinearLayout {
             return mActiveMethodIndex;
         }
         
-        public void restoreInputMethodsState(InputMethod[] inputMethods) {
+        public void restoreInputMethodsState(List<InputMethod> inputMethods) {
         	for (InputMethod im : inputMethods) {
         		im.onRestoreInstanceState(mInputMethodsState);
         	}

@@ -25,15 +25,25 @@ public abstract class InputMethod {
 	
 	public boolean enabled = true;
 	
-	private Context mContext;
+	protected Context mContext;
+	protected SudokuGame mGame;
+	protected SudokuBoardView mBoard;
+	protected HintsQueue mHintsQueue;
+	
 	private String mInputMethodName;
-	private View mControlPanel;
-	protected HintsQueue mHintsQueue; 
+	protected View mControlPanel;
+	 
 
-	public InputMethod(Context context, SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
+	public InputMethod() {
+		
+	}
+	
+	protected void initialize(Context context, SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
 		mContext = context;
-		mInputMethodName = this.getClass().getSimpleName();
+		mGame = game;
+		mBoard = board;
 		mHintsQueue = hintsQueue;
+		mInputMethodName = this.getClass().getSimpleName();
 	}
 	
 	public boolean isControlPanelCreated() {

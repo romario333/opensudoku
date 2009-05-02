@@ -37,28 +37,19 @@ public class IMSingleNumber extends InputMethod {
 	private static final int MODE_EDIT_VALUE = 0;
 	private static final int MODE_EDIT_NOTE = 1;
 	
-	private Context mContext;
-	private SudokuGame mGame;
-	private SudokuBoardView mBoard;
 	private Handler mGuiHandler;
 	private Map<Integer,Button> mNumberButtons;
 	private Button mSwitchNumNoteButton;
 
 	private int mSelectedNumber = -1;
-	private int mEditMode;
+	private int mEditMode = MODE_EDIT_VALUE;
 	
-	public IMSingleNumber(Context context, SudokuGame game,
-			SudokuBoardView board, HintsQueue hintsQueue) {
-		super(context, game, board, hintsQueue);
+	public IMSingleNumber() {
+		super();
 		
-		mContext = context;
-		mGame = game;
-		mBoard = board;
 		mGuiHandler = new Handler();
-		
-		mEditMode = MODE_EDIT_VALUE;
 	}
-
+	
 	@Override
 	public int getNameResID() {
 		return R.string.single_number;

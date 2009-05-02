@@ -7,6 +7,7 @@ import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.inputmethod.IMControlPanel;
+import cz.romario.opensudoku.gui.inputmethod.IMNumpad;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -104,11 +105,7 @@ public class SudokuEditActivity extends Activity {
         mInputMethods = (IMControlPanel)findViewById(R.id.input_methods);
         mInputMethods.setGame(mGame);
         mInputMethods.setBoard(mBoard);
-        mInputMethods.initialize();
-        mInputMethods.setInputMethodEnabled(IMControlPanel.INPUT_METHOD_NUMPAD, true);
-        mInputMethods.setInputMethodEnabled(IMControlPanel.INPUT_METHOD_POPUP, false);
-        mInputMethods.setInputMethodEnabled(IMControlPanel.INPUT_METHOD_SINGLE_NUMBER, false);
-        mInputMethods.activateInputMethod(0);
+        mInputMethods.addInputMethod(new IMNumpad());
 	}
 	
 	@Override

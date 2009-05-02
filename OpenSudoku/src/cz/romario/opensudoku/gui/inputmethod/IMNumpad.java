@@ -24,27 +24,14 @@ public class IMNumpad extends InputMethod {
 	private static final int MODE_EDIT_VALUE = 0;
 	private static final int MODE_EDIT_NOTE = 1;
 	
-	private Context mContext;
-	private SudokuGame mGame;
-	private SudokuBoardView mBoard;
 	private SudokuCell mSelectedCell;
 	private Button mSwitchNumNoteButton;
 
 	private int mSelectedNumber = -1;
-	private int mEditMode;
+	private int mEditMode = MODE_EDIT_VALUE;
 	
 	private Map<Integer,Button> mNumberButtons;
 	
-	public IMNumpad(Context context, SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
-		super(context, game, board, hintsQueue);
-		
-		mContext = context;
-		mGame = game;
-		mBoard = board;
-		
-		mEditMode = MODE_EDIT_VALUE;
-	}
-
 	@Override
 	protected View createControlPanel() {
 		LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -119,7 +106,10 @@ public class IMNumpad extends InputMethod {
 			
 			switch (mEditMode) {
 			case MODE_EDIT_NOTE:
-				if (selNumber >= 0 && selNumber <= 9) {
+				if (selNumber == 0) {
+					mGame.setCellNote(selCell, null);
+					mBoard.postInvalidate();
+				} else if (selNumber > 0 && selNumber <= 9) {
 					// TODO: this does not seem very effective
 					List<Integer> noteNums = new ArrayList<Integer>();
 					
@@ -131,7 +121,7 @@ public class IMNumpad extends InputMethod {
 					}
 					
 					if (noteNums.contains(selNumber)) {
-						noteNums.remove(selNumber);
+						noteNums.remove(new Integer(selNumber));
 					} else {
 						noteNums.add(selNumber);
 					}
