@@ -34,7 +34,7 @@ public class IMSingleNumberCellValue extends IMSingleNumber {
 
 	@Override
 	public String getAbbrName() {
-		return "Num";
+		return mContext.getString(R.string.single_number_value_abbr);
 	}
 	
 	@Override

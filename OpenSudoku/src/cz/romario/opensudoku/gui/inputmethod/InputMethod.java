@@ -1,6 +1,8 @@
 package cz.romario.opensudoku.gui.inputmethod;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.LightingColorFilter;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
@@ -35,11 +37,14 @@ public abstract class InputMethod {
 	public View getControlPanel() {
 		if (mControlPanel == null) {
 			mControlPanel = createControlPanel();
-			View switchModeButton = mControlPanel.findViewById(R.id.switch_input_mode);
-			if (switchModeButton == null) {
-				// TODO: exception
+			View switchModeView = mControlPanel.findViewById(R.id.switch_input_mode);
+			if (switchModeView == null) {
+				// TODO: exception + check that it is button
 			}
-			((Button)switchModeButton).setText(getAbbrName());
+			Button switchModeButton = (Button) switchModeView;
+			switchModeButton.setText(getAbbrName());
+			// TODO: color from resources
+			switchModeButton.getBackground().setColorFilter(new LightingColorFilter(Color.CYAN, 0));
 			onControlPanelCreated(mControlPanel);
 		}
 		
@@ -50,6 +55,11 @@ public abstract class InputMethod {
 		return mInputMethodName;
 	}
 	
+	/**
+	 * Gets abbreviated name of input method, which will be displayed on input method switch button.
+	 * 
+	 * @return
+	 */
 	public abstract String getAbbrName();
 	
 	protected abstract View createControlPanel();

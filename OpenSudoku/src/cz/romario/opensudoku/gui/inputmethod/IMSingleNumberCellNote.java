@@ -46,7 +46,7 @@ public class IMSingleNumberCellNote extends IMSingleNumber {
 
 	@Override
 	public String getAbbrName() {
-		return "Note";
+		return mContext.getString(R.string.single_number_note_abbr);
 	}
 	
 	@Override

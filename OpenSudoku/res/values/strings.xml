@@ -77,4 +77,9 @@
 	<string name="numpad">Numpad</string>
 	<string name="numpad_summary">Show numpad which acts as standard numeric keyobard.</string>
 	
+	<string name="numpad_abbr">Num\nPad</string>
+	<string name="popup_abbr">Popup</string>
+	<string name="single_number_note_abbr">Note</string>
+	<string name="single_number_value_abbr">Num</string>
+	
 </resources>

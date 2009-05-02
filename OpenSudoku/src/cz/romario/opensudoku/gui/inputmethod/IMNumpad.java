@@ -73,7 +73,7 @@ public class IMNumpad extends InputMethod {
 
 	@Override
 	public String getAbbrName() {
-		return "Num\nPad";
+		return mContext.getString(R.string.numpad_abbr);
 	}
 	
 	@Override

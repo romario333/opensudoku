@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.LightingColorFilter;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,8 +88,11 @@ public abstract class IMSingleNumber extends InputMethod {
 				for (Button b : mNumberButtons.values()) {
 					if (b.getTag().equals(mSelectedNumber)) {
 						b.setTextAppearance(mContext, android.R.style.TextAppearance_Large_Inverse);
+						// TODO: add color to resources
+						b.getBackground().setColorFilter(new LightingColorFilter(Color.rgb(240, 179, 42), 0));
 					} else {
 						b.setTextAppearance(mContext, android.R.style.TextAppearance_Widget_Button);
+						b.getBackground().setColorFilter(null);
 					}
 				}
 			}
