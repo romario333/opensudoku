@@ -90,7 +90,7 @@
 	<string name="im_numpad_hint">You\'re now in the <i>Numpad</i> input mode. Buttons act as a standard numeric keyboard.</string>
 	<string name="im_disable_modes_hint">Please remember that you don\'t have to use all input modes. You can disable any of them in the game settings.\n\nYou can also use the keyboard and trackball to control the game. If you want to enter notes using keyboard, press number with alt or shift.</string>
 	
-	<string name="help_text"><b>Keyboard controls</b>\n\nUse trackball to navigate to the desired cell than press number on keyboard to fill in value. If you want to edit cell\'s note, press number with shift or alt.\n\n<b>Input methods</b>\n<b>Popup</b>\naaa\n<b>SingleNumber</b>\n\n</string>
+	<string name="help_text"><b>Keyboard controls</b>\n\nUse trackball to navigate to the desired cell than press number on keyboard to fill in value. If you want to edit cell\'s note, press number with shift or alt.\n\n<b>Input modes</b>\n\nYou can switch between several input modes using button in the lower right corner of the screen. You can also disable any input mode in game settings - it will be completely hidden then.\n\n<b>Popup input mode</b>\n\nPopup dialog is showed when you tap the cell. You can edit cell\'s content using this dialog.\n\n<b>Single Number input mode</b>\n\nFirst select any number button by pressing it. Then just tap on cells in which you want to have selected number filled.\n\nUse <i>Num/Note</i> button to toggle between cell\'s value and note editing.\n\n<b>Numpad input mode</b>\n\nButtons act as a standard numeric keyboard.\n\nUse <i>Num/Note</i> button to toggle between cell\'s value and note editing.\n\n</string>
 
 	<string name="game">Game</string>
 	<string name="show_hints">First launch hints</string>

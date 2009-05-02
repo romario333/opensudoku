@@ -395,6 +395,7 @@ public class SudokuBoardView extends View {
 					if (mSelectedCell != null) {
 						if (event.isShiftPressed() || event.isAltPressed()) {
 							setCellNote(mSelectedCell, null);
+							postInvalidate();
 						} else {
 							setCellValue(mSelectedCell, 0);
 							moveCellSelectionRight();
