@@ -1,5 +1,8 @@
 package cz.romario.opensudoku.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -147,6 +150,27 @@ public class SudokuCell implements Parcelable {
 	 */
 	public boolean hasNote() {
 		return mNote != null && mNote != "";
+	}
+
+	// TODO: omg, too tired today to get rid of this
+	public String toggleNoteNumber(int number) {
+		List<Integer> noteNums = new ArrayList<Integer>();
+		
+		Integer[] currentNums = SudokuCell.getNoteNumbers(getNote());
+		if (currentNums != null) {
+			for (Integer n : currentNums) {
+				noteNums.add(n);
+			}
+		}
+		
+		if (noteNums.contains(number)) {
+			noteNums.remove(new Integer(number));
+		} else {
+			noteNums.add(number);
+		}
+		
+		Integer[] noteNumsArray = new Integer[noteNums.size()];
+		return SudokuCell.setNoteNumbers(noteNums.toArray(noteNumsArray));
 	}
 	
 	/**

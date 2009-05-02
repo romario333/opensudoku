@@ -110,24 +110,7 @@ public class IMNumpad extends InputMethod {
 					mGame.setCellNote(selCell, null);
 					mBoard.postInvalidate();
 				} else if (selNumber > 0 && selNumber <= 9) {
-					// TODO: this does not seem very effective
-					List<Integer> noteNums = new ArrayList<Integer>();
-					
-					Integer[] currentNums = SudokuCell.getNoteNumbers(selCell.getNote());
-					if (currentNums != null) {
-						for (Integer n : currentNums) {
-							noteNums.add(n);
-						}
-					}
-					
-					if (noteNums.contains(selNumber)) {
-						noteNums.remove(new Integer(selNumber));
-					} else {
-						noteNums.add(selNumber);
-					}
-					
-					Integer[] noteNumsArray = new Integer[noteNums.size()];
-					mGame.setCellNote(selCell, SudokuCell.setNoteNumbers(noteNums.toArray(noteNumsArray)));
+					mGame.setCellNote(selCell, selCell.toggleNoteNumber(selNumber));
 					mBoard.postInvalidate();
 				}
 				break;

@@ -407,24 +407,8 @@ public class SudokuBoardView extends View {
 				
 				if (event.isShiftPressed() || event.isAltPressed()) {
 					// add or remove number to notes
-					// TODO: duplicated from IMSingleNumber
-					List<Integer> noteNums = new ArrayList<Integer>();
-					
-					Integer[] currentNums = SudokuCell.getNoteNumbers(cell.getNote());
-					if (currentNums != null) {
-						for (Integer n : currentNums) {
-							noteNums.add(n);
-						}
-					}
-					
-					if (noteNums.contains(selNumber)) {
-						noteNums.remove(selNumber);
-					} else {
-						noteNums.add(selNumber);
-					}
-					
-					Integer[] noteNumsArray = new Integer[noteNums.size()];
-					setCellNote(cell, SudokuCell.setNoteNumbers(noteNums.toArray(noteNumsArray)));
+					setCellNote(cell, cell.toggleNoteNumber(selNumber));
+					invalidate();
 				} else {
 					// enter number in cell
 					setCellValue(cell, selNumber);

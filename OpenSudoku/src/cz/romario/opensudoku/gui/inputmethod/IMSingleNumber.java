@@ -155,24 +155,9 @@ public class IMSingleNumber extends InputMethod {
 		switch (mEditMode) {
 		case MODE_EDIT_NOTE:
 			if (selNumber >= 0 && selNumber <= 9) {
-				// TODO: this does not seem very effective
-				List<Integer> noteNums = new ArrayList<Integer>();
-				
-				Integer[] currentNums = SudokuCell.getNoteNumbers(cell.getNote());
-				if (currentNums != null) {
-					for (Integer n : currentNums) {
-						noteNums.add(n);
-					}
-				}
-				
-				if (noteNums.contains(selNumber)) {
-					noteNums.remove(selNumber);
-				} else {
-					noteNums.add(selNumber);
-				}
-				
-				Integer[] noteNumsArray = new Integer[noteNums.size()];
-				mGame.setCellNote(cell, SudokuCell.setNoteNumbers(noteNums.toArray(noteNumsArray)));
+				mGame.setCellNote(cell, cell.toggleNoteNumber(selNumber));
+				// TODO: board should know when data changes on itself
+				mBoard.postInvalidate();
 			}
 			break;
 		case MODE_EDIT_VALUE:
