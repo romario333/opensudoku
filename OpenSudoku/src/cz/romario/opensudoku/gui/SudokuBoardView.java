@@ -1,5 +1,8 @@
 package cz.romario.opensudoku.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
@@ -390,6 +393,8 @@ public class SudokuBoardView extends View {
 				case KeyEvent.KEYCODE_DEL:
 					// clear value in selected cell
 					if (mSelectedCell != null) {
+							setCellNote(mSelectedCell, null);
+					} else {
 						setCellValue(mSelectedCell, 0);
 						moveCellSelectionRight();
 					}
@@ -397,13 +402,38 @@ public class SudokuBoardView extends View {
 			}
 			
 			if (keyCode >= KeyEvent.KEYCODE_1 && keyCode <= KeyEvent.KEYCODE_9) {
-				// enter request number in cell
-				int selectedNumber = keyCode - KeyEvent.KEYCODE_0;
-				setCellValue(mSelectedCell, selectedNumber);
-				moveCellSelectionRight();
+				int selNumber = keyCode - KeyEvent.KEYCODE_0;
+				SudokuCell cell = mSelectedCell;
+				
+				if (event.isShiftPressed() || event.isAltPressed()) {
+					// add or remove number to notes
+					// TODO: duplicated from IMSingleNumber
+					List<Integer> noteNums = new ArrayList<Integer>();
+					
+					Integer[] currentNums = SudokuCell.getNoteNumbers(cell.getNote());
+					if (currentNums != null) {
+						for (Integer n : currentNums) {
+							noteNums.add(n);
+						}
+					}
+					
+					if (noteNums.contains(selNumber)) {
+						noteNums.remove(selNumber);
+					} else {
+						noteNums.add(selNumber);
+					}
+					
+					Integer[] noteNumsArray = new Integer[noteNums.size()];
+					setCellNote(cell, SudokuCell.setNoteNumbers(noteNums.toArray(noteNumsArray)));
+				} else {
+					// enter number in cell
+					setCellValue(cell, selNumber);
+					moveCellSelectionRight();
+				}
 				return true;
 			}
 		}
+	
 		
 		return false;
 	}

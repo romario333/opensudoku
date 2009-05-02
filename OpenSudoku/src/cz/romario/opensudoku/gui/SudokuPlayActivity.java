@@ -244,7 +244,7 @@ public class SudokuPlayActivity extends Activity{
         	startActivity(i);
         	return true;
         case MENU_ITEM_HELP:
-        	mInputMethods.showHelpForActiveMethod();
+        	mHintsQueue.showHint(R.string.help, R.string.help_text);
         	return true;
         }
         return super.onOptionsItemSelected(item);
