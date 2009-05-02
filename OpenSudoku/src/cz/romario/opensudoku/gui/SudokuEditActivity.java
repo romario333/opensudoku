@@ -108,7 +108,6 @@ public class SudokuEditActivity extends Activity {
         mInputMethods.setInputMethodEnabled(IMControlPanel.INPUT_METHOD_NUMPAD, true);
         mInputMethods.setInputMethodEnabled(IMControlPanel.INPUT_METHOD_POPUP, false);
         mInputMethods.setInputMethodEnabled(IMControlPanel.INPUT_METHOD_SINGLE_NUMBER, false);
-        mInputMethods.setInputMethodEnabled(IMControlPanel.INPUT_METHOD_SINGLE_NUMBER_NOTE, false);
         mInputMethods.activateInputMethod(0);
 	}
 	

@@ -7,7 +7,7 @@ import java.util.Map;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
-import cz.romario.opensudoku.gui.HintsManager;
+import cz.romario.opensudoku.gui.HintsQueue;
 import cz.romario.opensudoku.gui.SudokuBoardView;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellSelectedListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTappedListener;
@@ -34,14 +34,15 @@ public class IMControlPanel extends LinearLayout {
 	// TODO: find better names
 	public static final int INPUT_METHOD_POPUP = 0;
 	public static final int INPUT_METHOD_SINGLE_NUMBER = 1;
-	public static final int INPUT_METHOD_SINGLE_NUMBER_NOTE = 2;
-	public static final int INPUT_METHOD_NUMPAD = 3; 
+	public static final int INPUT_METHOD_NUMPAD = 2; 
 	
-	private static final int INPUT_METHODS_COUNT = 4;
+	private static final int INPUT_METHODS_COUNT = 3;
 	
 	private Context mContext;
 	private SudokuBoardView mBoard;
 	private SudokuGame mGame;
+	private HintsQueue mHintsQueue;
+	private boolean mPopupOneTimeHintShowed = false;
 	
 	private InputMethod[] mInputMethods;
 	private int mActiveMethodIndex = -1;
@@ -66,13 +67,12 @@ public class IMControlPanel extends LinearLayout {
 		assert mGame != null;
 		assert mBoard != null;
 		
-		HintsManager hm = new HintsManager(mContext);
+		mHintsQueue = new HintsQueue(mContext);
 		
 		mInputMethods = new InputMethod[INPUT_METHODS_COUNT];
-		mInputMethods[INPUT_METHOD_POPUP] = new IMPopup(mContext, mGame, mBoard, hm);
-		mInputMethods[INPUT_METHOD_SINGLE_NUMBER] = new IMSingleNumberCellValue(mContext, mGame, mBoard, hm);
-		mInputMethods[INPUT_METHOD_SINGLE_NUMBER_NOTE] = new IMSingleNumberCellNote(mContext, mGame, mBoard, hm);
-		mInputMethods[INPUT_METHOD_NUMPAD] = new IMNumpad(mContext, mGame, mBoard, hm);
+		mInputMethods[INPUT_METHOD_POPUP] = new IMPopup(mContext, mGame, mBoard, mHintsQueue);
+		mInputMethods[INPUT_METHOD_SINGLE_NUMBER] = new IMSingleNumber(mContext, mGame, mBoard, mHintsQueue);
+		mInputMethods[INPUT_METHOD_NUMPAD] = new IMNumpad(mContext, mGame, mBoard, mHintsQueue);
 	}
 	
 	public SudokuBoardView getBoard() {
@@ -170,12 +170,18 @@ public class IMControlPanel extends LinearLayout {
 		}
 		
 		mActiveMethodIndex = id;
-		mInputMethods[mActiveMethodIndex].onActivated();
+		if (mActiveMethodIndex != -1) {
+			InputMethod activeMethod = mInputMethods[mActiveMethodIndex];
+			activeMethod.onActivated();
+			
+			mHintsQueue.showOneTimeHint(activeMethod.getNameResID(), activeMethod.getHelpResID());
+		}
 	}
 	
 	public void activateNextInputMethod() {
 		int id = mActiveMethodIndex + 1;
 		if (id >= INPUT_METHODS_COUNT) {
+			mHintsQueue.showOneTimeHint(R.string.popup, R.string.im_disable_modes_hint);
 			id = 0;
 		}
 		activateInputMethod(id);
@@ -183,6 +189,15 @@ public class IMControlPanel extends LinearLayout {
 	
 	public int getActiveMethodIndex() {
 		return mActiveMethodIndex;
+	}
+	
+	public void showHelpForActiveMethod() {
+		if (mActiveMethodIndex != -1) {
+			InputMethod activeMethod = mInputMethods[mActiveMethodIndex];
+			activeMethod.onActivated();
+			
+			mHintsQueue.showHint(activeMethod.getNameResID(), activeMethod.getHelpResID());
+		}
 	}
 	
 	private void ensureControlPanel(int methodID) {

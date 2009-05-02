@@ -7,7 +7,7 @@ import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
-import cz.romario.opensudoku.gui.HintsManager;
+import cz.romario.opensudoku.gui.HintsQueue;
 import cz.romario.opensudoku.gui.SudokuBoardView;
 import cz.romario.opensudoku.gui.inputmethod.IMPopupDialog.OnNoteEditListener;
 import cz.romario.opensudoku.gui.inputmethod.IMPopupDialog.OnNumberEditListener;
@@ -21,10 +21,8 @@ public class IMPopup extends InputMethod {
 	private IMPopupDialog mEditCellDialog;
 	private SudokuCell mSelectedCell;
 	
-	private int mActivatedCount = 0;
-	
-	public IMPopup(Context context, SudokuGame game, SudokuBoardView board, HintsManager hintsManager) {
-		super(context, game, board, hintsManager);
+	public IMPopup(Context context, SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
+		super(context, game, board, hintsQueue);
 		
 		mContext = context;
 		mGame = game;
@@ -40,14 +38,6 @@ public class IMPopup extends InputMethod {
 	@Override
 	protected void onActivated() {
 		mBoard.setAutoHideTouchedCellHint(false);
-		
-		mActivatedCount++;
-		if (mActivatedCount == 2) {
-			if (!mHintsManager.wasDisplayed("popup_again")) {
-				hint("popup_again", mContext.getString(R.string.hint_popup_again), Toast.LENGTH_SHORT);
-				hint("popup_again", mContext.getString(R.string.hint_disable_modes), Toast.LENGTH_LONG);
-			}
-		}
 	}
 	
 	@Override
@@ -67,6 +57,16 @@ public class IMPopup extends InputMethod {
 		}
 	}
 
+	@Override
+	public int getNameResID() {
+		return R.string.popup;
+	}
+
+	@Override
+	public int getHelpResID() {
+		return R.string.im_popup_hint;
+	}
+	
 	@Override
 	public String getAbbrName() {
 		// TODO: Icon would be better?
@@ -89,7 +89,6 @@ public class IMPopup extends InputMethod {
     			mGame.setCellValue(mSelectedCell, number);
     			mBoard.hideTouchedCellHint();
     		}
-    		showNextModeHint();
 			return true;
 		}
 	};
@@ -104,14 +103,7 @@ public class IMPopup extends InputMethod {
 				mGame.setCellNote(mSelectedCell, SudokuCell.setNoteNumbers(numbers));
 				mBoard.hideTouchedCellHint();
 			}
-			showNextModeHint();
 			return true;
 		}
 	};
-	
-	private void showNextModeHint() {
-		if (!mHintsManager.wasDisplayed("next_mode")) {
-			hint("next_mode", mContext.getString(R.string.hint_next_mode), Toast.LENGTH_LONG);
-		}
-	}
 }

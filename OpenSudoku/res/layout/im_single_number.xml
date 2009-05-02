@@ -33,6 +33,10 @@
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
 	    	android:text="5" />
+	   <Button android:id="@+id/switch_num_note"
+		    android:layout_width="0dip"
+		    android:layout_height="fill_parent"
+	   		android:layout_weight="1" />
 	</LinearLayout>
 	<LinearLayout
 	    android:layout_width="fill_parent"
@@ -59,6 +63,11 @@
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
 	    	android:text="9" />
+	   <Button android:id="@+id/button_clear"
+		    android:layout_width="0dip"
+		    android:layout_height="fill_parent"
+	   		android:layout_weight="1"
+	    	android:text="C" />
 	   <Button android:id="@+id/switch_input_mode"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"

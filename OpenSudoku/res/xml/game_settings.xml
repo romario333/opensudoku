@@ -22,11 +22,6 @@
                 android:summary="@string/single_number_summary"
                 android:defaultValue="true" />
         <CheckBoxPreference
-                android:key="im_single_number_note"
-                android:title="@string/single_number_note"
-                android:summary="@string/single_number_note_summary"
-                android:defaultValue="true" />
-        <CheckBoxPreference
                 android:key="im_numpad"
                 android:title="@string/numpad"
                 android:summary="@string/numpad_summary"

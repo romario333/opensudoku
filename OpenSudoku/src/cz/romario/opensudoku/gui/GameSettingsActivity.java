@@ -24,9 +24,9 @@ public class GameSettingsActivity extends PreferenceActivity {
 		public boolean onPreferenceChange(Preference preference, Object newValue) {
 			boolean newVal = (Boolean)newValue;
 			
-			HintsManager hm = new HintsManager(GameSettingsActivity.this);
+			HintsQueue hm = new HintsQueue(GameSettingsActivity.this);
 			if (newVal) {
-				hm.reset();
+				hm.resetOneTimeHints();
 			};
 			return true;
 		}

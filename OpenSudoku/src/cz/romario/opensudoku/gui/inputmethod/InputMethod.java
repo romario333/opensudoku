@@ -11,7 +11,7 @@ import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
-import cz.romario.opensudoku.gui.HintsManager;
+import cz.romario.opensudoku.gui.HintsQueue;
 import cz.romario.opensudoku.gui.SudokuBoardView;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTappedListener;
 
@@ -28,12 +28,12 @@ public abstract class InputMethod {
 	private Context mContext;
 	private String mInputMethodName;
 	private View mControlPanel;
-	protected HintsManager mHintsManager; 
+	protected HintsQueue mHintsQueue; 
 
-	public InputMethod(Context context, SudokuGame game, SudokuBoardView board, HintsManager hintsManager) {
+	public InputMethod(Context context, SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
 		mContext = context;
 		mInputMethodName = this.getClass().getSimpleName();
-		mHintsManager = hintsManager;
+		mHintsQueue = hintsQueue;
 	}
 	
 	public boolean isControlPanelCreated() {
@@ -65,6 +65,10 @@ public abstract class InputMethod {
 	protected String getInputMethodName() {
 		return mInputMethodName;
 	}
+	
+	public abstract int getNameResID();
+	
+	public abstract int getHelpResID();
 	
 	/**
 	 * Gets abbreviated name of input method, which will be displayed on input method switch button.
@@ -113,19 +117,4 @@ public abstract class InputMethod {
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		
 	}
-	
-	/**
-	 * Shows the hint for the user. Hint will be displayed only once when user first
-	 * uses particular input method.
-	 * 
-	 * @param hintKey
-	 * @param hintText
-	 * @param duration How long to display the message. Either Toast.LENGTH_LONG or Toast.LENGTH_SHORT.
-	 */
-	protected void hint(String hintKey, CharSequence text, int duration) {
-		Toast.makeText(mContext, text, duration).show();
-		mHintsManager.markAsDisplayed(hintKey);
-	}
-	
-	
 }

@@ -41,7 +41,8 @@ public class SudokuPlayActivity extends Activity{
 	public static final int MENU_ITEM_RESTART = Menu.FIRST;
 	public static final int MENU_ITEM_CLEAR_ALL_NOTES = Menu.FIRST + 1;
 	public static final int MENU_ITEM_UNDO = Menu.FIRST + 2;
-	public static final int MENU_ITEM_SETTINGS = Menu.FIRST + 3;
+	public static final int MENU_ITEM_HELP = Menu.FIRST + 3; 
+	public static final int MENU_ITEM_SETTINGS = Menu.FIRST + 4;
 	
 	
 	//private static final String TAG = "SudokuPlayActivity";
@@ -51,8 +52,7 @@ public class SudokuPlayActivity extends Activity{
 	private static final int DIALOG_RESTART = 1;
 	private static final int DIALOG_WELL_DONE = 2;
 	private static final int DIALOG_CLEAR_NOTES = 3;
-	private static final int DIALOG_GREETING = 4;
-	
+
 	private long mSudokuGameID;
 	private SudokuGame mSudokuGame;
 	
@@ -64,7 +64,7 @@ public class SudokuPlayActivity extends Activity{
 	
 	private GameTimer mGameTimer;
 	
-	private HintsManager mHintsManager;
+	private HintsQueue mHintsQueue;
 	
 	
 	@Override
@@ -73,7 +73,7 @@ public class SudokuPlayActivity extends Activity{
         
 		setContentView(R.layout.sudoku_play);
     
-		mHintsManager = new HintsManager(this);
+		mHintsQueue = new HintsQueue(this);
 		
         mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
         
@@ -138,9 +138,6 @@ public class SudokuPlayActivity extends Activity{
         		IMControlPanel.INPUT_METHOD_SINGLE_NUMBER, 
         		gameSettings.getBoolean("im_single_number", true));
         mInputMethods.setInputMethodEnabled(
-        		IMControlPanel.INPUT_METHOD_SINGLE_NUMBER_NOTE, 
-        		gameSettings.getBoolean("im_single_number_note", true));
-        mInputMethods.setInputMethodEnabled(
         		IMControlPanel.INPUT_METHOD_NUMPAD, 
         		gameSettings.getBoolean("im_numpad", true));
         
@@ -148,11 +145,7 @@ public class SudokuPlayActivity extends Activity{
         	mInputMethods.activateInputMethod(0);
         }
         
-		// if this is the first time game-play is started, show greeting
-		if (!mHintsManager.wasDisplayed("greeting")) {
-			showDialog(DIALOG_GREETING);
-			mHintsManager.markAsDisplayed("greeting");
-		}
+		mHintsQueue.showOneTimeHint(R.string.welcome, R.string.first_run_hint);
 	}
 	
 	
@@ -197,6 +190,10 @@ public class SudokuPlayActivity extends Activity{
         .setShortcut('7', 'r')
         .setIcon(android.R.drawable.ic_menu_rotate);
 
+        menu.add(0, MENU_ITEM_HELP, 1, R.string.help)
+        .setShortcut('0', 'h')
+        .setIcon(android.R.drawable.ic_menu_help);
+        
         menu.add(0, MENU_ITEM_SETTINGS, 1, R.string.settings)
         .setShortcut('9', 's')
         .setIcon(android.R.drawable.ic_menu_preferences);
@@ -243,6 +240,9 @@ public class SudokuPlayActivity extends Activity{
         	Intent i = new Intent();
         	i.setClass(this, GameSettingsActivity.class);
         	startActivity(i);
+        	return true;
+        case MENU_ITEM_HELP:
+        	mInputMethods.showHelpForActiveMethod();
         	return true;
         }
         return super.onOptionsItemSelected(item);
@@ -292,22 +292,6 @@ public class SudokuPlayActivity extends Activity{
             })
             .setNegativeButton(android.R.string.no, null)
             .create();
-    	case DIALOG_GREETING:
-    		return new AlertDialog.Builder(this)
-    		.setIcon(android.R.drawable.ic_dialog_info)
-    		.setTitle(R.string.welcome)
-    		.setMessage(R.string.first_run_help)
-    		.setPositiveButton(R.string.close, new OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if (!mHintsManager.wasDisplayed("popup_activated")) {
-						Toast.makeText(SudokuPlayActivity.this, getString(R.string.hint_popup), Toast.LENGTH_LONG).show();
-						mHintsManager.markAsDisplayed("popup_activated");
-					}
-				}
-    			
-    		}).create();
     	}
     	return null;
     }

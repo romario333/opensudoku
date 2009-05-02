@@ -77,11 +77,10 @@
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
 	    	android:text="C" />
-	   <TextView
+	   <Button android:id="@+id/switch_num_note"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
-	   		android:layout_weight="1"
-	    	android:visibility="invisible" />
+	   		android:layout_weight="1" />
 	   <Button android:id="@+id/switch_input_mode"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"

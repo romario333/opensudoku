@@ -19,17 +19,6 @@
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
 	   		android:visibility="invisible" />
-	</LinearLayout>
-	<LinearLayout
-	    android:layout_width="fill_parent"
-	    android:layout_height="0dip"
-	    android:layout_weight="1"
-	    android:orientation="horizontal">
-	   <TextView
-		    android:layout_width="0dip"
-		    android:layout_height="fill_parent"
-	   		android:layout_weight="1"
-	   		android:visibility="invisible" />
 	   <TextView
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
@@ -51,6 +40,11 @@
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
 	   		android:visibility="invisible" />
+	   <TextView
+		    android:layout_width="0dip"
+		    android:layout_height="fill_parent"
+	   		android:layout_weight="1"
+	   		android:visibility="invisible" />
 	</LinearLayout>
 	<LinearLayout
 	    android:layout_width="fill_parent"
@@ -67,12 +61,22 @@
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
 	   		android:visibility="invisible" />
+	   <TextView
+		    android:layout_width="0dip"
+		    android:layout_height="fill_parent"
+	   		android:layout_weight="1"
+	   		android:visibility="invisible" />
 	</LinearLayout>
 	<LinearLayout
 	    android:layout_width="fill_parent"
 	    android:layout_height="0dip"
 	    android:layout_weight="1"
 	    android:orientation="horizontal">
+		   <TextView
+			    android:layout_width="0dip"
+			    android:layout_height="fill_parent"
+		   		android:layout_weight="1"
+		   		android:visibility="invisible" />
 		   <TextView
 			    android:layout_width="0dip"
 			    android:layout_height="fill_parent"
