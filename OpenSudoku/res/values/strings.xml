@@ -79,13 +79,13 @@
 	<string name="popup_abbr">Pop</string>
 	<string name="single_number_abbr">SN</string>
 	<string name="welcome">Welcome</string>
-	<string name="first_run_hint">There are several input modes which you can use to edit puzzle content. In order to help you get familiar with these modes there will be several hints displayed as you go through them.\n\nYou can disable these hints in game settings.</string>
+	<string name="first_run_hint">There are several input modes which you can use to fill in the puzzle. In order to help you get familiar with these modes there will be several hints displayed as you go through them.\n\nYou can disable these hints in game settings.</string>
 	<string name="hint">Hint</string>
 	<string name="help">Help</string>
 	<string name="that_is_all">That\'s all</string>
 
 	
-	<string name="im_popup_hint">You\'re now in the <i>Popup</i> input mode. Tap any cell with finger to edit its content or use keyboard.\n\nNotice the button in the lower right corner. You can use this button to switch to another input mode.</string>
+	<string name="im_popup_hint">You\'re now in the <i>Popup</i> input mode. Tap any cell with finger to edit its content.\n\nNotice the button in the lower right corner. You can use this button to switch to another input mode.</string>
 	<string name="im_single_number_hint">You\'re now in the <i>Single number</i> input mode. First select any number button by pressing it. Then just tap on cells in which you want to have selected number filled.\n\nUse <i>Num/Note</i> button to toggle between cell\'s value and note editing.</string>
 	<string name="im_numpad_hint">You\'re now in the <i>Numpad</i> input mode. Buttons act as a standard numeric keyboard.</string>
 	<string name="im_disable_modes_hint">Please remember that you don\'t have to use all input modes. You can disable any of them in the game settings.\n\nYou can also use the keyboard and trackball to control the game. If you want to enter notes using keyboard, press number with alt or shift.</string>

@@ -154,7 +154,11 @@ public class IMSingleNumber extends InputMethod {
 		
 		switch (mEditMode) {
 		case MODE_EDIT_NOTE:
-			if (selNumber >= 0 && selNumber <= 9) {
+			if (selNumber == 0) {
+				mGame.setCellNote(cell, null);
+				mBoard.postInvalidate();
+				
+			} else if (selNumber > 0 && selNumber <= 9) {
 				mGame.setCellNote(cell, cell.toggleNoteNumber(selNumber));
 				// TODO: board should know when data changes on itself
 				mBoard.postInvalidate();
@@ -162,6 +166,9 @@ public class IMSingleNumber extends InputMethod {
 			break;
 		case MODE_EDIT_VALUE:
 			if (selNumber >= 0 && selNumber <= 9) {
+				if (selNumber == cell.getValue()) {
+					selNumber = 0;
+				}
 				mGame.setCellValue(cell, selNumber);
 				mBoard.postInvalidate();
 			}
