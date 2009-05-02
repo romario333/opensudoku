@@ -393,10 +393,12 @@ public class SudokuBoardView extends View {
 				case KeyEvent.KEYCODE_DEL:
 					// clear value in selected cell
 					if (mSelectedCell != null) {
+						if (event.isShiftPressed() || event.isAltPressed()) {
 							setCellNote(mSelectedCell, null);
-					} else {
-						setCellValue(mSelectedCell, 0);
-						moveCellSelectionRight();
+						} else {
+							setCellValue(mSelectedCell, 0);
+							moveCellSelectionRight();
+						}
 					}
 					return true;
 			}
