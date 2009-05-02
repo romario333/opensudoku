@@ -14,9 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.gui.HintsManager;
 import cz.romario.opensudoku.gui.SudokuBoardView;
 
 /**
@@ -36,8 +38,8 @@ public class IMSingleNumberCellNote extends IMSingleNumber {
 
 	
 	public IMSingleNumberCellNote(Context context, SudokuGame game,
-			SudokuBoardView board) {
-		super(context, game, board);
+			SudokuBoardView board, HintsManager hintsManager) {
+		super(context, game, board, hintsManager);
 		
 		mContext = context;
 		mGame = game;
@@ -84,6 +86,17 @@ public class IMSingleNumberCellNote extends IMSingleNumber {
 		
 		if (selNumber >= 0 && selNumber < 9) {
 			mBoard.postInvalidate();
+		}
+	}
+	
+	@Override
+	protected void onActivated() {
+		super.onActivated();
+		
+		if (!mHintsManager.wasDisplayed("single_number_note_activated")) {
+			hint("single_number_note_activated", 
+					mContext.getString(R.string.hint_single_number_note_activated), 
+					Toast.LENGTH_LONG);
 		}
 	}
 

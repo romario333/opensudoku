@@ -2,7 +2,10 @@ package cz.romario.opensudoku.gui;
 
 import cz.romario.opensudoku.R;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
+import android.preference.Preference.OnPreferenceChangeListener;
 
 public class GameSettingsActivity extends PreferenceActivity {
 	@Override
@@ -10,6 +13,24 @@ public class GameSettingsActivity extends PreferenceActivity {
 		super.onCreate(savedInstanceState);
 		
 		addPreferencesFromResource(R.xml.game_settings);
+		
+		findPreference("show_hints").setOnPreferenceChangeListener(mShowHintsChanged);
+
 	}
+
+	private OnPreferenceChangeListener mShowHintsChanged = new OnPreferenceChangeListener() {
+
+		@Override
+		public boolean onPreferenceChange(Preference preference, Object newValue) {
+			boolean newVal = (Boolean)newValue;
+			
+			HintsManager hm = new HintsManager(GameSettingsActivity.this);
+			if (newVal) {
+				hm.reset();
+			};
+			return true;
+		}
+		
+	};
 
 }

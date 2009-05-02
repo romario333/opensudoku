@@ -67,7 +67,7 @@
 	<string name="game_helpers">Game Helpers</string>
 	<string name="highlight_wrong_values">Highlight wrong values</string>
 	<string name="highlight_wrong_values_summary">Highlight values which break rules of sudoku.</string>
-	<string name="input_methods">Input Methods</string>
+	<string name="input_methods">Input Modes</string>
 	<string name="popup">Popup</string>
 	<string name="popup_summary">Edit cell value and note in popup.</string>
 	<string name="single_number">Single number</string>
@@ -81,5 +81,20 @@
 	<string name="popup_abbr">Popup</string>
 	<string name="single_number_note_abbr">Note</string>
 	<string name="single_number_value_abbr">Num</string>
+	<string name="welcome">Welcome</string>
+	<string name="first_run_help">There are several input modes which you can use to edit puzzle content. In order to help you get familiar with these modes there will be several hints displayed as you go through game controls.\n\nYou can disable these hints in game settings.</string>
+	<string name="hint_popup">You\'re in the <i>Popup</i> input mode. Tap any cell with finger to edit its content or use keyobard.</string>
+	<string name="hint_next_mode">Now press button in the lower right corner to switch to another input mode.</string>
+	<string name="hint_single_number_activated">You\'re now in the <i>Single number</i> mode. First press any number button.</string>
+	<string name="hint_single_number_pressed">Now just start tapping on the cells, number %s will be written there.</string>
+	<string name="hint_single_number_few_nums_entered">Press button %s again to deselect it. Now if you tap cell, you will clear its value.</string>
+	<string name="hint_single_number_note_activated">This is Single number note mode. This time you\'re editing cell\'s notes.</string>
+	<string name="hint_numpad_activated">This is Numpad mode, it acts as a standard numeric keyobard.</string>
+	<string name="hint_popup_again">OK, now you\'re back in the Popup mode.</string>
+	<string name="hint_disable_modes">Remember that you can disable any of the input modes in the game settings.</string>
+
+	<string name="game">Game</string>
+	<string name="show_hints">First launch hints</string>
+	<string name="show_hints_summary">Show hints which will guide you through application controls.</string>
 	
 </resources>

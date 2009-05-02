@@ -9,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.gui.HintsManager;
 import cz.romario.opensudoku.gui.SudokuBoardView;
 
 public class IMNumpad extends InputMethod {
@@ -23,8 +25,8 @@ public class IMNumpad extends InputMethod {
 	
 	private Map<Integer,Button> mNumberButtons;
 	
-	public IMNumpad(Context context, SudokuGame game, SudokuBoardView board) {
-		super(context, game, board);
+	public IMNumpad(Context context, SudokuGame game, SudokuBoardView board, HintsManager hintsManager) {
+		super(context, game, board, hintsManager);
 		
 		mContext = context;
 		mGame = game;
@@ -79,6 +81,10 @@ public class IMNumpad extends InputMethod {
 	@Override
 	protected void onActivated() {
 		mSelectedCell = mBoard.getSelectedCell();
+		
+		if (!mHintsManager.wasDisplayed("numpad_activated")) {
+			hint("numpad_activated", mContext.getString(R.string.hint_numpad_activated), Toast.LENGTH_LONG);
+		}
 	}
 	
 	@Override

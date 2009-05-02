@@ -13,6 +13,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnClickListener;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuCell;
@@ -48,6 +51,7 @@ public class SudokuPlayActivity extends Activity{
 	private static final int DIALOG_RESTART = 1;
 	private static final int DIALOG_WELL_DONE = 2;
 	private static final int DIALOG_CLEAR_NOTES = 3;
+	private static final int DIALOG_GREETING = 4;
 	
 	private long mSudokuGameID;
 	private SudokuGame mSudokuGame;
@@ -60,13 +64,17 @@ public class SudokuPlayActivity extends Activity{
 	
 	private GameTimer mGameTimer;
 	
+	private HintsManager mHintsManager;
+	
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
 		setContentView(R.layout.sudoku_play);
-        
+    
+		mHintsManager = new HintsManager(this);
+		
         mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
         
         mTimeText = new StringBuilder(5);
@@ -139,6 +147,12 @@ public class SudokuPlayActivity extends Activity{
         if (mInputMethods.getActiveMethodIndex() == -1) {
         	mInputMethods.activateInputMethod(0);
         }
+        
+		// if this is the first time game-play is started, show greeting
+		if (!mHintsManager.wasDisplayed("greeting")) {
+			showDialog(DIALOG_GREETING);
+			mHintsManager.markAsDisplayed("greeting");
+		}
 	}
 	
 	
@@ -278,6 +292,22 @@ public class SudokuPlayActivity extends Activity{
             })
             .setNegativeButton(android.R.string.no, null)
             .create();
+    	case DIALOG_GREETING:
+    		return new AlertDialog.Builder(this)
+    		.setIcon(android.R.drawable.ic_dialog_info)
+    		.setTitle(R.string.welcome)
+    		.setMessage(R.string.first_run_help)
+    		.setPositiveButton(R.string.close, new OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if (!mHintsManager.wasDisplayed("popup_activated")) {
+						Toast.makeText(SudokuPlayActivity.this, getString(R.string.hint_popup), Toast.LENGTH_LONG).show();
+						mHintsManager.markAsDisplayed("popup_activated");
+					}
+				}
+    			
+    		}).create();
     	}
     	return null;
     }

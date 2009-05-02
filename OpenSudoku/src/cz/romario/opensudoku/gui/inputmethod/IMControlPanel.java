@@ -7,6 +7,7 @@ import java.util.Map;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.gui.HintsManager;
 import cz.romario.opensudoku.gui.SudokuBoardView;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellSelectedListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTappedListener;
@@ -65,11 +66,13 @@ public class IMControlPanel extends LinearLayout {
 		assert mGame != null;
 		assert mBoard != null;
 		
+		HintsManager hm = new HintsManager(mContext);
+		
 		mInputMethods = new InputMethod[INPUT_METHODS_COUNT];
-		mInputMethods[INPUT_METHOD_POPUP] = new IMPopup(mContext, mGame, mBoard);
-		mInputMethods[INPUT_METHOD_SINGLE_NUMBER] = new IMSingleNumberCellValue(mContext, mGame, mBoard);
-		mInputMethods[INPUT_METHOD_SINGLE_NUMBER_NOTE] = new IMSingleNumberCellNote(mContext, mGame, mBoard);
-		mInputMethods[INPUT_METHOD_NUMPAD] = new IMNumpad(mContext, mGame, mBoard);
+		mInputMethods[INPUT_METHOD_POPUP] = new IMPopup(mContext, mGame, mBoard, hm);
+		mInputMethods[INPUT_METHOD_SINGLE_NUMBER] = new IMSingleNumberCellValue(mContext, mGame, mBoard, hm);
+		mInputMethods[INPUT_METHOD_SINGLE_NUMBER_NOTE] = new IMSingleNumberCellNote(mContext, mGame, mBoard, hm);
+		mInputMethods[INPUT_METHOD_NUMPAD] = new IMNumpad(mContext, mGame, mBoard, hm);
 	}
 	
 	public SudokuBoardView getBoard() {

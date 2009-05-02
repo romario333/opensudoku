@@ -32,4 +32,12 @@
                 android:summary="@string/numpad_summary"
                 android:defaultValue="true" />
     </PreferenceCategory>
+    <PreferenceCategory
+            android:title="@string/game">
+        <CheckBoxPreference
+                android:key="show_hints"
+                android:title="@string/show_hints"
+                android:summary="@string/show_hints_summary"
+                android:defaultValue="true" />
+    </PreferenceCategory>
 </PreferenceScreen>

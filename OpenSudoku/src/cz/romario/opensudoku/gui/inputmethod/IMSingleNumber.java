@@ -16,9 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.gui.HintsManager;
 import cz.romario.opensudoku.gui.SudokuBoardView;
 
 /**
@@ -41,8 +43,8 @@ public abstract class IMSingleNumber extends InputMethod {
 	
 	
 	public IMSingleNumber(Context context, SudokuGame game,
-			SudokuBoardView board) {
-		super(context, game, board);
+			SudokuBoardView board, HintsManager hintsManager) {
+		super(context, game, board, hintsManager);
 		
 		mContext = context;
 		mGuiHandler = new Handler();
@@ -74,6 +76,11 @@ public abstract class IMSingleNumber extends InputMethod {
 					mSelectedNumber = mSelectedNumber == num ? 0 : num;
 					
 					update();
+					
+					if (!mHintsManager.wasDisplayed("single_number_pressed")) {
+						hint("single_number_pressed", mContext.getString(R.string.hint_single_number_pressed, num),
+								Toast.LENGTH_LONG);
+					}
 				}
 			});
 		}
@@ -107,6 +114,11 @@ public abstract class IMSingleNumber extends InputMethod {
 	@Override
 	protected void onActivated() {
 		update();
+		
+		if (!mHintsManager.wasDisplayed("single_number_activated")) {
+			hint("single_number_activated", mContext.getString(R.string.hint_single_number_activated), 
+					Toast.LENGTH_LONG);
+		}
 	}
 	
 	@Override
