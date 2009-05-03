@@ -65,7 +65,7 @@ public class SudokuPlayActivity extends Activity{
         
 		setContentView(R.layout.sudoku_play);
     
-		mHintsQueue = new HintsQueue(this);
+		mHintsQueue = new HintsQueue(getApplicationContext());
 		
         mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
         
@@ -79,7 +79,7 @@ public class SudokuPlayActivity extends Activity{
         if (savedInstanceState == null) {
         	// activity runs for the first time, read game from database
         	mSudokuGameID = getIntent().getLongExtra(EXTRAS_SUDOKU_ID, 0);
-        	SudokuDatabase sudokuDB = new SudokuDatabase(this);
+        	SudokuDatabase sudokuDB = new SudokuDatabase(getApplicationContext());
         	mSudokuGame = sudokuDB.getSudoku(mSudokuGameID);
         	//gameTimer.setTime(sudokuGame.getTime());
         } else {
@@ -126,7 +126,7 @@ public class SudokuPlayActivity extends Activity{
 		}
 		
         // read game settings
-		SharedPreferences gameSettings = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences gameSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mSudokuGame.setHighlightWrongVals(gameSettings.getBoolean("highlight_wrong_values", true));
         
         mIMPopup.enabled = gameSettings.getBoolean("im_popup", true);
@@ -149,7 +149,7 @@ public class SudokuPlayActivity extends Activity{
 		}
     	
     	// we will save game to the database as we might not be able to get back
-		SudokuDatabase sudokuDB = new SudokuDatabase(SudokuPlayActivity.this);
+		SudokuDatabase sudokuDB = new SudokuDatabase(getApplicationContext());
 		sudokuDB.updateSudoku(mSudokuGame);
 		
 		mGameTimer.stop();
@@ -248,7 +248,7 @@ public class SudokuPlayActivity extends Activity{
 //    	case DIALOG_SELECT_MULTIPLE_NUMBERS:
 //			return selectMultipleNumbersDialog.getDialog();
     	case DIALOG_WELL_DONE:
-            return new AlertDialog.Builder(SudokuPlayActivity.this)
+            return new AlertDialog.Builder(this)
             .setIcon(android.R.drawable.ic_dialog_info)
             .setTitle(R.string.well_done)
             .setMessage(getString(R.string.congrats, getTime()))

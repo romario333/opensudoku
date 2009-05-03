@@ -65,13 +65,13 @@ public class FolderListActivity extends ListActivity {
 		//mGuiHandler = new Handler();
 		//mBackgroundTaskQueue = new TaskQueue();
 		
-		mSudokuDB = new SudokuDatabase(this);
+		mSudokuDB = new SudokuDatabase(getApplicationContext());
 		
 		// Inform the list we provide context menus for items
         getListView().setOnCreateContextMenuListener(this);
 
         // TODO: it is important that only getFolderList is called on this instance of SudokuDatabase.
-        mCursorDB = new SudokuDatabase(this);
+        mCursorDB = new SudokuDatabase(getApplicationContext());
         mCursor = mCursorDB.getFolderList();
 		startManagingCursor(mCursor);
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.folder_list_item,
@@ -91,7 +91,7 @@ public class FolderListActivity extends ListActivity {
 					final TextView detailView = (TextView)view;
 					//final Handler guiHandler = mGuiHandler;
 					// TODO: lazy load detail or improve detail loading performance
-					String detail = mSudokuDB.getFolderInfo(folderID).getDetail(FolderListActivity.this);
+					String detail = mSudokuDB.getFolderInfo(folderID).getDetail(getApplicationContext());
 					detailView.setText(detail);
 //					detailView.setTag(folderID);
 //					// folder detail will be loaded asynchronously
@@ -254,7 +254,7 @@ public class FolderListActivity extends ListActivity {
                 .setView(addFolderView)
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                    	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
+                    	SudokuDatabase db = new SudokuDatabase(getApplicationContext());
                     	db.insertFolder(mAddFolderNameInput.getText().toString().trim());
                     	update();
                     }
@@ -271,7 +271,7 @@ public class FolderListActivity extends ListActivity {
             .setView(renameFolderView)
             .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
+                	SudokuDatabase db = new SudokuDatabase(getApplicationContext());
                 	db.updateFolder(mRenameFolderID, mRenameFolderNameInput.getText().toString().trim());
                 	update();
                 }
@@ -286,7 +286,7 @@ public class FolderListActivity extends ListActivity {
             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	// TODO: this could take a while, I should show progress dialog
-                	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
+                	SudokuDatabase db = new SudokuDatabase(getApplicationContext());
                 	db.deleteFolder(mDeleteFolderID);
                 	update();
                 }

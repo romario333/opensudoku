@@ -55,7 +55,7 @@ public class SudokuEditActivity extends Activity {
 
 		mBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
 		
-        mSudokuDB = new SudokuDatabase(this);
+        mSudokuDB = new SudokuDatabase(getApplicationContext());
 		
 		Intent intent = getIntent();
         String action = intent.getAction();

@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -85,7 +86,7 @@ public class SudokuListActivity extends ListActivity {
 		// Inform the list we provide context menus for items
 		getListView().setOnCreateContextMenuListener(this);
 
-		mCursorDB = new SudokuDatabase(this);
+		mCursorDB = new SudokuDatabase(getApplicationContext());
 
 		mTimeText = new StringBuilder();
 		mGameTimeFormatter = new Formatter(mTimeText);
@@ -248,9 +249,10 @@ public class SudokuListActivity extends ListActivity {
 	}
 	
 	private void updateTitle() {
-		SudokuDatabase sudokuDB = new SudokuDatabase(this);
+		Context context = getApplicationContext();
+		SudokuDatabase sudokuDB = new SudokuDatabase(context);
 		FolderInfo folder = sudokuDB.getFolderInfo(mFolderID);
-		setTitle(folder.name + " - " + folder.getDetail(this));
+		setTitle(folder.name + " - " + folder.getDetail(context));
 	}
 
 	private String getTime(long time) {
@@ -313,7 +315,7 @@ public class SudokuListActivity extends ListActivity {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
 									SudokuDatabase db = new SudokuDatabase(
-											SudokuListActivity.this);
+											getApplicationContext());
 									db.deleteSudoku(mDeletePuzzleID);
 									update();
 								}
@@ -331,7 +333,7 @@ public class SudokuListActivity extends ListActivity {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
 									SudokuDatabase db = new SudokuDatabase(
-											SudokuListActivity.this);
+											getApplicationContext());
 									
 									SudokuGame game = db.getSudoku(mEditNotePuzzleID);
 									game.setNote(mEditNoteInput.getText()
@@ -349,7 +351,7 @@ public class SudokuListActivity extends ListActivity {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
 									SudokuDatabase db = new SudokuDatabase(
-											SudokuListActivity.this);
+											getApplicationContext());
 									SudokuGame game = db.getSudoku(mResetPuzzleID);
 									if (game != null) {
 										game.reset();
@@ -369,7 +371,7 @@ public class SudokuListActivity extends ListActivity {
 		
 		switch (id) {
 		case DIALOG_EDIT_NOTE: {
-			SudokuDatabase db = new SudokuDatabase(this);
+			SudokuDatabase db = new SudokuDatabase(getApplicationContext());
 			SudokuGame game = db.getSudoku(mEditNotePuzzleID);
 			mEditNoteInput.setText(game.getNote());
 			break;
