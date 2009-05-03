@@ -120,7 +120,7 @@ public class IMSingleNumber extends InputMethod {
 			mSwitchNumNoteButton.setImageResource(R.drawable.pencil);
 			break;
 		case MODE_EDIT_VALUE:
-			mSwitchNumNoteButton.setImageResource(R.drawable.pencil_disabled);
+			mSwitchNumNoteButton.setImageResource(R.drawable.pencil_disabled_test);
 			break;
 		}
 		
