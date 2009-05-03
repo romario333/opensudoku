@@ -65,7 +65,7 @@ public class SudokuPlayActivity extends Activity{
         
 		setContentView(R.layout.sudoku_play);
     
-		mHintsQueue = new HintsQueue(getApplicationContext());
+		mHintsQueue = new HintsQueue(this);
 		
         mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
         
