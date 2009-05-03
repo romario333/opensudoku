@@ -317,6 +317,15 @@ public class SudokuDatabase {
     	}
     }
     
+    /**
+     * TODO: You need to call this in activity's onDestroy when using getFolderList
+     * or getSudokuList and let activity to manage the cursor.
+     * 
+     */
+    public void close() {
+    	mOpenHelper.close();
+    }
+    
     static {
     	sudokuListProjection = new String[] {
     		SudokuColumns._ID,

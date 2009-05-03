@@ -46,6 +46,8 @@ public class FolderListActivity extends ListActivity {
     private Cursor mCursor;
     private SudokuDatabase mSudokuDB;
     
+    private SudokuDatabase mCursorDB;
+    
     // input parameters for dialogs
     private TextView mAddFolderNameInput;
     private TextView mRenameFolderNameInput;
@@ -69,7 +71,8 @@ public class FolderListActivity extends ListActivity {
         getListView().setOnCreateContextMenuListener(this);
 
         // TODO: it is important that only getFolderList is called on this instance of SudokuDatabase.
-        mCursor = new SudokuDatabase(this).getFolderList();
+        mCursorDB = new SudokuDatabase(this);
+        mCursor = mCursorDB.getFolderList();
 		startManagingCursor(mCursor);
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.folder_list_item,
 				mCursor, new String[] { FolderColumns.NAME, FolderColumns._ID},
@@ -140,6 +143,13 @@ public class FolderListActivity extends ListActivity {
     protected void onPause() {
     	super.onPause();
     	//mBackgroundTaskQueue.stop();
+    }
+    
+    @Override
+    protected void onDestroy() {
+    	super.onDestroy();
+    	
+    	mCursorDB.close();
     }
     
     @Override

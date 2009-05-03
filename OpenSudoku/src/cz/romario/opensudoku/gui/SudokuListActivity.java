@@ -57,6 +57,7 @@ public class SudokuListActivity extends ListActivity {
 			.getTimeInstance(DateFormat.SHORT);
 
 	private Cursor mCursor;
+	private SudokuDatabase mCursorDB;
 
 	private long mFolderID;
 	
@@ -84,12 +85,12 @@ public class SudokuListActivity extends ListActivity {
 		// Inform the list we provide context menus for items
 		getListView().setOnCreateContextMenuListener(this);
 
-		SudokuDatabase sudokuDB = new SudokuDatabase(this);
+		mCursorDB = new SudokuDatabase(this);
 
 		mTimeText = new StringBuilder();
 		mGameTimeFormatter = new Formatter(mTimeText);
 
-		mCursor = sudokuDB.getSudokuList(mFolderID);
+		mCursor = mCursorDB.getSudokuList(mFolderID);
 		startManagingCursor(mCursor);
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.sudoku_list_item,
 				mCursor, new String[] { SudokuColumns.DATA, SudokuColumns.STATE,
@@ -226,6 +227,13 @@ public class SudokuListActivity extends ListActivity {
 		mDeletePuzzleID = state.getLong("mDeletePuzzleID");
 		mResetPuzzleID = state.getLong("mResetPuzzleID");
 		mEditNotePuzzleID = state.getLong("mEditNotePuzzleID");
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		
+		mCursorDB.close();
 	}
 	
 	/**
