@@ -15,10 +15,11 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 public class HintsQueue {
-	// TODO: should be saved to activity's state
+	// TODO: should be persisted in activity's state
 	private Queue<Message> mMessages;
 	
 	private static final String PREF_FILE_NAME = "hints";
@@ -132,6 +133,16 @@ public class HintsQueue {
 		Editor editor = mPrefs.edit();
 		editor.clear();
 		editor.commit();
+	}
+	
+	/**
+	 * This should be called when activity is paused.
+	 */
+	public void pause() {
+		// get rid of WindowLeakedException in logcat
+		if (mHintDialog != null) {
+			mHintDialog.cancel();
+		}
 	}
 	
 	private static class Message {

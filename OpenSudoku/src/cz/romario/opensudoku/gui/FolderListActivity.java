@@ -248,7 +248,6 @@ public class FolderListActivity extends ListActivity {
                 	SudokuDatabase db = new SudokuDatabase(FolderListActivity.this);
                 	db.updateFolder(mRenameFolderID, mRenameFolderNameInput.getText().toString().trim());
                 	update();
-                	//dialog.dismiss();
                 }
             })
             .setNegativeButton(android.R.string.cancel, null)

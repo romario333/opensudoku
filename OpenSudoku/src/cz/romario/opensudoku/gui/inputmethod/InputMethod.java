@@ -68,6 +68,18 @@ public abstract class InputMethod {
 	}
 	
 	/**
+	 * This should be called when activity is paused (so InputMethod can do some cleanup,
+	 * for example properly dismiss dialogs because of WindowLeaked exception).
+	 */
+	public void pause() {
+		onPause();
+	}
+	
+	protected void onPause() {
+		
+	}
+	
+	/**
 	 * This should be unique name of input method.
 	 * 
 	 * @return

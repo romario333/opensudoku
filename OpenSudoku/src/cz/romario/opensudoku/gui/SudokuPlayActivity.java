@@ -167,6 +167,8 @@ public class SudokuPlayActivity extends Activity{
 		sudokuDB.updateSudoku(mSudokuGame);
 		
 		mGameTimer.stop();
+		
+		mInputMethods.pause();
     }
     
     @Override
@@ -176,8 +178,8 @@ public class SudokuPlayActivity extends Activity{
     	mGameTimer.stop();
     	outState.putParcelable("sudoku_game", mSudokuGame);
     	mGameTimer.saveState(outState);
-    }	
-	
+    }
+    
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);

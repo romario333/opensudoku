@@ -342,12 +342,6 @@ public class SudokuListActivity extends ListActivity {
 		super.onPrepareDialog(id, dialog);
 		
 		switch (id) {
-		case DIALOG_DELETE_PUZZLE: {
-			SudokuDatabase db = new SudokuDatabase(this);
-			SudokuGame game = db.getSudoku(mEditNotePuzzleID);
-			mEditNoteInput.setText(game.getNote());
-			break;
-		}
 		case DIALOG_EDIT_NOTE: {
 			SudokuDatabase db = new SudokuDatabase(this);
 			SudokuGame game = db.getSudoku(mEditNotePuzzleID);

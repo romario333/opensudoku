@@ -187,6 +187,16 @@ public class IMControlPanel extends LinearLayout {
 		}
 	}
 	
+	/**
+	 * This should be called when activity is paused (so Input Methods can do some cleanup,
+	 * for example properly dismiss dialogs because of WindowLeaked exception).
+	 */
+	public void pause() {
+		for (InputMethod im : mInputMethods) {
+			im.pause();
+		}
+	}
+	
 	private void ensureControlPanel(int methodID) {
 		InputMethod im = mInputMethods.get(methodID);
 		if (!im.isControlPanelCreated()) {

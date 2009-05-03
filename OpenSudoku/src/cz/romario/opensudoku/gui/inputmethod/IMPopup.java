@@ -48,6 +48,14 @@ public class IMPopup extends InputMethod {
 			mBoard.hideTouchedCellHint();
 		}
 	}
+	
+	@Override
+	protected void onPause() {
+		// release dialog resource (otherwise WindowLeaked exception is logged)
+		if (mEditCellDialog != null) {
+			mEditCellDialog.cancel();
+		}
+	}
 
 	@Override
 	public int getNameResID() {
