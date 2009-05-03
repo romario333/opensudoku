@@ -4,7 +4,6 @@ import cz.romario.opensudoku.R;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceScreen;
 import android.preference.Preference.OnPreferenceChangeListener;
 
 public class GameSettingsActivity extends PreferenceActivity {

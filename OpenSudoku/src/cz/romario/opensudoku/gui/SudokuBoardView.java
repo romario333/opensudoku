@@ -1,18 +1,13 @@
 package cz.romario.opensudoku.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,8 +21,6 @@ import android.view.View;
 public class SudokuBoardView extends View {
 
 	public static final int DEFAULT_BOARD_SIZE = 100;
-	
-	private static final String TAG = "SudokuBoardView";
 	
 	private float mCellWidth;
 	private float mCellHeight;
@@ -49,8 +42,6 @@ public class SudokuBoardView extends View {
 	
 	private SudokuGame mGame;
 	private SudokuCellCollection mCells;
-	
-	private int mScreenOrientation = -1;
 	
 	private OnCellTappedListener mOnCellTappedListener;
 	private OnCellSelectedListener mOnCellSelectedListener;

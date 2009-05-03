@@ -3,12 +3,8 @@ package cz.romario.opensudoku.gui.inputmethod;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
-import cz.romario.opensudoku.game.SudokuGame;
-import cz.romario.opensudoku.gui.HintsQueue;
-import cz.romario.opensudoku.gui.SudokuBoardView;
 import cz.romario.opensudoku.gui.inputmethod.IMPopupDialog.OnNoteEditListener;
 import cz.romario.opensudoku.gui.inputmethod.IMPopupDialog.OnNumberEditListener;
 

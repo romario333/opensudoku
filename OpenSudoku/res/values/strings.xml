@@ -96,6 +96,6 @@
 	<string name="show_hints">First launch hints</string>
 	<string name="show_hints_summary">Show hints which will guide you through application controls.</string>
 	
-	<string name="credits"><b>Credits:</b>\nRoman Mašek - developer\nMartin Sobola - GUI feedback</string>
+	<string name="credits">Credits:\nRoman Mašek (creator)\nMartin Sobola (UI design)</string>
 	
 </resources>

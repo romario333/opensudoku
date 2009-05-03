@@ -2,7 +2,6 @@ package cz.romario.opensudoku.gui.inputmethod;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
@@ -15,11 +14,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.Parcelable.Creator;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.View.BaseSavedState;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
@@ -34,7 +30,6 @@ public class IMControlPanel extends LinearLayout {
 	private SudokuBoardView mBoard;
 	private SudokuGame mGame;
 	private HintsQueue mHintsQueue;
-	private boolean mPopupOneTimeHintShowed = false;
 	
 	private List<InputMethod> mInputMethods = new ArrayList<InputMethod>();
 	private int mActiveMethodIndex = -1;

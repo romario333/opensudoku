@@ -6,10 +6,8 @@ import java.util.Map;
 import java.util.Set;
 
 import cz.romario.opensudoku.R;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;

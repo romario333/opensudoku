@@ -4,7 +4,6 @@ import java.util.Date;
 
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuDatabase;
-import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.inputmethod.IMControlPanel;
 import cz.romario.opensudoku.gui.inputmethod.IMNumpad;
@@ -16,9 +15,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 
 public class SudokuEditActivity extends Activity {
 	private static final String TAG = "SudokuEditActivity";

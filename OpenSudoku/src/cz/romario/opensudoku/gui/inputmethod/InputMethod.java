@@ -4,16 +4,13 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.HintsQueue;
 import cz.romario.opensudoku.gui.SudokuBoardView;
-import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTappedListener;
 
 /**
  * Base class for several input methods used to edit sudoku contents. 

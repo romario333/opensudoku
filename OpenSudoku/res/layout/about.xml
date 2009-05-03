@@ -16,14 +16,6 @@
    		android:layout_marginBottom="5sp"
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
-    	android:text="@string/work_in_progress"
-    	android:autoLink="all" />
-   <TextView 
-		android:layout_marginLeft="5sp"
-   		android:layout_marginTop="5sp"
-   		android:layout_marginBottom="5sp"
-	    android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content"
     	android:text="@string/send_me_bugs"
     	android:autoLink="all" />
    <TextView 
@@ -40,6 +32,14 @@
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
     	android:text="@string/homepage"
+    	android:autoLink="all" />
+   <TextView 
+		android:layout_marginLeft="5sp"
+   		android:layout_marginTop="5sp"
+   		android:layout_marginBottom="5sp"
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+    	android:text="@string/credits"
     	android:autoLink="all" />
     
      

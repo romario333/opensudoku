@@ -1,13 +1,11 @@
 package cz.romario.opensudoku.gui;
 
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Queue;
 
 import cz.romario.opensudoku.R;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -15,7 +13,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 public class HintsQueue {

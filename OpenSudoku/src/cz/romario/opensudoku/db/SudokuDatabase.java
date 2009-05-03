@@ -243,8 +243,6 @@ public class SudokuDatabase {
      * @return
      */
     public long insertSudoku(long folderID, SudokuGame sudoku) {
-        Long created = Long.valueOf(System.currentTimeMillis());
-
         ContentValues values = new ContentValues();
         values.put(SudokuColumns.DATA, sudoku.getCells().serialize());
         values.put(SudokuColumns.CREATED, sudoku.getCreated().getTime());

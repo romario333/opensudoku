@@ -1,24 +1,17 @@
 package cz.romario.opensudoku.gui.inputmethod;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
-import cz.romario.opensudoku.game.SudokuGame;
-import cz.romario.opensudoku.gui.HintsQueue;
-import cz.romario.opensudoku.gui.SudokuBoardView;
 
 public class IMNumpad extends InputMethod {
 
@@ -28,7 +21,6 @@ public class IMNumpad extends InputMethod {
 	private SudokuCell mSelectedCell;
 	private ImageButton mSwitchNumNoteButton;
 
-	private int mSelectedNumber = -1;
 	private int mEditMode = MODE_EDIT_VALUE;
 	
 	private Map<Integer,Button> mNumberButtons;
