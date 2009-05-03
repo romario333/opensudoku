@@ -97,23 +97,25 @@ public class IMNumpad extends InputMethod {
 			int selNumber = (Integer)v.getTag();
 			SudokuCell selCell = mSelectedCell;
 			
-			switch (mEditMode) {
-			case MODE_EDIT_NOTE:
-				if (selNumber == 0) {
-					mGame.setCellNote(selCell, null);
-					mBoard.postInvalidate();
-				} else if (selNumber > 0 && selNumber <= 9) {
-					mGame.setCellNote(selCell, selCell.toggleNoteNumber(selNumber));
-					mBoard.postInvalidate();
+			if (selCell != null) {
+				switch (mEditMode) {
+				case MODE_EDIT_NOTE:
+					if (selNumber == 0) {
+						mGame.setCellNote(selCell, null);
+						mBoard.postInvalidate();
+					} else if (selNumber > 0 && selNumber <= 9) {
+						mGame.setCellNote(selCell, selCell.toggleNoteNumber(selNumber));
+						mBoard.postInvalidate();
+					}
+					break;
+				case MODE_EDIT_VALUE:
+					if (selNumber >= 0 && selNumber <= 9) {
+						mGame.setCellValue(selCell, selNumber);
+						mBoard.moveCellSelectionRight();
+						mBoard.postInvalidate();
+					}
+					break;
 				}
-				break;
-			case MODE_EDIT_VALUE:
-				if (selNumber >= 0 && selNumber <= 9) {
-					mGame.setCellValue(selCell, selNumber);
-					mBoard.moveCellSelectionRight();
-					mBoard.postInvalidate();
-				}
-				break;
 			}
 		}
 		
