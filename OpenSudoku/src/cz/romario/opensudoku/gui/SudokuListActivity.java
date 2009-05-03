@@ -210,6 +210,24 @@ public class SudokuListActivity extends ListActivity {
 		updateTitle();
 	}
 	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		outState.putLong("mDeletePuzzleID", mDeletePuzzleID);
+		outState.putLong("mResetPuzzleID", mResetPuzzleID);
+		outState.putLong("mEditNotePuzzleID", mEditNotePuzzleID);
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle state) {
+		super.onRestoreInstanceState(state);
+		
+		mDeletePuzzleID = state.getLong("mDeletePuzzleID");
+		mResetPuzzleID = state.getLong("mResetPuzzleID");
+		mEditNotePuzzleID = state.getLong("mEditNotePuzzleID");
+	}
+	
 	/**
 	 * Updates whole list.
 	 */

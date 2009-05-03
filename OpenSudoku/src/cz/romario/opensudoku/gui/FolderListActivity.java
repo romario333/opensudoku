@@ -141,6 +141,22 @@ public class FolderListActivity extends ListActivity {
     	super.onPause();
     	//mBackgroundTaskQueue.stop();
     }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    	super.onSaveInstanceState(outState);
+    	
+    	outState.putLong("mRenameFolderID", mRenameFolderID);
+    	outState.putLong("mDeleteFolderID", mDeleteFolderID);
+    }
+    
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+    	super.onRestoreInstanceState(state);
+    	
+    	mRenameFolderID = state.getLong("mRenameFolderID");
+    	mDeleteFolderID = state.getLong("mDeleteFolderID");
+    }
 	
 	private void update() {
 		mCursor.requery();
@@ -277,6 +293,9 @@ public class FolderListActivity extends ListActivity {
     @Override
     protected void onPrepareDialog(int id, Dialog dialog) {
     	super.onPrepareDialog(id, dialog);
+    	
+    	// TODO: when changing orientation, it seems that only onCreateDialog is called, delete folder than for
+    	// example does not have proper title
     	
     	switch (id) {
     	case DIALOG_ADD_FOLDER:
