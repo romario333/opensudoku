@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
@@ -25,7 +26,7 @@ public class IMNumpad extends InputMethod {
 	private static final int MODE_EDIT_NOTE = 1;
 	
 	private SudokuCell mSelectedCell;
-	private Button mSwitchNumNoteButton;
+	private ImageButton mSwitchNumNoteButton;
 
 	private int mSelectedNumber = -1;
 	private int mEditMode = MODE_EDIT_VALUE;
@@ -55,7 +56,7 @@ public class IMNumpad extends InputMethod {
 			b.setOnClickListener(mNumberButtonClick);
 		}
 		
-		mSwitchNumNoteButton = (Button)controlPanel.findViewById(R.id.switch_num_note);
+		mSwitchNumNoteButton = (ImageButton)controlPanel.findViewById(R.id.switch_num_note);
 		mSwitchNumNoteButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -129,10 +130,10 @@ public class IMNumpad extends InputMethod {
 	private void update() {
 		switch (mEditMode) {
 		case MODE_EDIT_NOTE:
-			mSwitchNumNoteButton.setText("Note");
+			mSwitchNumNoteButton.setImageResource(R.drawable.pencil);
 			break;
 		case MODE_EDIT_VALUE:
-			mSwitchNumNoteButton.setText("Num");
+			mSwitchNumNoteButton.setImageResource(R.drawable.pencil_disabled);
 			break;
 		}
 	}

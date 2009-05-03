@@ -33,10 +33,12 @@
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
 	    	android:text="5" />
-	   <Button android:id="@+id/switch_num_note"
+		<ImageButton android:id="@+id/switch_num_note"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
-	   		android:layout_weight="1" />
+	   		android:layout_weight="1"
+	   		android:src="@drawable/pencil_disabled"
+	   		android:scaleType="fitXY" />
 	</LinearLayout>
 	<LinearLayout
 	    android:layout_width="fill_parent"

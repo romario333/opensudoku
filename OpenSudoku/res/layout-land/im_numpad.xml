@@ -77,10 +77,12 @@
 		    android:layout_height="fill_parent"
 	   		android:layout_weight="1"
 	    	android:text="C" />
-	   <Button android:id="@+id/switch_num_note"
+		<ImageButton android:id="@+id/switch_num_note"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
-	   		android:layout_weight="1" />
+	   		android:layout_weight="1"
+	   		android:src="@drawable/pencil_disabled"
+	   		android:scaleType="fitXY" />
 	   <Button android:id="@+id/switch_input_mode"
 		    android:layout_width="0dip"
 		    android:layout_height="fill_parent"
