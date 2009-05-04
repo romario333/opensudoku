@@ -1,5 +1,7 @@
 package cz.romario.opensudoku.gui;
 
+import java.util.Collection;
+
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuCellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
@@ -252,24 +254,29 @@ public class SudokuBoardView extends View {
 					int value = cell.getValue();
 					if (value != 0) {
 						mNumberPaint.setColor(cell.isInvalid() ? Color.RED : Color.BLACK);
-						canvas.drawText(new Integer(value).toString(),
+						canvas.drawText(Integer.toString(value),
 								cellLeft + mNumberLeft, 
 								Math.round(cellTop) + mNumberTop - numberAscent, 
 								mNumberPaint);
 					} else {
-						
 						if (cell.hasNote()) {
-							Integer[] numbers = SudokuCell.getNoteNumbers(cell.getNote());
-							if (numbers != null) {
-								for (Integer number : numbers) {
-									if (number >= 1 && number <= 9) {
-										int n = number - 1;
-										int c = n % 3;
-										int r = n / 3;
-										canvas.drawText(number.toString(), cellLeft + c*noteWidth + 2, cellTop - noteAscent + r*noteWidth - 1, mNotePaint);
-									}
-								}
+							Collection<Integer> numbers = cell.getNoteNumbers();
+							for (Integer number : numbers) {
+								int n = number - 1;
+								int c = n % 3;
+								int r = n / 3;
+								canvas.drawText(Integer.toString(number), cellLeft + c*noteWidth + 2, cellTop - noteAscent + r*noteWidth - 1, mNotePaint);
 							}
+							
+//							int[] numbers = cell.getNoteNumbers();
+//							for (int number=1; number<numbers.length; number++) {
+//								if (numbers[number] == 1) {
+//									int n = number - 1;
+//									int c = n % 3;
+//									int r = n / 3;
+//									canvas.drawText(Integer.toString(number), cellLeft + c*noteWidth + 2, cellTop - noteAscent + r*noteWidth - 1, mNotePaint);
+//								}
+//							}
 						}
 					}
 					
@@ -401,7 +408,9 @@ public class SudokuBoardView extends View {
 				
 				if (event.isShiftPressed() || event.isAltPressed()) {
 					// add or remove number to notes
-					setCellNote(cell, cell.toggleNoteNumber(selNumber));
+					// TODO: ugly, I should just pass the number to command
+					cell.toggleNoteNumber(selNumber);
+					setCellNote(cell, cell.getNote());
 					invalidate();
 				} else {
 					// enter number in cell

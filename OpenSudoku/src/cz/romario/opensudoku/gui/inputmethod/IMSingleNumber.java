@@ -150,7 +150,8 @@ public class IMSingleNumber extends InputMethod {
 				mBoard.postInvalidate();
 				
 			} else if (selNumber > 0 && selNumber <= 9) {
-				mGame.setCellNote(cell, cell.toggleNoteNumber(selNumber));
+				cell.toggleNoteNumber(selNumber);
+				mGame.setCellNote(cell, cell.getNote());
 				// TODO: board should know when data changes on itself
 				mBoard.postInvalidate();
 			}

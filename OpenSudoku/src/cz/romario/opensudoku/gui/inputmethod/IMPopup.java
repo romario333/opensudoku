@@ -38,7 +38,7 @@ public class IMPopup extends InputMethod {
 		if (cell.isEditable()) {
 			ensureEditCellDialog();
 			mEditCellDialog.updateNumber(cell.getValue());
-			mEditCellDialog.updateNote(SudokuCell.getNoteNumbers(cell.getNote()));
+			mEditCellDialog.updateNote(cell.getNoteNumbers());
 			mEditCellDialog.show();
 		} else {
 			mBoard.hideTouchedCellHint();
@@ -96,7 +96,7 @@ public class IMPopup extends InputMethod {
 		@Override
 		public boolean onNoteEdit(Integer[] numbers) {
 			if (mSelectedCell != null) {
-				mGame.setCellNote(mSelectedCell, SudokuCell.setNoteNumbers(numbers));
+				mGame.setCellNote(mSelectedCell, SudokuCell.numberListToNoteString(numbers));
 				mBoard.hideTouchedCellHint();
 			}
 			return true;

@@ -1,5 +1,6 @@
 package cz.romario.opensudoku.gui.inputmethod;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -81,7 +82,7 @@ public class IMPopupDialog extends Dialog {
 	 * Updates selected numbers in note.
 	 * @param numbers
 	 */
-	public void updateNote(Integer[] numbers) {
+	public void updateNote(Collection<Integer> numbers) {
 		mNoteSelectedNumbers = new HashSet<Integer>();
 		
 		if (numbers != null) {

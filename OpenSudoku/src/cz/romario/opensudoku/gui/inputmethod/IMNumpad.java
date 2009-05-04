@@ -104,7 +104,8 @@ public class IMNumpad extends InputMethod {
 						mGame.setCellNote(selCell, null);
 						mBoard.postInvalidate();
 					} else if (selNumber > 0 && selNumber <= 9) {
-						mGame.setCellNote(selCell, selCell.toggleNoteNumber(selNumber));
+						selCell.toggleNoteNumber(selNumber);
+						mGame.setCellNote(selCell, selCell.getNote());
 						mBoard.postInvalidate();
 					}
 					break;

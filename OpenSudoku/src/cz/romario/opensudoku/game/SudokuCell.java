@@ -1,7 +1,11 @@
 package cz.romario.opensudoku.game;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -24,12 +28,12 @@ public class SudokuCell implements Parcelable {
 	private SudokuCellGroup mColumn; // column containing this cell
 	
 	private int mValue;
-	private String mNote = "";
 	private boolean mEditable = false;
 	private boolean mInvalid = false;
+	//private int[] mNoteNumbers = new int[10];
+	private Set<Integer> mNoteNumbers = new HashSet<Integer>();
 	
 	public SudokuCell() {
-		mNote = "";
 		mEditable = true;
 		mInvalid = false;
 	}
@@ -125,13 +129,31 @@ public class SudokuCell implements Parcelable {
 		return mValue;
 	}
 
+	public Collection<Integer> getNoteNumbers() {
+		return mNoteNumbers;		
+	}
+	
 	/**
 	 * Sets note attached to the cell.
 	 * 
 	 * @param notes
 	 */
 	public void setNote(String note) {
-		mNote = note;
+		if (note == null || note.equals(""))
+		{
+			mNoteNumbers.clear();
+//			for (int i=1; i<mNoteNumbers.length; i++) {
+//				mNoteNumbers[i] = 0;
+//			}
+		} else {
+			mNoteNumbers.clear();
+
+			StringTokenizer tokenizer = new StringTokenizer(note, ",");
+	        while (tokenizer.hasMoreTokens()) {
+	        	mNoteNumbers.add(Integer.parseInt(tokenizer.nextToken()));
+//	            mNoteNumbers[Integer.parseInt(tokenizer.nextToken())] = 1;
+	        }
+		}
 	}
 
 	/**
@@ -140,7 +162,30 @@ public class SudokuCell implements Parcelable {
 	 * @return
 	 */
 	public String getNote() {
-		return mNote;
+		StringBuffer sb = new StringBuffer();
+		
+//		for (int i=1; i<mNoteNumbers.length; i++) {
+//			if (mNoteNumbers[i] == 1) {
+//				sb.append(i).append(",");
+//			}
+//		}
+		
+		for (Integer i : mNoteNumbers) {
+			sb.append(i).append(",");
+		}
+		
+		return sb.toString();
+	}
+	
+	// TODO: think again about SudokuCell's interface concerning notes, also take into account
+	// EditCellNoteCommand and especially the fact, that SudokuBoard onDraw needs to know
+	// which numbers are noted
+	public static String numberListToNoteString(Integer[] numbers) {
+		StringBuffer sb = new StringBuffer();
+		for (Integer num : numbers) {
+			sb.append(num).append(",");
+		}
+		return sb.toString();
 	}
 	
 	/**
@@ -149,68 +194,40 @@ public class SudokuCell implements Parcelable {
 	 * @return
 	 */
 	public boolean hasNote() {
-		return mNote != null && mNote != "";
+		return mNoteNumbers.size() != 0;
+//		for (int i=1; i<mNoteNumbers.length; i++) {
+//			if(mNoteNumbers[i] == 1)
+//				return true;
+//		}
+//		return false;
 	}
 
-	// TODO: omg, too tired today to get rid of this
-	public String toggleNoteNumber(int number) {
-		List<Integer> noteNums = new ArrayList<Integer>();
-		
-		Integer[] currentNums = SudokuCell.getNoteNumbers(getNote());
-		if (currentNums != null) {
-			for (Integer n : currentNums) {
-				noteNums.add(n);
-			}
-		}
-		
-		if (noteNums.contains(number)) {
-			noteNums.remove(new Integer(number));
+	public void setNoteNumber(int number, boolean isSet) {
+		if (isSet) {
+			mNoteNumbers.add(number);
 		} else {
-			noteNums.add(number);
+			mNoteNumbers.remove(new Integer(number));
 		}
-		
-		Integer[] noteNumsArray = new Integer[noteNums.size()];
-		return SudokuCell.setNoteNumbers(noteNums.toArray(noteNumsArray));
-	}
-	
-	/**
-	 * Returns content of note as array of numbers. Note is expected to be
-	 * in format "n,n,n".
-	 * 
-	 * @return
-	 */
-	public static Integer[] getNoteNumbers(String note) {
-		if (note == null || note.equals(""))
-			return null;
-		
-		String[] numberStrings = note.split(",");
-		Integer[] numbers = new Integer[numberStrings.length];
-		for (int i=0; i<numberStrings.length; i++) {
-			numbers[i] = Integer.parseInt(numberStrings[i]);
-		}
-		
-		return numbers;
-	}
-	
-	/**
-	 * Creates content of note from array of numbers. Note will be stored
-	 * in "n,n,n" format.
-	 * 
-	 * TODO: find better name for this method
-	 * 
-	 * @param numbers
-	 */
-	public static String setNoteNumbers(Integer[] numbers) {
-		StringBuffer sb = new StringBuffer();
-		
-		for (Integer number : numbers) {
-			sb.append(number).append(",");
-		}
-		
-		return sb.toString();
-	}
-	
 
+//		mNoteNumbers[number] = isSet ? 1 : 0;
+	}
+	
+	public void toggleNoteNumber(int number) {
+		Integer n = new Integer(number);
+		if (mNoteNumbers.contains(n)) {
+			mNoteNumbers.remove(n);
+		} else {
+			mNoteNumbers.add(n);
+		}
+			
+		
+//		if (mNoteNumbers[number] == 1) {
+//			mNoteNumbers[number] = 0;
+//		} else {
+//			mNoteNumbers[number] = 1;
+//		}
+	}
+	
 	public boolean isEditable() {
 		return mEditable;
 	}
@@ -230,7 +247,7 @@ public class SudokuCell implements Parcelable {
 	// constructor for Parcelable
 	private SudokuCell(Parcel in) {
 		mValue = in.readInt();
-		mNote = in.readString();
+		setNote(in.readString());
 		mEditable = (Boolean)in.readValue(null);
 		mInvalid = (Boolean)in.readValue(null);
 	}
@@ -253,7 +270,7 @@ public class SudokuCell implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(mValue);
-		dest.writeString(mNote);
+		dest.writeString(getNote());
 		dest.writeValue(mEditable);
 		dest.writeValue(mInvalid);
 	}
