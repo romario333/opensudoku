@@ -409,8 +409,7 @@ public class SudokuBoardView extends View {
 				if (event.isShiftPressed() || event.isAltPressed()) {
 					// add or remove number to notes
 					// TODO: ugly, I should just pass the number to command
-					cell.toggleNoteNumber(selNumber);
-					setCellNote(cell, cell.getNote());
+					setCellNote(cell, SudokuCell.numberListToNoteString(cell.toggleNoteNumber(selNumber)));
 					invalidate();
 				} else {
 					// enter number in cell

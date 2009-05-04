@@ -180,6 +180,13 @@ public class SudokuCell implements Parcelable {
 	// TODO: think again about SudokuCell's interface concerning notes, also take into account
 	// EditCellNoteCommand and especially the fact, that SudokuBoard onDraw needs to know
 	// which numbers are noted
+	public static String numberListToNoteString(Collection<Integer> numbers) {
+		StringBuffer sb = new StringBuffer();
+		for (Integer num : numbers) {
+			sb.append(num).append(",");
+		}
+		return sb.toString();
+	}
 	public static String numberListToNoteString(Integer[] numbers) {
 		StringBuffer sb = new StringBuffer();
 		for (Integer num : numbers) {
@@ -212,13 +219,21 @@ public class SudokuCell implements Parcelable {
 //		mNoteNumbers[number] = isSet ? 1 : 0;
 	}
 	
-	public void toggleNoteNumber(int number) {
-		Integer n = new Integer(number);
-		if (mNoteNumbers.contains(n)) {
-			mNoteNumbers.remove(n);
-		} else {
-			mNoteNumbers.add(n);
+	// TODO: ugly quick fix
+	public Collection<Integer> toggleNoteNumber(int number) {
+		Set<Integer> nums = new HashSet<Integer>();
+		
+		for (Integer n : mNoteNumbers) {
+			nums.add(n);
 		}
+		
+		Integer n = new Integer(number);
+		if (nums.contains(n)) {
+			nums.remove(n);
+		} else {
+			nums.add(n);
+		}
+		return nums;
 			
 		
 //		if (mNoteNumbers[number] == 1) {

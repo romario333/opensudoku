@@ -150,8 +150,7 @@ public class IMSingleNumber extends InputMethod {
 				mBoard.postInvalidate();
 				
 			} else if (selNumber > 0 && selNumber <= 9) {
-				cell.toggleNoteNumber(selNumber);
-				mGame.setCellNote(cell, cell.getNote());
+				mGame.setCellNote(cell, SudokuCell.numberListToNoteString(cell.toggleNoteNumber(selNumber)));
 				// TODO: board should know when data changes on itself
 				mBoard.postInvalidate();
 			}

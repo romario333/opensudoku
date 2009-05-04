@@ -104,8 +104,7 @@ public class IMNumpad extends InputMethod {
 						mGame.setCellNote(selCell, null);
 						mBoard.postInvalidate();
 					} else if (selNumber > 0 && selNumber <= 9) {
-						selCell.toggleNoteNumber(selNumber);
-						mGame.setCellNote(selCell, selCell.getNote());
+						mGame.setCellNote(selCell, SudokuCell.numberListToNoteString(selCell.toggleNoteNumber(selNumber)));
 						mBoard.postInvalidate();
 					}
 					break;
