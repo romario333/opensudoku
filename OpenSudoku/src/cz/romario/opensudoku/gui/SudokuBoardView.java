@@ -32,6 +32,7 @@ public class SudokuBoardView extends View {
 	private Paint mNotePaint;
 	private int mNumberLeft;
 	private int mNumberTop;
+	private float mNoteTop;
 	private Paint mReadonlyPaint;
 	private Paint mTouchedPaint;
 	private Paint mSelectedPaint;
@@ -205,10 +206,14 @@ public class SudokuBoardView extends View {
         setMeasuredDimension(width, height);
         
         mNumberPaint.setTextSize(mCellHeight * 0.75f);
-        mNotePaint.setTextSize(mCellHeight / 3f);
+        mNotePaint.setTextSize(mCellHeight / 3.0f);
         // compute offsets in each cell to center the rendered number
         mNumberLeft = (int) ((mCellWidth - mNumberPaint.measureText("9")) / 2);
         mNumberTop = (int) ((mCellHeight - mNumberPaint.getTextSize()) / 2);
+        
+        // add some offset because in some resolutions notes are cut-off in the top
+        mNoteTop = mCellHeight / 50.0f;
+
 	}
 	
 	@Override
@@ -218,11 +223,9 @@ public class SudokuBoardView extends View {
 		// some notes:
 		// Drawable has its own draw() method that takes your Canvas as an arguement
 		
-//		int width = getMeasuredWidth();
-//		int height = getMeasuredHeight();
-		// TODO: padding?
-		int width = getWidth() - getPaddingLeft() - getPaddingRight();
-		int height = getHeight() - getPaddingTop() - getPaddingBottom();
+		// TODO: I don't get this, why do I need to substract padding only from one side?
+		int width = getWidth() - getPaddingRight();
+		int height = getHeight() - getPaddingBottom();
 		
 		int paddingLeft = getPaddingLeft();
 		int paddingTop = getPaddingTop();
@@ -231,7 +234,6 @@ public class SudokuBoardView extends View {
 		int cellLeft, cellTop;
 		if (mCells != null) {
 			
-			// TODO: why?
 			float numberAscent = mNumberPaint.ascent();
 			float noteAscent = mNotePaint.ascent();
 			float noteWidth = mCellWidth / 3f;
@@ -265,7 +267,8 @@ public class SudokuBoardView extends View {
 								int n = number - 1;
 								int c = n % 3;
 								int r = n / 3;
-								canvas.drawText(Integer.toString(number), cellLeft + c*noteWidth + 2, cellTop - noteAscent + r*noteWidth - 1, mNotePaint);
+								//canvas.drawText(Integer.toString(number), cellLeft + c*noteWidth + 2, cellTop + noteAscent + r*noteWidth - 1, mNotePaint);
+								canvas.drawText(Integer.toString(number), cellLeft + c*noteWidth + 2, cellTop + mNoteTop - noteAscent + r*noteWidth - 1, mNotePaint);
 							}
 							
 //							int[] numbers = cell.getNoteNumbers();
@@ -287,8 +290,8 @@ public class SudokuBoardView extends View {
 			
 			// highlight selected cell
 			if (!mReadonly && mSelectedCell != null) {
-				cellLeft = Math.round(mSelectedCell.getColumnIndex() * mCellWidth);
-				cellTop = Math.round(mSelectedCell.getRowIndex() * mCellHeight);
+				cellLeft = Math.round(mSelectedCell.getColumnIndex() * mCellWidth) + paddingLeft;
+				cellTop = Math.round(mSelectedCell.getRowIndex() * mCellHeight) + paddingTop;
 				canvas.drawRect(
 						cellLeft, cellTop, 
 						cellLeft + mCellWidth, cellTop + mCellHeight,
@@ -298,14 +301,14 @@ public class SudokuBoardView extends View {
 			// visually highlight cell under the finger (to cope with touch screen
 			// imprecision)
 			if (mTouchedCell != null) {
-				cellLeft = Math.round(mTouchedCell.getColumnIndex() * mCellWidth);
-				cellTop = Math.round(mTouchedCell.getRowIndex() * mCellHeight);
+				cellLeft = Math.round(mTouchedCell.getColumnIndex() * mCellWidth) + paddingLeft;
+				cellTop = Math.round(mTouchedCell.getRowIndex() * mCellHeight) + paddingTop;
 				canvas.drawRect(
-						cellLeft, 0,
+						cellLeft, paddingTop,
 						cellLeft + mCellWidth, height,
 						mTouchedPaint);
 				canvas.drawRect(
-						0, cellTop,
+						paddingLeft, cellTop,
 						width, cellTop + mCellHeight,
 						mTouchedPaint);
 			}
@@ -314,21 +317,21 @@ public class SudokuBoardView extends View {
 		
 		// draw vertical lines
 		for (int c=0; c <= 9; c++) {
-			float x = c * mCellWidth;
+			float x = (c * mCellWidth) + paddingLeft;
 			if (c % 3 == 0) {
-				canvas.drawRect(x-1, 0, x+1, height, mLinePaint);
+				canvas.drawRect(x-1, paddingTop, x+1, height, mLinePaint);
 			} else {
-				canvas.drawLine(x, 0, x, height, mLinePaint);
+				canvas.drawLine(x, paddingTop, x, height, mLinePaint);
 			}
 		}
 		
 		// draw horizontal lines
 		for (int r=0; r <= 9; r++) {
-			float y = r * mCellHeight;
+			float y = r * mCellHeight + paddingTop;
 			if (r % 3 == 0) {
-				canvas.drawRect(0, y-1, width, y+1, mLinePaint);
+				canvas.drawRect(paddingLeft, y-1, width, y+1, mLinePaint);
 			} else {
-				canvas.drawLine(0, y, width, y, mLinePaint);
+				canvas.drawLine(paddingLeft, y, width, y, mLinePaint);
 			}
 		}
 	}
@@ -508,8 +511,12 @@ public class SudokuBoardView extends View {
 	private SudokuCell getCellAtPoint(int x, int y) {
 		// TODO: this is not nice, col/row vs x/y
 		
-		int row = (int) (y / mCellHeight);
-		int col = (int) (x / mCellWidth);
+		// take into account padding
+		int lx = x - getPaddingLeft();
+		int ly = y - getPaddingTop();
+		
+		int row = (int) (ly / mCellHeight);
+		int col = (int) (lx / mCellWidth);
 		
 		if(col >= 0 && col < SudokuCellCollection.SUDOKU_SIZE 
 				&& row >= 0 && row < SudokuCellCollection.SUDOKU_SIZE) {
