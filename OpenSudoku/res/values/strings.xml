@@ -74,6 +74,8 @@
 	<string name="single_number_summary">Select number, then just tap on cell to set its value or note.</string>
 	<string name="numpad">Numpad</string>
 	<string name="numpad_summary">Show numpad which acts as standard numeric keyobard.</string>
+	<string name="numpad_move_right">Move right on press</string>
+	<string name="numpad_move_right_summary">Moves cell selection by one cell right when number button is pressed.</string>
 	
 	<string name="numpad_abbr">Num\nPad</string>
 	<string name="popup_abbr">Pop</string>

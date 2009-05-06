@@ -26,6 +26,13 @@
                 android:title="@string/numpad"
                 android:summary="@string/numpad_summary"
                 android:defaultValue="true" />
+        <CheckBoxPreference
+                android:key="im_numpad_move_right"
+                android:dependency="im_numpad"
+                android:layout="?android:attr/preferenceLayoutChild"
+                android:title="@string/numpad_move_right"
+                android:summary="@string/numpad_move_right_summary"
+                android:defaultValue="false" />
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/game">

@@ -15,12 +15,14 @@ import cz.romario.opensudoku.game.SudokuCell;
 
 public class IMNumpad extends InputMethod {
 
+	public boolean moveCellSelectionOnPress = true;
+	
 	private static final int MODE_EDIT_VALUE = 0;
 	private static final int MODE_EDIT_NOTE = 1;
 	
 	private SudokuCell mSelectedCell;
 	private ImageButton mSwitchNumNoteButton;
-
+	
 	private int mEditMode = MODE_EDIT_VALUE;
 	
 	private Map<Integer,Button> mNumberButtons;
@@ -111,7 +113,9 @@ public class IMNumpad extends InputMethod {
 				case MODE_EDIT_VALUE:
 					if (selNumber >= 0 && selNumber <= 9) {
 						mGame.setCellValue(selCell, selNumber);
-						mBoard.moveCellSelectionRight();
+						if (moveCellSelectionOnPress) {
+							mBoard.moveCellSelectionRight();
+						}
 						mBoard.postInvalidate();
 					}
 					break;

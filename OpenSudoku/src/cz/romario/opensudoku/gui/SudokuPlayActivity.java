@@ -132,6 +132,7 @@ public class SudokuPlayActivity extends Activity{
         mIMPopup.enabled = gameSettings.getBoolean("im_popup", true);
         mIMSingleNumber.enabled = gameSettings.getBoolean("im_single_number", true);
         mIMNumpad.enabled = gameSettings.getBoolean("im_numpad", true);
+        mIMNumpad.moveCellSelectionOnPress = gameSettings.getBoolean("im_numpad_move_right", false);
 
         mInputMethods.ensureSomethingIsActive();
         
