@@ -98,6 +98,9 @@
 	<string name="show_hints">First launch hints</string>
 	<string name="show_hints_summary">Show hints which will guide you through application controls.</string>
 	
+	<string name="puzzle_inserted">New puzzle has been saved.</string>
+	<string name="puzzle_updated">Puzzle has been updated.</string>
+	
 	<string name="credits">Credits:\nRoman Mašek (creator)\nMartin Sobola (UI design)</string>
 	
 </resources>

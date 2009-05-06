@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class SudokuEditActivity extends Activity {
 	private static final String TAG = "SudokuEditActivity";
@@ -31,8 +32,10 @@ public class SudokuEditActivity extends Activity {
 	// The different distinct states the activity can be run in.
     private static final int STATE_EDIT = 0;
     private static final int STATE_INSERT = 1;
+    private static final int STATE_CANCEL = 2;
 
     private int mState;
+    
     private long mFolderID;
     private long mSudokuID;
     
@@ -112,6 +115,15 @@ public class SudokuEditActivity extends Activity {
 	}
 	
 	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		if (isFinishing() && mState != STATE_CANCEL) {
+			savePuzzle();
+		}
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
         // This is our one standard application action -- inserting a
         // new note into the list.
@@ -138,24 +150,30 @@ public class SudokuEditActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
         case MENU_ITEM_SAVE:
-			mGame.getCells().markFilledCellsAsNotEditable();
-			
-			switch (mState) {
-			case STATE_EDIT:
-				mSudokuDB.updateSudoku(mGame);
-				break;
-			case STATE_INSERT:
-				mGame.setCreated(new Date());
-				mSudokuDB.insertSudoku(mFolderID, mGame);
-				break;
-			}
-			
+        	savePuzzle();
 			finish();
             return true;
         case MENU_ITEM_CANCEL:
+        	mState = STATE_CANCEL;
         	finish();
         	return true;
         }
         return super.onOptionsItemSelected(item);
+	}
+	
+	private void savePuzzle() {
+		mGame.getCells().markFilledCellsAsNotEditable();
+		
+		switch (mState) {
+		case STATE_EDIT:
+			mSudokuDB.updateSudoku(mGame);
+			Toast.makeText(getApplicationContext(), R.string.puzzle_updated, Toast.LENGTH_SHORT).show();
+			break;
+		case STATE_INSERT:
+			mGame.setCreated(new Date());
+			mSudokuDB.insertSudoku(mFolderID, mGame);
+			Toast.makeText(getApplicationContext(), R.string.puzzle_inserted, Toast.LENGTH_SHORT).show();
+			break;
+		}
 	}
 }
