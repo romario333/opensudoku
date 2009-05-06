@@ -393,6 +393,7 @@ public class SudokuBoardView extends View {
 				case KeyEvent.KEYCODE_SPACE:
 				case KeyEvent.KEYCODE_DEL:
 					// clear value in selected cell
+					// TODO: I'm not really sure that this is thread-safe
 					if (mSelectedCell != null) {
 						if (event.isShiftPressed() || event.isAltPressed()) {
 							setCellNote(mSelectedCell, null);
@@ -401,6 +402,11 @@ public class SudokuBoardView extends View {
 							setCellValue(mSelectedCell, 0);
 							moveCellSelectionRight();
 						}
+					}
+					return true;
+				case KeyEvent.KEYCODE_DPAD_CENTER:
+					if (mSelectedCell != null) {
+						onCellTapped(mSelectedCell);
 					}
 					return true;
 			}
