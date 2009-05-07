@@ -318,7 +318,8 @@ public class SudokuCellCollection  implements Parcelable {
             cell.setValue(Integer.parseInt(tokenizer.nextToken()));
             String note = tokenizer.nextToken(); 
             if (!note.equals("-")) {
-            	cell.setNote(note);
+            	// TODO: asi kazdy z techle objektu by mel mit serialize a deserialize, udelej z toho interface
+            	cell.setNote(SudokuCellNote.deserialize(note));
             }
             cell.setEditable(tokenizer.nextToken().equals("1"));
             

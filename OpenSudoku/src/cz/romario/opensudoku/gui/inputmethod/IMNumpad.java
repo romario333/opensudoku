@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuCell;
+import cz.romario.opensudoku.game.SudokuCellNote;
 
 public class IMNumpad extends InputMethod {
 
@@ -106,7 +107,9 @@ public class IMNumpad extends InputMethod {
 						mGame.setCellNote(selCell, null);
 						mBoard.postInvalidate();
 					} else if (selNumber > 0 && selNumber <= 9) {
-						mGame.setCellNote(selCell, SudokuCell.numberListToNoteString(selCell.toggleNoteNumber(selNumber)));
+						SudokuCellNote newNote = selCell.getNote().clone();
+						newNote.toggleNumber(selNumber);
+						mGame.setCellNote(selCell, newNote);
 						mBoard.postInvalidate();
 					}
 					break;

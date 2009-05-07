@@ -28,24 +28,30 @@ public class SudokuCell implements Parcelable {
 	private SudokuCellGroup mColumn; // column containing this cell
 	
 	private int mValue;
-	private boolean mEditable = false;
-	private boolean mInvalid = false;
-	//private int[] mNoteNumbers = new int[10];
-	private Set<Integer> mNoteNumbers = new HashSet<Integer>();
+	private SudokuCellNote mNote;
+	private boolean mEditable;
+	private boolean mInvalid;
 	
 	public SudokuCell() {
-		mEditable = true;
-		mInvalid = false;
+		this (0, new SudokuCellNote(), true, false);
 	}
 	
+	// TODO: fakt tohle nekde pouzivam?
 	public SudokuCell(int value) {
-		this();
+		this(value, new SudokuCellNote(), true, false);
 		mValue = value;
+	}
+	
+	public SudokuCell(int value, SudokuCellNote note, boolean editable, boolean invalid) {
+		mValue = value;
+		mNote = note;
+		mEditable = editable;
+		mInvalid = invalid;
 	}
 	
 	/**
 	 * Gets cell's row index within SudokuCellCollection.
-	 * @return
+	 * @return 
 	 */
 	public int getRowIndex() {
 		return mRowIndex;
@@ -129,118 +135,22 @@ public class SudokuCell implements Parcelable {
 		return mValue;
 	}
 
-	public Collection<Integer> getNoteNumbers() {
-		return mNoteNumbers;		
-	}
-	
-	/**
-	 * Sets note attached to the cell.
-	 * 
-	 * @param notes
-	 */
-	public void setNote(String note) {
-		if (note == null || note.equals(""))
-		{
-			mNoteNumbers.clear();
-//			for (int i=1; i<mNoteNumbers.length; i++) {
-//				mNoteNumbers[i] = 0;
-//			}
-		} else {
-			mNoteNumbers.clear();
-
-			StringTokenizer tokenizer = new StringTokenizer(note, ",");
-	        while (tokenizer.hasMoreTokens()) {
-	        	mNoteNumbers.add(Integer.parseInt(tokenizer.nextToken()));
-//	            mNoteNumbers[Integer.parseInt(tokenizer.nextToken())] = 1;
-	        }
-		}
-	}
 
 	/**
 	 * Gets note attached to the cell.
 	 * 
 	 * @return
 	 */
-	public String getNote() {
-		StringBuffer sb = new StringBuffer();
-		
-//		for (int i=1; i<mNoteNumbers.length; i++) {
-//			if (mNoteNumbers[i] == 1) {
-//				sb.append(i).append(",");
-//			}
-//		}
-		
-		for (Integer i : mNoteNumbers) {
-			sb.append(i).append(",");
-		}
-		
-		return sb.toString();
-	}
-	
-	// TODO: think again about SudokuCell's interface concerning notes, also take into account
-	// EditCellNoteCommand and especially the fact, that SudokuBoard onDraw needs to know
-	// which numbers are noted
-	public static String numberListToNoteString(Collection<Integer> numbers) {
-		StringBuffer sb = new StringBuffer();
-		for (Integer num : numbers) {
-			sb.append(num).append(",");
-		}
-		return sb.toString();
-	}
-	public static String numberListToNoteString(Integer[] numbers) {
-		StringBuffer sb = new StringBuffer();
-		for (Integer num : numbers) {
-			sb.append(num).append(",");
-		}
-		return sb.toString();
+	public SudokuCellNote getNote() {
+		return mNote;
 	}
 	
 	/**
-	 * Returns true, if cell has some note attached to it.
-	 * 
-	 * @return
+	 * Sets note attached to the cell
+	 * @param note
 	 */
-	public boolean hasNote() {
-		return mNoteNumbers.size() != 0;
-//		for (int i=1; i<mNoteNumbers.length; i++) {
-//			if(mNoteNumbers[i] == 1)
-//				return true;
-//		}
-//		return false;
-	}
-
-	public void setNoteNumber(int number, boolean isSet) {
-		if (isSet) {
-			mNoteNumbers.add(number);
-		} else {
-			mNoteNumbers.remove(new Integer(number));
-		}
-
-//		mNoteNumbers[number] = isSet ? 1 : 0;
-	}
-	
-	// TODO: ugly quick fix
-	public Collection<Integer> toggleNoteNumber(int number) {
-		Set<Integer> nums = new HashSet<Integer>();
-		
-		for (Integer n : mNoteNumbers) {
-			nums.add(n);
-		}
-		
-		Integer n = new Integer(number);
-		if (nums.contains(n)) {
-			nums.remove(n);
-		} else {
-			nums.add(n);
-		}
-		return nums;
-			
-		
-//		if (mNoteNumbers[number] == 1) {
-//			mNoteNumbers[number] = 0;
-//		} else {
-//			mNoteNumbers[number] = 1;
-//		}
+	public void setNote(SudokuCellNote note) {
+		mNote = note;
 	}
 	
 	public boolean isEditable() {
@@ -262,7 +172,7 @@ public class SudokuCell implements Parcelable {
 	// constructor for Parcelable
 	private SudokuCell(Parcel in) {
 		mValue = in.readInt();
-		setNote(in.readString());
+		setNote(SudokuCellNote.deserialize(in.readString()));
 		mEditable = (Boolean)in.readValue(null);
 		mInvalid = (Boolean)in.readValue(null);
 	}
@@ -285,7 +195,7 @@ public class SudokuCell implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(mValue);
-		dest.writeString(getNote());
+		dest.writeString(mNote.serialize());
 		dest.writeValue(mEditable);
 		dest.writeValue(mInvalid);
 	}

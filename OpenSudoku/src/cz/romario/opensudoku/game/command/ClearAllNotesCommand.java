@@ -5,6 +5,7 @@ import java.util.List;
 
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuCellCollection;
+import cz.romario.opensudoku.game.SudokuCellNote;
 
 public class ClearAllNotesCommand implements Command {
 
@@ -22,8 +23,8 @@ public class ClearAllNotesCommand implements Command {
 		for (int r = 0; r < SudokuCellCollection.SUDOKU_SIZE; r++) {
 			for (int c = 0; c < SudokuCellCollection.SUDOKU_SIZE; c++) {
 				SudokuCell cell = mCells.getCell(r, c);
-				String note = cell.getNote();
-				if (note != null && !note.equals("")) {
+				SudokuCellNote note = cell.getNote();
+				if (!note.isEmpty()) {
 					mOldNotes.add(new NoteEntry(r, c, note));
 					cell.setNote(null);
 				}
@@ -42,9 +43,9 @@ public class ClearAllNotesCommand implements Command {
 	private class NoteEntry {
 		public int rowIndex;
 		public int colIndex;
-		public String note;
+		public SudokuCellNote note;
 		
-		public NoteEntry(int rowIndex, int colIndex, String note){
+		public NoteEntry(int rowIndex, int colIndex, SudokuCellNote note){
 			this.rowIndex = rowIndex;
 			this.colIndex = colIndex;
 			this.note = note;

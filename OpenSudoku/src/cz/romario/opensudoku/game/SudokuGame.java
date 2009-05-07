@@ -152,7 +152,7 @@ public class SudokuGame implements Parcelable {
 	 * @param cell
 	 * @param note
 	 */
-	public void setCellNote(SudokuCell cell, String note) {
+	public void setCellNote(SudokuCell cell, SudokuCellNote note) {
 		assert cell != null;
 
 		if (cell.isEditable()) {
@@ -224,7 +224,7 @@ public class SudokuGame implements Parcelable {
 				SudokuCell cell = mCells.getCell(r, c);
 				if (cell.isEditable()) {
 					cell.setValue(0);
-					cell.setNote("");
+					cell.getNote().clear();
 				}
 			}
 		}

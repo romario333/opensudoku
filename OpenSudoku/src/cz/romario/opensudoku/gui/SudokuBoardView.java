@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import cz.romario.opensudoku.game.SudokuCell;
 import cz.romario.opensudoku.game.SudokuCellCollection;
+import cz.romario.opensudoku.game.SudokuCellNote;
 import cz.romario.opensudoku.game.SudokuGame;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -261,8 +262,8 @@ public class SudokuBoardView extends View {
 								Math.round(cellTop) + mNumberTop - numberAscent, 
 								mNumberPaint);
 					} else {
-						if (cell.hasNote()) {
-							Collection<Integer> numbers = cell.getNoteNumbers();
+						if (!cell.getNote().isEmpty()) {
+							Collection<Integer> numbers = cell.getNote().getNotedNumbers();
 							for (Integer number : numbers) {
 								int n = number - 1;
 								int c = n % 3;
@@ -270,16 +271,6 @@ public class SudokuBoardView extends View {
 								//canvas.drawText(Integer.toString(number), cellLeft + c*noteWidth + 2, cellTop + noteAscent + r*noteWidth - 1, mNotePaint);
 								canvas.drawText(Integer.toString(number), cellLeft + c*noteWidth + 2, cellTop + mNoteTop - noteAscent + r*noteWidth - 1, mNotePaint);
 							}
-							
-//							int[] numbers = cell.getNoteNumbers();
-//							for (int number=1; number<numbers.length; number++) {
-//								if (numbers[number] == 1) {
-//									int n = number - 1;
-//									int c = n % 3;
-//									int r = n / 3;
-//									canvas.drawText(Integer.toString(number), cellLeft + c*noteWidth + 2, cellTop - noteAscent + r*noteWidth - 1, mNotePaint);
-//								}
-//							}
 						}
 					}
 					
@@ -417,8 +408,9 @@ public class SudokuBoardView extends View {
 				
 				if (event.isShiftPressed() || event.isAltPressed()) {
 					// add or remove number to notes
-					// TODO: ugly, I should just pass the number to command
-					setCellNote(cell, SudokuCell.numberListToNoteString(cell.toggleNoteNumber(selNumber)));
+					SudokuCellNote newNote = cell.getNote().clone();
+					newNote.toggleNumber(selNumber);
+					setCellNote(cell, newNote);
 					invalidate();
 				} else {
 					// enter number in cell
@@ -444,7 +436,7 @@ public class SudokuBoardView extends View {
 		}
 	}
 	
-	public void setCellNote(SudokuCell cell, String note) {
+	public void setCellNote(SudokuCell cell, SudokuCellNote note) {
 		if (cell.isEditable()) {
 			if (mGame != null) {
 				mGame.setCellNote(cell, note);
