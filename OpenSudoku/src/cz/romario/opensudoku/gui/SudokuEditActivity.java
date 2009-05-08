@@ -150,7 +150,7 @@ public class SudokuEditActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
         case MENU_ITEM_SAVE:
-        	savePuzzle();
+        	// do nothing, puzzle will be saved automatically in onPause
 			finish();
             return true;
         case MENU_ITEM_CANCEL:

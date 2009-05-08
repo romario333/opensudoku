@@ -58,6 +58,8 @@ public class SudokuPlayActivity extends Activity{
 	
 	private HintsQueue mHintsQueue;
 	
+	private boolean mShowTime = true;
+	
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,21 +115,25 @@ public class SudokuPlayActivity extends Activity{
         mInputMethods.addInputMethod(mIMSingleNumber);
         mIMNumpad = new IMNumpad();
         mInputMethods.addInputMethod(mIMNumpad);
-		updateTime();
     }
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
 		
-		if (mSudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-			mSudokuGame.resume();
-			mGameTimer.start();
-		}
-		
         // read game settings
 		SharedPreferences gameSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mSudokuGame.setHighlightWrongVals(gameSettings.getBoolean("highlight_wrong_values", true));
+
+        mShowTime = gameSettings.getBoolean("show_time", true);
+        if (mSudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			mSudokuGame.resume();
+			
+			if (mShowTime) {
+				mGameTimer.start();
+			}
+		}
+
         
         mIMPopup.enabled = gameSettings.getBoolean("im_popup", true);
         mIMSingleNumber.enabled = gameSettings.getBoolean("im_single_number", true);
@@ -135,8 +141,8 @@ public class SudokuPlayActivity extends Activity{
         mIMNumpad.moveCellSelectionOnPress = gameSettings.getBoolean("im_numpad_move_right", false);
 
         mInputMethods.ensureSomethingIsActive();
-        
-        
+
+		updateTitle();
 	}
 	
 	
@@ -267,7 +273,9 @@ public class SudokuPlayActivity extends Activity{
                 	mSudokuGame.start();
                 	mSudokuBoard.setReadOnly(false);
                 	mSudokuBoard.postInvalidate();
-                	mGameTimer.start();
+                	if (mShowTime) {
+                		mGameTimer.start();
+                	}
                 }
             })
             .setNegativeButton(android.R.string.no, null)
@@ -307,8 +315,12 @@ public class SudokuPlayActivity extends Activity{
 	/**
      * Update the time of game-play.
      */
-	void updateTime() {
-		setTitle(getTime());
+	void updateTitle() {
+		if (mShowTime) {
+			setTitle(getTime());
+		} else {
+			setTitle(R.string.app_name);
+		}
 	}
 	
 	public String getTime() {
@@ -328,7 +340,7 @@ public class SudokuPlayActivity extends Activity{
 		
     	@Override
 		protected boolean step(int count, long time) {
-    		updateTime();
+    		updateTitle();
             
             // Run until explicitly stopped.
             return false;

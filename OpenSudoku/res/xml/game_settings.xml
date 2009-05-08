@@ -37,6 +37,11 @@
     <PreferenceCategory
             android:title="@string/game">
         <CheckBoxPreference
+                android:key="show_time"
+                android:title="@string/show_time"
+                android:summary="@string/show_time_summary"
+                android:defaultValue="true" />
+        <CheckBoxPreference
                 android:key="show_hints"
                 android:title="@string/show_hints"
                 android:summary="@string/show_hints_summary"

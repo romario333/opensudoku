@@ -97,6 +97,8 @@
 	<string name="game">Game</string>
 	<string name="show_hints">First launch hints</string>
 	<string name="show_hints_summary">Show hints which will guide you through application controls.</string>
+	<string name="show_time">Show time</string>
+	<string name="show_time_summary">Show time during gameplay.</string>
 	
 	<string name="puzzle_inserted">New puzzle has been saved.</string>
 	<string name="puzzle_updated">Puzzle has been updated.</string>
