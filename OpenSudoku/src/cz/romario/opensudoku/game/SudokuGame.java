@@ -13,6 +13,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 
+// TODO: try static code analysis (checkstyle, findbugs etc.)
+
 public class SudokuGame implements Parcelable {
 	
 	public static final int GAME_STATE_PLAYING = 0;
