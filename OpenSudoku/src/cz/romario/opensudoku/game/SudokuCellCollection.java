@@ -353,7 +353,7 @@ public class SudokuCellCollection  implements Parcelable {
                         if (cell.getNote() == null || cell.getNote().equals("")) {
                         	sb.append("-").append("|");
                         } else {
-                        	sb.append(cell.getNote()).append("|");
+                        	sb.append(cell.getNote().serialize()).append("|");
                         }
                         sb.append(cell.isEditable() ? "1" : "0").append("|");
                 }

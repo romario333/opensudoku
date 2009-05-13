@@ -56,11 +56,16 @@ public class SudokuCellNote {
 	}
 	
 	public String serialize() {
-		StringBuffer sb = new StringBuffer();
-		for (Integer num : mNotedNumbers) {
-			sb.append(num).append(",");
+		if (mNotedNumbers.size() == 0) {
+			// TODO:
+			return "-";
+		} else {
+			StringBuffer sb = new StringBuffer();
+			for (Integer num : mNotedNumbers) {
+				sb.append(num).append(",");
+			}
+			return sb.toString();
 		}
-		return sb.toString();
 	}
 
 	public void clear() {
