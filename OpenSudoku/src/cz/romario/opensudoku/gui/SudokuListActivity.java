@@ -30,7 +30,7 @@ import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuColumns;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.FolderInfo;
-import cz.romario.opensudoku.game.SudokuCellCollection;
+import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 
 public class SudokuListActivity extends ListActivity {
@@ -112,7 +112,7 @@ public class SudokuListActivity extends ListActivity {
 				case R.id.sudoku_board:
 					String data = c.getString(columnIndex);
 					// TODO: still can be faster, I don't have to call initCollection and read notes
-					SudokuCellCollection cells = SudokuCellCollection
+					CellCollection cells = CellCollection
 							.deserialize(data);
 					SudokuBoardView board = (SudokuBoardView) view;
 					board.setReadOnly(true);

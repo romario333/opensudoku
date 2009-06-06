@@ -1,15 +1,15 @@
 package cz.romario.opensudoku.game.command;
 
-import cz.romario.opensudoku.game.SudokuCell;
-import cz.romario.opensudoku.game.SudokuCellNote;
+import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.game.CellNote;
 
 public class EditCellNoteCommand implements Command {
 
-	private SudokuCell mCell;
-	private SudokuCellNote mNote;
-	private SudokuCellNote mOldNote;
+	private Cell mCell;
+	private CellNote mNote;
+	private CellNote mOldNote;
 	
-	public EditCellNoteCommand(SudokuCell cell, SudokuCellNote note) {
+	public EditCellNoteCommand(Cell cell, CellNote note) {
 		mCell = cell;
 		mNote = note;
 	}

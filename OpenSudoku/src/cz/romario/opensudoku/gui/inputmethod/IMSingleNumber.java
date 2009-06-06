@@ -14,8 +14,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import cz.romario.opensudoku.R;
-import cz.romario.opensudoku.game.SudokuCell;
-import cz.romario.opensudoku.game.SudokuCellNote;
+import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.game.CellNote;
 
 /**
  * This class represents following type of number input workflow: Number buttons are displayed
@@ -141,7 +141,7 @@ public class IMSingleNumber extends InputMethod {
 	}
 	
 	@Override
-	protected void onCellTapped(SudokuCell cell) {
+	protected void onCellTapped(Cell cell) {
 		int selNumber = mSelectedNumber;
 		
 		switch (mEditMode) {
@@ -151,7 +151,7 @@ public class IMSingleNumber extends InputMethod {
 				mBoard.postInvalidate();
 				
 			} else if (selNumber > 0 && selNumber <= 9) {
-				SudokuCellNote newNote = cell.getNote().clone();
+				CellNote newNote = cell.getNote().clone();
 				newNote.toggleNumber(selNumber);
 				mGame.setCellNote(cell, newNote);
 				// TODO: board should know when data changes on itself

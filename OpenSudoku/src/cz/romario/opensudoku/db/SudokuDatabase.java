@@ -9,7 +9,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import cz.romario.opensudoku.game.FolderInfo;
-import cz.romario.opensudoku.game.SudokuCellCollection;
+import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 
 /**
@@ -219,7 +219,7 @@ public class SudokuDatabase {
             	s = new SudokuGame();
             	s.setId(id);
             	s.setCreated(created);
-            	s.setCells(SudokuCellCollection.deserialize(data));
+            	s.setCells(CellCollection.deserialize(data));
             	s.setLastPlayed(lastPlayed);
             	s.setState(state);
             	s.setTime(time);
@@ -309,7 +309,7 @@ public class SudokuDatabase {
     		long folderID = insertFolder("debug" + f);
     		for (int p=0; p<puzzlesPerFolder; p++) {
     			SudokuGame game = new SudokuGame();
-    			game.setCells(SudokuCellCollection.createDebugGame());
+    			game.setCells(CellCollection.createDebugGame());
     			insertSudoku(folderID, game);
     		}
     	}

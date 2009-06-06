@@ -19,30 +19,30 @@ import android.os.Parcelable;
  * @author romario
  *
  */
-public class SudokuCell implements Parcelable {
+public class Cell implements Parcelable {
 	// if cell is included in collection, here are some information about cell's position
 	private int mRowIndex = -1;
 	private int mColumnIndex = -1;
-	private SudokuCellGroup mSector; // sector containing this cell
-	private SudokuCellGroup mRow; // row containing this cell
-	private SudokuCellGroup mColumn; // column containing this cell
+	private CellGroup mSector; // sector containing this cell
+	private CellGroup mRow; // row containing this cell
+	private CellGroup mColumn; // column containing this cell
 	
 	private int mValue;
-	private SudokuCellNote mNote;
+	private CellNote mNote;
 	private boolean mEditable;
 	private boolean mInvalid;
 	
-	public SudokuCell() {
-		this (0, new SudokuCellNote(), true, false);
+	public Cell() {
+		this (0, new CellNote(), true, false);
 	}
 	
 	// TODO: fakt tohle nekde pouzivam?
-	public SudokuCell(int value) {
-		this(value, new SudokuCellNote(), true, false);
+	public Cell(int value) {
+		this(value, new CellNote(), true, false);
 		mValue = value;
 	}
 	
-	public SudokuCell(int value, SudokuCellNote note, boolean editable, boolean invalid) {
+	public Cell(int value, CellNote note, boolean editable, boolean invalid) {
 		mValue = value;
 		mNote = note;
 		mEditable = editable;
@@ -50,7 +50,7 @@ public class SudokuCell implements Parcelable {
 	}
 	
 	/**
-	 * Gets cell's row index within SudokuCellCollection.
+	 * Gets cell's row index within <code>CellCollection</code>.
 	 * @return 
 	 */
 	public int getRowIndex() {
@@ -58,7 +58,7 @@ public class SudokuCell implements Parcelable {
 	}
 	
 	/**
-	 * Gets cell's column index within SudokuCellColection.
+	 * Gets cell's column index within <code>CellColection</code>.
 	 * @return
 	 */
 	public int getColumnIndex() {
@@ -66,7 +66,7 @@ public class SudokuCell implements Parcelable {
 	}
 	
 	/**
-	 * Called when SudokuCell is added to SudokuCellCollection.  
+	 * Called when <code>Cell</code> is added to <code>CellCollection</code>.  
 	 * 
 	 * @param rowIndex Cell's row index within collection.
 	 * @param colIndex Cell's column index within collection.
@@ -74,7 +74,7 @@ public class SudokuCell implements Parcelable {
 	 * @param row Reference to row group in which cell is included.
 	 * @param column Reference to column group in which cell is included. 
 	 */
-	protected void initCollection(int rowIndex, int colIndex, SudokuCellGroup sector, SudokuCellGroup row, SudokuCellGroup column) {
+	protected void initCollection(int rowIndex, int colIndex, CellGroup sector, CellGroup row, CellGroup column) {
 		mRowIndex = rowIndex;
 		mColumnIndex = colIndex;
 		mSector = sector;
@@ -91,7 +91,7 @@ public class SudokuCell implements Parcelable {
 	 * 
 	 * @return
 	 */
-	public SudokuCellGroup getSector() {
+	public CellGroup getSector() {
 		return mSector;
 	}
 	
@@ -103,7 +103,7 @@ public class SudokuCell implements Parcelable {
 	 * 
 	 * @return
 	 */
-	public SudokuCellGroup getRow() {
+	public CellGroup getRow() {
 		return mRow;
 	}
 
@@ -112,7 +112,7 @@ public class SudokuCell implements Parcelable {
 	 * 
 	 * @return
 	 */
-	public SudokuCellGroup getColumn() {
+	public CellGroup getColumn() {
 		return mColumn;
 	}
 	
@@ -141,7 +141,7 @@ public class SudokuCell implements Parcelable {
 	 * 
 	 * @return
 	 */
-	public SudokuCellNote getNote() {
+	public CellNote getNote() {
 		return mNote;
 	}
 	
@@ -149,7 +149,7 @@ public class SudokuCell implements Parcelable {
 	 * Sets note attached to the cell
 	 * @param note
 	 */
-	public void setNote(SudokuCellNote note) {
+	public void setNote(CellNote note) {
 		mNote = note;
 	}
 	
@@ -170,20 +170,20 @@ public class SudokuCell implements Parcelable {
 	}
 	
 	// constructor for Parcelable
-	private SudokuCell(Parcel in) {
+	private Cell(Parcel in) {
 		mValue = in.readInt();
-		setNote(SudokuCellNote.deserialize(in.readString()));
+		setNote(CellNote.deserialize(in.readString()));
 		mEditable = (Boolean)in.readValue(null);
 		mInvalid = (Boolean)in.readValue(null);
 	}
 
-	public static final Parcelable.Creator<SudokuCell> CREATOR = new Parcelable.Creator<SudokuCell>() {
-		public SudokuCell createFromParcel(Parcel in) {
-		    return new SudokuCell(in);
+	public static final Parcelable.Creator<Cell> CREATOR = new Parcelable.Creator<Cell>() {
+		public Cell createFromParcel(Parcel in) {
+		    return new Cell(in);
 		}
 		
-		public SudokuCell[] newArray(int size) {
-		    return new SudokuCell[size];
+		public Cell[] newArray(int size) {
+		    return new Cell[size];
 		}
 	};
 	

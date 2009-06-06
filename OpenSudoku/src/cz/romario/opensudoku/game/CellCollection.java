@@ -11,17 +11,17 @@ import android.os.Parcelable;
  * @author romario
  *
  */
-public class SudokuCellCollection  implements Parcelable {
+public class CellCollection  implements Parcelable {
 	
 	// TODO: An array of ints is a much better than an array of Integers, but this also generalizes to the fact that two parallel arrays of ints are also a lot more efficient than an array of (int,int) objects
 	// Cell's data.
-	private SudokuCell[][] mCells;
+	private Cell[][] mCells;
 	
 	// Helper arrays, contains references to the groups of cells, which should contain unique
 	// numbers.
-	private SudokuCellGroup[] mSectors;
-	private SudokuCellGroup[] mRows;
-	private SudokuCellGroup[] mColumns;
+	private CellGroup[] mSectors;
+	private CellGroup[] mRows;
+	private CellGroup[] mColumns;
 	
 	public static final int SUDOKU_SIZE = 9;
 	
@@ -29,20 +29,20 @@ public class SudokuCellCollection  implements Parcelable {
 	 * Creates empty sudoku.
 	 * @return
 	 */
-	public static SudokuCellCollection createEmpty()
+	public static CellCollection createEmpty()
 	{
-		SudokuCell[][] cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
+		Cell[][] cells = new Cell[SUDOKU_SIZE][SUDOKU_SIZE];
 		
 		for (int r=0; r<SUDOKU_SIZE; r++)
 		{
 			
 			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				cells[r][c] = new SudokuCell();
+				cells[r][c] = new Cell();
 			}
 		}
 		
-		return new SudokuCellCollection(cells);
+		return new CellCollection(cells);
 	}
 	
 	/**
@@ -50,23 +50,23 @@ public class SudokuCellCollection  implements Parcelable {
 	 * 
 	 * @return
 	 */
-	public static SudokuCellCollection createDebugGame() {
-		SudokuCellCollection debugGame = new SudokuCellCollection(new SudokuCell[][] {
-                { new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(4), new SudokuCell(5), new SudokuCell(6), new SudokuCell(7), new SudokuCell(8), new SudokuCell(9),},
-                { new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(7), new SudokuCell(8), new SudokuCell(9), new SudokuCell(1), new SudokuCell(2), new SudokuCell(3),},
-                { new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(1), new SudokuCell(2), new SudokuCell(3), new SudokuCell(4), new SudokuCell(5), new SudokuCell(6),},
-                { new SudokuCell(2), new SudokuCell(3), new SudokuCell(4), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(8), new SudokuCell(9), new SudokuCell(1),},
-                { new SudokuCell(5), new SudokuCell(6), new SudokuCell(7), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(2), new SudokuCell(3), new SudokuCell(4),},
-                { new SudokuCell(8), new SudokuCell(9), new SudokuCell(1), new SudokuCell(), new SudokuCell(), new SudokuCell(), new SudokuCell(5), new SudokuCell(6), new SudokuCell(7),},
-                { new SudokuCell(3), new SudokuCell(4), new SudokuCell(5), new SudokuCell(6), new SudokuCell(7), new SudokuCell(8), new SudokuCell(9), new SudokuCell(1), new SudokuCell(2),},
-                { new SudokuCell(6), new SudokuCell(7), new SudokuCell(8), new SudokuCell(9), new SudokuCell(1), new SudokuCell(2), new SudokuCell(3), new SudokuCell(4), new SudokuCell(5),},
-                { new SudokuCell(9), new SudokuCell(1), new SudokuCell(2), new SudokuCell(3), new SudokuCell(4), new SudokuCell(5), new SudokuCell(6), new SudokuCell(7), new SudokuCell(8),},
+	public static CellCollection createDebugGame() {
+		CellCollection debugGame = new CellCollection(new Cell[][] {
+                { new Cell(), new Cell(), new Cell(), new Cell(4), new Cell(5), new Cell(6), new Cell(7), new Cell(8), new Cell(9),},
+                { new Cell(), new Cell(), new Cell(), new Cell(7), new Cell(8), new Cell(9), new Cell(1), new Cell(2), new Cell(3),},
+                { new Cell(), new Cell(), new Cell(), new Cell(1), new Cell(2), new Cell(3), new Cell(4), new Cell(5), new Cell(6),},
+                { new Cell(2), new Cell(3), new Cell(4), new Cell(), new Cell(), new Cell(), new Cell(8), new Cell(9), new Cell(1),},
+                { new Cell(5), new Cell(6), new Cell(7), new Cell(), new Cell(), new Cell(), new Cell(2), new Cell(3), new Cell(4),},
+                { new Cell(8), new Cell(9), new Cell(1), new Cell(), new Cell(), new Cell(), new Cell(5), new Cell(6), new Cell(7),},
+                { new Cell(3), new Cell(4), new Cell(5), new Cell(6), new Cell(7), new Cell(8), new Cell(9), new Cell(1), new Cell(2),},
+                { new Cell(6), new Cell(7), new Cell(8), new Cell(9), new Cell(1), new Cell(2), new Cell(3), new Cell(4), new Cell(5),},
+                { new Cell(9), new Cell(1), new Cell(2), new Cell(3), new Cell(4), new Cell(5), new Cell(6), new Cell(7), new Cell(8),},
         });
 		debugGame.markFilledCellsAsNotEditable();
 		return debugGame;
 	}
 	
-	public SudokuCell[][] getCells() {
+	public Cell[][] getCells() {
 		return mCells;
 	}
 	
@@ -74,7 +74,7 @@ public class SudokuCellCollection  implements Parcelable {
 	 * Wraps given array in this object.
 	 * @param cells
 	 */
-	private SudokuCellCollection(SudokuCell[][] cells)
+	private CellCollection(Cell[][] cells)
 	{
 		
 		mCells = cells;
@@ -87,7 +87,7 @@ public class SudokuCellCollection  implements Parcelable {
 	 * @param colIndex
 	 * @return
 	 */
-	public SudokuCell getCell(int rowIndex, int colIndex) {
+	public Cell getCell(int rowIndex, int colIndex) {
 		return mCells[rowIndex][colIndex];
 	}
 	
@@ -115,17 +115,17 @@ public class SudokuCellCollection  implements Parcelable {
 		markAllCellsAsValid();
 		
 		// run validation in groups
-		for (SudokuCellGroup row : mRows) {
+		for (CellGroup row : mRows) {
 			if (!row.validate()) {
 				valid = false;
 			}
 		}
-		for (SudokuCellGroup column : mColumns) {
+		for (CellGroup column : mColumns) {
 			if (!column.validate()) {
 				valid = false;
 			}
 		}
-		for (SudokuCellGroup sector : mSectors) {
+		for (CellGroup sector : mSectors) {
 			if (!sector.validate()) {
 				valid = false;
 			}
@@ -139,7 +139,7 @@ public class SudokuCellCollection  implements Parcelable {
 		{
 			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				SudokuCell cell = mCells[r][c]; 
+				Cell cell = mCells[r][c]; 
 				if (cell.getValue() == 0 || cell.isInvalid()) {
 					return false;
 				}
@@ -147,41 +147,6 @@ public class SudokuCellCollection  implements Parcelable {
 		}
 		return true;
 	}
-	
-//	/** 
-//	 * Sets value in given cell.
-//	 * @param cell
-//	 * @param value
-//	 */
-//	public void setValue(SudokuCell cell, int value) {
-//		if (cell != null && cell.getEditable()) {
-//			cell.setValue(value);
-//		}
-//	}
-	
-	
-//	/**
-//	 * Sets value in cell given by its row and column index.
-//	 * @param rowIndex
-//	 * @param columnIndex
-//	 * @param value
-//	 */
-//	public void setValue(int rowIndex, int columnIndex, int value) {
-//		SudokuCell cell = getCell(rowIndex, columnIndex);
-//		setValue(cell, value);
-//	}
-	
-//	/**
-//	 * Sets note for given cell from array of numbers and fires change event. 
-//	 * @param cell
-//	 * @param numbers
-//	 */
-//	public void setNoteNumbers(SudokuCell cell, Integer[] numbers) {
-//		if (cell != null) {
-//			cell.setNoteNumbers(numbers);
-//			onChange();
-//		}
-//	}
 
 	/**
 	 * Marks all cells as editable.
@@ -190,7 +155,7 @@ public class SudokuCellCollection  implements Parcelable {
 		// TODO: implement iterator? (consider also performance)
 		for (int r=0; r<SUDOKU_SIZE; r++) {
 			for (int c=0; c<SUDOKU_SIZE; c++){
-				SudokuCell cell = mCells[r][c];
+				Cell cell = mCells[r][c];
 				cell.setEditable(true);
 			}
 		}
@@ -202,7 +167,7 @@ public class SudokuCellCollection  implements Parcelable {
 	public void markFilledCellsAsNotEditable() {
 		for (int r=0; r<SUDOKU_SIZE; r++) {
 			for (int c=0; c<SUDOKU_SIZE; c++){
-				SudokuCell cell = mCells[r][c];
+				Cell cell = mCells[r][c];
 				cell.setEditable(cell.getValue() == 0);
 			}
 		}
@@ -214,21 +179,21 @@ public class SudokuCellCollection  implements Parcelable {
 	 * 2) Row and column index for each cell is set.
 	 */
 	private void initCollection() {
-		mRows = new SudokuCellGroup[SUDOKU_SIZE];
-		mColumns = new SudokuCellGroup[SUDOKU_SIZE];
-		mSectors = new SudokuCellGroup[SUDOKU_SIZE];
+		mRows = new CellGroup[SUDOKU_SIZE];
+		mColumns = new CellGroup[SUDOKU_SIZE];
+		mSectors = new CellGroup[SUDOKU_SIZE];
 
 		for (int i=0; i<SUDOKU_SIZE; i++) {
-			mRows[i] = new SudokuCellGroup();
-			mColumns[i] = new SudokuCellGroup();
-			mSectors[i] = new SudokuCellGroup();
+			mRows[i] = new CellGroup();
+			mColumns[i] = new CellGroup();
+			mSectors[i] = new CellGroup();
 		}
 		
 		for (int r=0; r<SUDOKU_SIZE; r++)
 		{
 			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				SudokuCell cell = mCells[r][c];
+				Cell cell = mCells[r][c];
 				
 				cell.initCollection(r, c,
 						mSectors[((c/3) * 3) + (r/3)],
@@ -244,25 +209,25 @@ public class SudokuCellCollection  implements Parcelable {
 	 * 
 	 * @param in
 	 */
-	private SudokuCellCollection(Parcel in) {
+	private CellCollection(Parcel in) {
 		
-		mCells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
+		mCells = new Cell[SUDOKU_SIZE][SUDOKU_SIZE];
 		for (int row=0; row<SUDOKU_SIZE; row++) {
-			Parcelable[] rowData = (Parcelable[])in.readParcelableArray(SudokuCell.class.getClassLoader());
+			Parcelable[] rowData = (Parcelable[])in.readParcelableArray(Cell.class.getClassLoader());
 			for (int col=0; col < rowData.length; col++) {
-				mCells[row][col] = (SudokuCell)rowData[col];
+				mCells[row][col] = (Cell)rowData[col];
 			}
 		}
 		initCollection();
 	}
 	
-	public static final Parcelable.Creator<SudokuCellCollection> CREATOR = new Parcelable.Creator<SudokuCellCollection>() {
-		public SudokuCellCollection createFromParcel(Parcel in) {
-		    return new SudokuCellCollection(in);
+	public static final Parcelable.Creator<CellCollection> CREATOR = new Parcelable.Creator<CellCollection>() {
+		public CellCollection createFromParcel(Parcel in) {
+		    return new CellCollection(in);
 		}
 		
-		public SudokuCellCollection[] newArray(int size) {
-		    return new SudokuCellCollection[size];
+		public CellCollection[] newArray(int size) {
+		    return new CellCollection[size];
 		}
 	};
 	
@@ -273,7 +238,7 @@ public class SudokuCellCollection  implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		for (SudokuCell[] cols : mCells) {
+		for (Cell[] cols : mCells) {
 			dest.writeParcelableArray(cols, flags);
 		}
 	}
@@ -299,8 +264,8 @@ public class SudokuCellCollection  implements Parcelable {
 	 * Creates instance of sudoku collection from String, which was earlier created
 	 * by writeToString method.
 	 */
-	public static SudokuCellCollection deserialize(String data) {
-		SudokuCell[][] cells = new SudokuCell[SUDOKU_SIZE][SUDOKU_SIZE];
+	public static CellCollection deserialize(String data) {
+		Cell[][] cells = new Cell[SUDOKU_SIZE][SUDOKU_SIZE];
 
         String[] lines = data.split("\n");
         if (lines.length == 0) {
@@ -314,12 +279,12 @@ public class SudokuCellCollection  implements Parcelable {
         StringTokenizer tokenizer = new StringTokenizer(lines[1], "|");
         int r = 0, c = 0;
         while (tokenizer.hasMoreTokens() && r < 9) {
-            SudokuCell cell = new SudokuCell();
+            Cell cell = new Cell();
             cell.setValue(Integer.parseInt(tokenizer.nextToken()));
             String note = tokenizer.nextToken(); 
             if (!note.equals("-")) {
             	// TODO: asi kazdy z techle objektu by mel mit serialize a deserialize, udelej z toho interface
-            	cell.setNote(SudokuCellNote.deserialize(note));
+            	cell.setNote(CellNote.deserialize(note));
             }
             cell.setEditable(tokenizer.nextToken().equals("1"));
             
@@ -332,7 +297,7 @@ public class SudokuCellCollection  implements Parcelable {
             }
         }
 
-        return new SudokuCellCollection(cells);
+        return new CellCollection(cells);
 	}
 	
 	/**
@@ -348,7 +313,7 @@ public class SudokuCellCollection  implements Parcelable {
         {
                 for (int c=0; c<SUDOKU_SIZE; c++)
                 {
-                        SudokuCell cell = mCells[r][c];
+                        Cell cell = mCells[r][c];
                         sb.append(cell.getValue()).append("|");
                         if (cell.getNote() == null || cell.getNote().equals("")) {
                         	sb.append("-").append("|");

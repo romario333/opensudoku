@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import cz.romario.opensudoku.R;
-import cz.romario.opensudoku.game.SudokuCell;
+import cz.romario.opensudoku.game.Cell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.HintsQueue;
 import cz.romario.opensudoku.gui.SudokuBoardView;
@@ -116,7 +116,7 @@ public abstract class InputMethod {
 	 * 
 	 * @param cell
 	 */
-	protected void onCellSelected(SudokuCell cell) {
+	protected void onCellSelected(Cell cell) {
 		
 	}
 	
@@ -125,7 +125,7 @@ public abstract class InputMethod {
 	 * 
 	 * @param cell
 	 */
-	protected void onCellTapped(SudokuCell cell) {
+	protected void onCellTapped(Cell cell) {
 		
 	}
 	

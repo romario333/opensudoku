@@ -1,14 +1,14 @@
 package cz.romario.opensudoku.game.command;
 
-import cz.romario.opensudoku.game.SudokuCell;
+import cz.romario.opensudoku.game.Cell;
 
 public class SetCellValueCommand implements Command {
 
-	private SudokuCell mCell;
+	private Cell mCell;
 	private int mValue;
 	private int mOldValue;
 	
-	public SetCellValueCommand(SudokuCell cell, int value) {
+	public SetCellValueCommand(Cell cell, int value) {
 		mCell = cell;
 		mValue = value;
 	}

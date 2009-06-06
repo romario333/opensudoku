@@ -6,7 +6,7 @@ import android.content.Context;
 /**
  * Some information about folder, used in FolderListActivity.
  * 
- * @author EXT91365
+ * @author romario
  *
  */
 public class FolderInfo {

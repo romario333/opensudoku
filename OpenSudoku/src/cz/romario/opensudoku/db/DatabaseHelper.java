@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import cz.romario.opensudoku.game.SudokuCell;
-import cz.romario.opensudoku.game.SudokuCellCollection;
+import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 
 /**
@@ -141,14 +141,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void insertSudoku(SQLiteDatabase db, long folderID, long sudokuID, String sudokuName, String data) {
     	String[] values = data.split(" ");
     	
-    	SudokuCellCollection cellCollection = SudokuCellCollection.createEmpty();
-    	SudokuCell[][] cells = cellCollection.getCells();
+    	CellCollection cellCollection = CellCollection.createEmpty();
+    	Cell[][] cells = cellCollection.getCells();
     	
     	int pos = 0;
     	for (int r=0; r<9; r++) {
     		for (int c=0; c<9; c++) {
     			int value = Integer.parseInt(values[pos++]);
-    			cells[r][c] = new SudokuCell();
+    			cells[r][c] = new Cell();
 				cells[r][c].setValue(value);
     			cells[r][c].setEditable(value == 0);
     		}

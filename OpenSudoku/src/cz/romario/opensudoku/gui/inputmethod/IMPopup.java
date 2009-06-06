@@ -4,15 +4,15 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import cz.romario.opensudoku.R;
-import cz.romario.opensudoku.game.SudokuCell;
-import cz.romario.opensudoku.game.SudokuCellNote;
+import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.game.CellNote;
 import cz.romario.opensudoku.gui.inputmethod.IMPopupDialog.OnNoteEditListener;
 import cz.romario.opensudoku.gui.inputmethod.IMPopupDialog.OnNumberEditListener;
 
 public class IMPopup extends InputMethod {
 
 	private IMPopupDialog mEditCellDialog;
-	private SudokuCell mSelectedCell;
+	private Cell mSelectedCell;
 	
 	private void ensureEditCellDialog() {
 		if (mEditCellDialog == null) {
@@ -34,7 +34,7 @@ public class IMPopup extends InputMethod {
 	}
 	
 	@Override
-	protected void onCellTapped(SudokuCell cell){
+	protected void onCellTapped(Cell cell){
 		mSelectedCell = cell;
 		if (cell.isEditable()) {
 			ensureEditCellDialog();
@@ -97,7 +97,7 @@ public class IMPopup extends InputMethod {
 		@Override
 		public boolean onNoteEdit(Integer[] numbers) {
 			if (mSelectedCell != null) {
-				mGame.setCellNote(mSelectedCell, SudokuCellNote.deserialize(numbers));
+				mGame.setCellNote(mSelectedCell, CellNote.deserialize(numbers));
 				mBoard.hideTouchedCellHint();
 			}
 			return true;

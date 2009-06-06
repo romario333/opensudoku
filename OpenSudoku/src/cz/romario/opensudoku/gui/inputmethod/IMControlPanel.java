@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.romario.opensudoku.R;
-import cz.romario.opensudoku.game.SudokuCell;
+import cz.romario.opensudoku.game.Cell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.HintsQueue;
 import cz.romario.opensudoku.gui.SudokuBoardView;
@@ -22,7 +22,7 @@ import android.widget.LinearLayout;
 /**
  * 
  * 
- * @author EXT91365
+ * @author romario
  *
  */
 public class IMControlPanel extends LinearLayout {
@@ -207,7 +207,7 @@ public class IMControlPanel extends LinearLayout {
 	
 	private OnCellTappedListener mOnCellTapListener = new OnCellTappedListener() {
 		@Override
-		public void onCellTapped(SudokuCell cell) {
+		public void onCellTapped(Cell cell) {
 			if (mActiveMethodIndex != -1 && mInputMethods != null) {
 				mInputMethods.get(mActiveMethodIndex).onCellTapped(cell);
 			}
@@ -216,7 +216,7 @@ public class IMControlPanel extends LinearLayout {
 	
 	private OnCellSelectedListener mOnCellSelected = new OnCellSelectedListener() {
 		@Override
-		public void onCellSelected(SudokuCell cell) {
+		public void onCellSelected(Cell cell) {
 			if (mActiveMethodIndex != -1 && mInputMethods != null) {
 				mInputMethods.get(mActiveMethodIndex).onCellSelected(cell);
 			}

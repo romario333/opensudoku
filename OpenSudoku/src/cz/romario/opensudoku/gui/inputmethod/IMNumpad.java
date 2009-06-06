@@ -11,8 +11,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import cz.romario.opensudoku.R;
-import cz.romario.opensudoku.game.SudokuCell;
-import cz.romario.opensudoku.game.SudokuCellNote;
+import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.game.CellNote;
 
 public class IMNumpad extends InputMethod {
 
@@ -21,7 +21,7 @@ public class IMNumpad extends InputMethod {
 	private static final int MODE_EDIT_VALUE = 0;
 	private static final int MODE_EDIT_NOTE = 1;
 	
-	private SudokuCell mSelectedCell;
+	private Cell mSelectedCell;
 	private ImageButton mSwitchNumNoteButton;
 	
 	private int mEditMode = MODE_EDIT_VALUE;
@@ -89,7 +89,7 @@ public class IMNumpad extends InputMethod {
 	}
 	
 	@Override
-	protected void onCellSelected(SudokuCell cell) {
+	protected void onCellSelected(Cell cell) {
 		mSelectedCell = cell;
 	}
 	
@@ -98,7 +98,7 @@ public class IMNumpad extends InputMethod {
 		@Override
 		public void onClick(View v) {
 			int selNumber = (Integer)v.getTag();
-			SudokuCell selCell = mSelectedCell;
+			Cell selCell = mSelectedCell;
 			
 			if (selCell != null) {
 				switch (mEditMode) {
@@ -107,7 +107,7 @@ public class IMNumpad extends InputMethod {
 						mGame.setCellNote(selCell, null);
 						mBoard.postInvalidate();
 					} else if (selNumber > 0 && selNumber <= 9) {
-						SudokuCellNote newNote = selCell.getNote().clone();
+						CellNote newNote = selCell.getNote().clone();
 						newNote.toggleNumber(selNumber);
 						mGame.setCellNote(selCell, newNote);
 						mBoard.postInvalidate();

@@ -27,7 +27,7 @@ public class SudokuGame implements Parcelable {
 	private long mTime;
 	private Date mLastPlayed;
 	private String mNote;
-	private SudokuCellCollection mCells;
+	private CellCollection mCells;
 	
 	private OnPuzzleSolvedListener mOnPuzzleSolvedListener;
 	// very basic implementation of undo
@@ -39,7 +39,7 @@ public class SudokuGame implements Parcelable {
 
 	public static SudokuGame createEmptyGame() {
 		SudokuGame game = new SudokuGame();
-		game.setCells(SudokuCellCollection.createEmpty());
+		game.setCells(CellCollection.createEmpty());
 		return game;
 	}
 	
@@ -109,11 +109,11 @@ public class SudokuGame implements Parcelable {
 		return mLastPlayed;
 	}
 
-	public void setCells(SudokuCellCollection cells) {
+	public void setCells(CellCollection cells) {
 		mCells = cells;
 	}
 	
-	public SudokuCellCollection getCells() {
+	public CellCollection getCells() {
 		return mCells;
 	}
 
@@ -131,7 +131,7 @@ public class SudokuGame implements Parcelable {
 	 * @param cell
 	 * @param value
 	 */
-	public void setCellValue(SudokuCell cell, int value) {
+	public void setCellValue(Cell cell, int value) {
 		assert cell != null;
 		assert value >= 0 && value <= 9;
 		
@@ -154,7 +154,7 @@ public class SudokuGame implements Parcelable {
 	 * @param cell
 	 * @param note
 	 */
-	public void setCellNote(SudokuCell cell, SudokuCellNote note) {
+	public void setCellNote(Cell cell, CellNote note) {
 		assert cell != null;
 
 		if (cell.isEditable()) {
@@ -221,9 +221,9 @@ public class SudokuGame implements Parcelable {
 	 * Resets game.
 	 */
 	public void reset() {
-		for (int r=0; r<SudokuCellCollection.SUDOKU_SIZE; r++) {
-			for (int c=0; c<SudokuCellCollection.SUDOKU_SIZE; c++) {
-				SudokuCell cell = mCells.getCell(r, c);
+		for (int r=0; r<CellCollection.SUDOKU_SIZE; r++) {
+			for (int c=0; c<CellCollection.SUDOKU_SIZE; c++) {
+				Cell cell = mCells.getCell(r, c);
 				if (cell.isEditable()) {
 					cell.setValue(0);
 					cell.getNote().clear();
@@ -277,7 +277,7 @@ public class SudokuGame implements Parcelable {
 		mTime = in.readLong();
 		mLastPlayed = new Date(in.readLong());
 		
-		mCells = (SudokuCellCollection) in.readParcelable(SudokuCellCollection.class.getClassLoader());
+		mCells = (CellCollection) in.readParcelable(CellCollection.class.getClassLoader());
 	}
 	
 	public static final Parcelable.Creator<SudokuGame> CREATOR = new Parcelable.Creator<SudokuGame>() {

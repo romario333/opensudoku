@@ -7,15 +7,15 @@ import java.util.StringTokenizer;
 
 // TODO: rename all SudokuCell* classes to Cell*
 
-public class SudokuCellNote {
+public class CellNote {
 	private Set<Integer> mNotedNumbers;
 	
-	public SudokuCellNote() {
+	public CellNote() {
 		mNotedNumbers = new HashSet<Integer>();
 		
 	}
 	
-	private SudokuCellNote(Set<Integer> notedNumbers) {
+	private CellNote(Set<Integer> notedNumbers) {
 		mNotedNumbers = notedNumbers;
 	}
 	
@@ -24,7 +24,7 @@ public class SudokuCellNote {
 	 * 
 	 * Returns reference to the data (for performance reasons, it's called from
 	 * SudokuBoardView's onDraw). Do not change
-	 * anything through this reference, use SudokuCellNote's methods !
+	 * anything through this reference, use CellNote's methods !
 	 * 
 	 * @return
 	 */
@@ -33,7 +33,7 @@ public class SudokuCellNote {
 	}
 	
 
-	public static SudokuCellNote deserialize(String note) {
+	public static CellNote deserialize(String note) {
 		Set<Integer> notedNumbers = new HashSet<Integer>();
 		if (note != null && !note.equals("")) {
 			StringTokenizer tokenizer = new StringTokenizer(note, ",");
@@ -42,17 +42,17 @@ public class SudokuCellNote {
 	        }
 		}
 		
-		return new SudokuCellNote(notedNumbers);
+		return new CellNote(notedNumbers);
 	}
 	
-	public static SudokuCellNote deserialize(Integer[] notedNums) {
+	public static CellNote deserialize(Integer[] notedNums) {
 		Set<Integer> notedNumbers = new HashSet<Integer>();
 		
 		for (Integer n : notedNums) {
 			notedNumbers.add(n);
 		}
 
-		return new SudokuCellNote(notedNumbers);
+		return new CellNote(notedNumbers);
 	}
 	
 	public String serialize() {
@@ -72,12 +72,12 @@ public class SudokuCellNote {
 		mNotedNumbers.clear();
 	}
 	
-	public SudokuCellNote clone() {
+	public CellNote clone() {
 		Set<Integer> copy = new HashSet<Integer>();
 		for (Integer n : mNotedNumbers) {
 			copy.add(n);
 		}
-		return new SudokuCellNote(copy);
+		return new CellNote(copy);
 	}
 	
 	public void toggleNumber(int number) {
