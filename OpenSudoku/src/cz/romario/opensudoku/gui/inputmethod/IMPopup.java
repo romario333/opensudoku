@@ -97,7 +97,7 @@ public class IMPopup extends InputMethod {
 		@Override
 		public boolean onNoteEdit(Integer[] numbers) {
 			if (mSelectedCell != null) {
-				mGame.setCellNote(mSelectedCell, CellNote.deserialize(numbers));
+				mGame.setCellNote(mSelectedCell, CellNote.fromIntArray(numbers));
 				mBoard.hideTouchedCellHint();
 			}
 			return true;

@@ -16,13 +16,62 @@ public class CellNote {
 	
 	public CellNote() {
 		mNotedNumbers = new HashSet<Integer>();
-		
 	}
 	
 	private CellNote(Set<Integer> notedNumbers) {
 		mNotedNumbers = notedNumbers;
 	}
 	
+	/**
+	 * Creates note instance from given string (string which has been created by <code>toString</code>
+	 * earlier.
+	 * 
+	 * @param note String representation of note object.
+	 * @return New note instance.
+	 */
+	public static CellNote fromString(String note) {
+		Set<Integer> notedNumbers = new HashSet<Integer>();
+		if (note != null && !note.equals("")) {
+			StringTokenizer tokenizer = new StringTokenizer(note, ",");
+	        while (tokenizer.hasMoreTokens()) {
+	        	notedNumbers.add(Integer.parseInt(tokenizer.nextToken()));
+	        }
+		}
+		
+		return new CellNote(notedNumbers);
+	}
+	
+	/**
+	 * Creates note instance from given int array.
+	 * 
+	 * @param notedNums Array of integers, which should be part of note.
+	 * @return New note instance.
+	 */
+	public static CellNote fromIntArray(Integer[] notedNums) {
+		Set<Integer> notedNumbers = new HashSet<Integer>();
+		
+		for (Integer n : notedNums) {
+			notedNumbers.add(n);
+		}
+
+		return new CellNote(notedNumbers);
+	}
+	
+	@Override
+	public String toString() {
+		if (mNotedNumbers.size() == 0) {
+			// TODO:
+			return "-";
+		} else {
+			// TODO: do not create new StringBuffer for each note.
+			StringBuffer sb = new StringBuffer();
+			for (Integer num : mNotedNumbers) {
+				sb.append(num).append(",");
+			}
+			return sb.toString();
+		}
+	}
+
 	/**
 	 * TODO: find out how big performance impact would be to create new collection here
 	 * 
@@ -36,46 +85,16 @@ public class CellNote {
 		return mNotedNumbers;		
 	}
 	
-
-	public static CellNote deserialize(String note) {
-		Set<Integer> notedNumbers = new HashSet<Integer>();
-		if (note != null && !note.equals("")) {
-			StringTokenizer tokenizer = new StringTokenizer(note, ",");
-	        while (tokenizer.hasMoreTokens()) {
-	        	notedNumbers.add(Integer.parseInt(tokenizer.nextToken()));
-	        }
-		}
-		
-		return new CellNote(notedNumbers);
-	}
-	
-	public static CellNote deserialize(Integer[] notedNums) {
-		Set<Integer> notedNumbers = new HashSet<Integer>();
-		
-		for (Integer n : notedNums) {
-			notedNumbers.add(n);
-		}
-
-		return new CellNote(notedNumbers);
-	}
-	
-	public String serialize() {
-		if (mNotedNumbers.size() == 0) {
-			// TODO:
-			return "-";
-		} else {
-			StringBuffer sb = new StringBuffer();
-			for (Integer num : mNotedNumbers) {
-				sb.append(num).append(",");
-			}
-			return sb.toString();
-		}
-	}
-
+	/**
+	 * Clears note.
+	 */
 	public void clear() {
 		mNotedNumbers.clear();
 	}
 	
+	/**
+	 * Creates deep copy of object's instance.
+	 */
 	public CellNote clone() {
 		Set<Integer> copy = new HashSet<Integer>();
 		for (Integer n : mNotedNumbers) {
@@ -84,7 +103,15 @@ public class CellNote {
 		return new CellNote(copy);
 	}
 	
+	/**
+	 * Toggles noted number: if number is already noted, it will be removed otherwise it will be added. 
+	 * 
+	 * @param number Number to toggle.
+	 */
 	public void toggleNumber(int number) {
+		if (number < 1 || number > 9)
+			throw new IllegalArgumentException("Number must be between 1-9.");
+
 		Integer n = new Integer(number);
 		if (mNotedNumbers.contains(n)) {
 			mNotedNumbers.remove(n);
@@ -94,49 +121,12 @@ public class CellNote {
 	}
 	
 	/**
-	 * Returns true, if the note is empty.
+	 * Returns true, if note is empty.
 	 * 
-	 * @return
+	 * @return True if note is empty.
 	 */
 	public boolean isEmpty() {
 		return mNotedNumbers.size() == 0;
 	}
-
-//	public void setNoteNumber(int number, boolean isSet) {
-//		if (isSet) {
-//			mNoteNumbers.add(number);
-//		} else {
-//			mNoteNumbers.remove(new Integer(number));
-//		}
-//
-////		mNoteNumbers[number] = isSet ? 1 : 0;
-//	}
-//	
-//	// TODO: ugly quick fix
-//	public Collection<Integer> toggleNoteNumber(int number) {
-//		Set<Integer> nums = new HashSet<Integer>();
-//		
-//		for (Integer n : mNoteNumbers) {
-//			nums.add(n);
-//		}
-//		
-//		Integer n = new Integer(number);
-//		if (nums.contains(n)) {
-//			nums.remove(n);
-//		} else {
-//			nums.add(n);
-//		}
-//		return nums;
-//			
-//		
-////		if (mNoteNumbers[number] == 1) {
-////			mNoteNumbers[number] = 0;
-////		} else {
-////			mNoteNumbers[number] = 1;
-////		}
-//	}
-
-
-
 
 }

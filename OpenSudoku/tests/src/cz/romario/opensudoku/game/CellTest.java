@@ -4,8 +4,8 @@ import junit.framework.TestCase;
 
 public class CellTest extends TestCase {
 
-	public void testSudokuCell() {
-		fail("Not yet implemented");
-	}
+//	public void testSudokuCell() {
+//		fail("Not yet implemented");
+//	}
 
 }

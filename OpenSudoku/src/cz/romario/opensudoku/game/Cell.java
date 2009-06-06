@@ -188,7 +188,7 @@ public class Cell implements Parcelable {
 	// constructor for Parcelable
 	private Cell(Parcel in) {
 		mValue = in.readInt();
-		setNote(CellNote.deserialize(in.readString()));
+		setNote(CellNote.fromString(in.readString()));
 		mEditable = (Boolean)in.readValue(null);
 		mValid = (Boolean)in.readValue(null);
 	}
@@ -211,7 +211,8 @@ public class Cell implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(mValue);
-		dest.writeString(mNote.serialize());
+		// TODO: maybe I don't need to use Parcelable at all? I could use my own serialization.
+		dest.writeString(mNote.toString());
 		dest.writeValue(mEditable);
 		dest.writeValue(mValid);
 	}

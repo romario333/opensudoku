@@ -284,7 +284,7 @@ public class CellCollection  implements Parcelable {
             String note = tokenizer.nextToken(); 
             if (!note.equals("-")) {
             	// TODO: asi kazdy z techle objektu by mel mit serialize a deserialize, udelej z toho interface
-            	cell.setNote(CellNote.deserialize(note));
+            	cell.setNote(CellNote.fromString(note));
             }
             cell.setEditable(tokenizer.nextToken().equals("1"));
             
@@ -318,7 +318,7 @@ public class CellCollection  implements Parcelable {
                         if (cell.getNote() == null || cell.getNote().equals("")) {
                         	sb.append("-").append("|");
                         } else {
-                        	sb.append(cell.getNote().serialize()).append("|");
+                        	sb.append(cell.getNote().toString()).append("|");
                         }
                         sb.append(cell.isEditable() ? "1" : "0").append("|");
                 }
