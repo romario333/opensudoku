@@ -96,7 +96,7 @@ public class CellCollection  implements Parcelable {
 		{
 			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
-				mCells[r][c].setInvalid(false);
+				mCells[r][c].setValid(true);
 			}
 		}
 	}
@@ -140,7 +140,7 @@ public class CellCollection  implements Parcelable {
 			for (int c=0; c<SUDOKU_SIZE; c++)
 			{
 				Cell cell = mCells[r][c]; 
-				if (cell.getValue() == 0 || cell.isInvalid()) {
+				if (cell.getValue() == 0 || !cell.isValid()) {
 					return false;
 				}
 			}

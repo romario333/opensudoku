@@ -256,7 +256,7 @@ public class SudokuBoardView extends View {
 					// draw cell Text
 					int value = cell.getValue();
 					if (value != 0) {
-						mNumberPaint.setColor(cell.isInvalid() ? Color.RED : Color.BLACK);
+						mNumberPaint.setColor(cell.isValid() ? Color.BLACK : Color.RED);
 						canvas.drawText(Integer.toString(value),
 								cellLeft + mNumberLeft, 
 								Math.round(cellTop) + mNumberTop - numberAscent, 

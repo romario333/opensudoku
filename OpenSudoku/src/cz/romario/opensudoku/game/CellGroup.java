@@ -58,7 +58,7 @@ public class CellGroup {
 		for (Entry<Integer, List<Cell>> cellsForValue : cellsByValue.entrySet()) {
 			if (cellsForValue.getValue() != null && cellsForValue.getValue().size() > 1) {
 				for (Cell cell : cellsForValue.getValue()) {
-					cell.setInvalid(true);
+					cell.setValid(false);
 					valid = false;
 				}
 			}

@@ -1,12 +1,5 @@
 package cz.romario.opensudoku.game;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -14,7 +7,7 @@ import android.os.Parcelable;
  * Sudoku cell. Every cell has value, some notes attached to it and some basic
  * state (whether it is editable and valid).
  * 
- * Implements Parcelable, however references to sector, row and column are not serialized.
+ * Implements <code>Parcelable</code>, however references to sector, row and column are not serialized.
  * 
  * @author romario
  *
@@ -30,43 +23,49 @@ public class Cell implements Parcelable {
 	private int mValue;
 	private CellNote mNote;
 	private boolean mEditable;
-	private boolean mInvalid;
+	private boolean mValid;
 	
+	/**
+	 * Creates empty editable cell.
+	 */
 	public Cell() {
-		this (0, new CellNote(), true, false);
-	}
-	
-	// TODO: fakt tohle nekde pouzivam?
-	public Cell(int value) {
-		this(value, new CellNote(), true, false);
-		mValue = value;
-	}
-	
-	public Cell(int value, CellNote note, boolean editable, boolean invalid) {
-		mValue = value;
-		mNote = note;
-		mEditable = editable;
-		mInvalid = invalid;
+		this (0, new CellNote(), true, true);
 	}
 	
 	/**
-	 * Gets cell's row index within <code>CellCollection</code>.
-	 * @return 
+	 * Creates empty editable cell containing given value.
+	 * @param value Value of the cell.
+	 */
+	public Cell(int value) {
+		this(value, new CellNote(), true, true);
+		mValue = value;
+	}
+	
+	private Cell(int value, CellNote note, boolean editable, boolean valid) {
+		mValue = value;
+		mNote = note;
+		mEditable = editable;
+		mValid = valid;
+	}
+	
+	/**
+	 * Gets cell's row index within {@link CellCollection}.
+	 * @return Cell's row index within CellCollection.
 	 */
 	public int getRowIndex() {
 		return mRowIndex;
 	}
 	
 	/**
-	 * Gets cell's column index within <code>CellColection</code>.
-	 * @return
+	 * Gets cell's column index within {@link CellCollection}.
+	 * @return Cell's column index within CellColection.
 	 */
 	public int getColumnIndex() {
 		return mColumnIndex;
 	}
 	
 	/**
-	 * Called when <code>Cell</code> is added to <code>CellCollection</code>.  
+	 * Called when <code>Cell</code> is added to {@link CellCollection}.  
 	 * 
 	 * @param rowIndex Cell's row index within collection.
 	 * @param colIndex Cell's column index within collection.
@@ -89,7 +88,7 @@ public class Cell implements Parcelable {
 	/**
 	 * Returns sector containing this cell. Sector is 3x3 group of cells.
 	 * 
-	 * @return
+	 * @return Sector containing this cell.
 	 */
 	public CellGroup getSector() {
 		return mSector;
@@ -98,10 +97,7 @@ public class Cell implements Parcelable {
 	/**
 	 * Returns row containing this cell.
 	 * 
-	 * 
-	 * 
-	 * 
-	 * @return
+	 * @return Row containing this cell.
 	 */
 	public CellGroup getRow() {
 		return mRow;
@@ -110,7 +106,7 @@ public class Cell implements Parcelable {
 	/**
 	 * Returns column containing this cell.
 	 * 
-	 * @return
+	 * @return Column containing this cell.
 	 */
 	public CellGroup getColumn() {
 		return mColumn;
@@ -128,8 +124,9 @@ public class Cell implements Parcelable {
 	}
 
 	/**
-	 * Gets cell's value. Value can be 1-9 or 0 if cell should be empty.
-	 * @return
+	 * Gets cell's value. Value can be 1-9 or 0 if cell is empty.
+	 * 
+	 * @return Cell's value. Value can be 1-9 or 0 if cell is empty.
 	 */
 	public int getValue() {
 		return mValue;
@@ -139,7 +136,7 @@ public class Cell implements Parcelable {
 	/**
 	 * Gets note attached to the cell.
 	 * 
-	 * @return
+	 * @return Note attached to the cell.
 	 */
 	public CellNote getNote() {
 		return mNote;
@@ -147,26 +144,45 @@ public class Cell implements Parcelable {
 	
 	/**
 	 * Sets note attached to the cell
-	 * @param note
+	 * 
+	 * @param note Note attached to the cell
 	 */
 	public void setNote(CellNote note) {
 		mNote = note;
 	}
 	
+	/**
+	 * Returns whether cell can be edited.
+	 * @return True if cell can be edited.
+	 */
 	public boolean isEditable() {
 		return mEditable;
 	}
 	
+	/**
+	 * Sets whether cell can be edited.
+	 * @param editable True, if cell should allow editing.
+	 */
 	public void setEditable(Boolean editable) {
 		mEditable = editable;
 	}
 	
-	public void setInvalid(Boolean invalid) {
-		mInvalid = invalid;
+	/**
+	 * Sets whether cell contains valid value according to sudoku rules.
+	 * 
+	 * @param valid
+	 */
+	public void setValid(Boolean valid) {
+		mValid = valid;
 	}
 
-	public boolean isInvalid() {
-		return mInvalid;
+	/**
+	 * Returns true, if cell contains valid value according to sudoku rules.
+	 * 
+	 * @return True, if cell contains valid value according to sudoku rules.
+	 */
+	public boolean isValid() {
+		return mValid;
 	}
 	
 	// constructor for Parcelable
@@ -174,7 +190,7 @@ public class Cell implements Parcelable {
 		mValue = in.readInt();
 		setNote(CellNote.deserialize(in.readString()));
 		mEditable = (Boolean)in.readValue(null);
-		mInvalid = (Boolean)in.readValue(null);
+		mValid = (Boolean)in.readValue(null);
 	}
 
 	public static final Parcelable.Creator<Cell> CREATOR = new Parcelable.Creator<Cell>() {
@@ -197,6 +213,6 @@ public class Cell implements Parcelable {
 		dest.writeInt(mValue);
 		dest.writeString(mNote.serialize());
 		dest.writeValue(mEditable);
-		dest.writeValue(mInvalid);
+		dest.writeValue(mValid);
 	}
 }

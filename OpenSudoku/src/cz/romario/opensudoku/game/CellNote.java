@@ -5,8 +5,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-// TODO: rename all SudokuCell* classes to Cell*
-
+/**
+ * Note attached to cell.
+ * 
+ * @author romario
+ *
+ */
 public class CellNote {
 	private Set<Integer> mNotedNumbers;
 	
