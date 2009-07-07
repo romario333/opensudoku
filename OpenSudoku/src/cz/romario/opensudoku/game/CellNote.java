@@ -57,10 +57,10 @@ public class CellNote {
 		return new CellNote(notedNumbers);
 	}
 	
+	// TODO: serialization
 	@Override
 	public String toString() {
 		if (mNotedNumbers.size() == 0) {
-			// TODO:
 			return "-";
 		} else {
 			// TODO: do not create new StringBuffer for each note.

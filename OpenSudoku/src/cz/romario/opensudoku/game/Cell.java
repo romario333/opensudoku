@@ -118,6 +118,10 @@ public class Cell implements Parcelable {
 	 * @param value 1-9 or 0 if cell should be empty.
 	 */
 	public void setValue(int value) {
+		if (value < 0 || value > 9) {
+			throw new IllegalArgumentException("Value must be between 0-9.");
+		}
+			
 		assert value >= 0 && value < 10;
 		
 		mValue = value;
