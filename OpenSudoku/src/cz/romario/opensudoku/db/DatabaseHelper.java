@@ -154,7 +154,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     		}
     	}
     	
-    	String cellsString = cellCollection.serialize();
+    	String cellsString = cellCollection.toString();
 
     	String sql = "INSERT INTO " + SudokuDatabase.SUDOKU_TABLE_NAME + " VALUES ("+sudokuID+", "+ folderID + ", 0, " + SudokuGame.GAME_STATE_NOT_STARTED + ", 0, null, '"+ cellsString + "', null);";
     	db.execSQL(sql);

@@ -204,6 +204,8 @@ public class CellCollection  implements Parcelable {
 		}
 	}
 
+	// TODO: Parcelable pujde pryc
+	
 	/**
 	 * Contructor because of Parcelable support.
 	 * 
@@ -243,30 +245,38 @@ public class CellCollection  implements Parcelable {
 		}
 	}
 	
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-
-		for (int r=0; r<SUDOKU_SIZE; r++)
-		{
-			for (int c=0; c<SUDOKU_SIZE; c++)
-			{
-				sb.append(mCells[r][c].getValue());
-			}
-			sb.append("\n");
-		}
-		sb.deleteCharAt(sb.length()-1);
-		return sb.toString();
+	/**
+	 * Creates instance from given <code>StringTokenizer</code>.
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public static CellCollection fromStringTokenizer(StringTokenizer data) {
+		Cell[][] cells = new Cell[SUDOKU_SIZE][SUDOKU_SIZE];
+		
+		int r = 0, c = 0;
+        while (data.hasMoreTokens() && r < 9) {
+            cells[r][c] = Cell.fromStringTokenizer(data);
+            c++;
+            
+            if (c == 9) {
+            	r++;
+            	c = 0;
+            }
+        }
+        
+        return new CellCollection(cells);
 	}
 	
-	// TODO: find some standard way of serialization
 	/**
-	 * Creates instance of sudoku collection from String, which was earlier created
-	 * by writeToString method.
+	 * Creates instance from given string (string which has been 
+	 * created by {@link #toStringBuilder(StringBuilder)} or {@link #toString()} method).
+	 * earlier.
+	 * 
+	 * @param note
 	 */
-	public static CellCollection deserialize(String data) {
-		Cell[][] cells = new Cell[SUDOKU_SIZE][SUDOKU_SIZE];
-
+	public static CellCollection fromString(String data) {
+		// TODO: version handling
         String[] lines = data.split("\n");
         if (lines.length == 0) {
             throw new IllegalArgumentException("Cannot deserialize Sudoku, data corrupted.");
@@ -276,28 +286,15 @@ public class CellCollection  implements Parcelable {
             throw new IllegalArgumentException(String.format("Unknown version of data: %s", lines[0]));
         }
         
-        StringTokenizer tokenizer = new StringTokenizer(lines[1], "|");
-        int r = 0, c = 0;
-        while (tokenizer.hasMoreTokens() && r < 9) {
-            Cell cell = new Cell();
-            cell.setValue(Integer.parseInt(tokenizer.nextToken()));
-            String note = tokenizer.nextToken(); 
-            if (!note.equals("-")) {
-            	// TODO: asi kazdy z techle objektu by mel mit serialize a deserialize, udelej z toho interface
-            	cell.setNote(CellNote.fromString(note));
-            }
-            cell.setEditable(tokenizer.nextToken().equals("1"));
-            
-            cells[r][c] = cell;
-            c++;
-            
-            if (c == 9) {
-            	r++;
-            	c = 0;
-            }
-        }
-
-        return new CellCollection(cells);
+        StringTokenizer st = new StringTokenizer(lines[1], "|");
+        return fromStringTokenizer(st);	
+    }
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		toStringBuilder(sb);
+		return sb.toString();
 	}
 	
 	/**
@@ -305,25 +302,16 @@ public class CellCollection  implements Parcelable {
 	 * by calling createFromString method.
 	 * @return
 	 */
-	public String serialize() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("version: 1\n");
+	public void toStringBuilder(StringBuilder data) {
+		data.append("version: 1\n");
         
         for (int r=0; r<SUDOKU_SIZE; r++)
         {
                 for (int c=0; c<SUDOKU_SIZE; c++)
                 {
                         Cell cell = mCells[r][c];
-                        sb.append(cell.getValue()).append("|");
-                        if (cell.getNote() == null || cell.getNote().equals("")) {
-                        	sb.append("-").append("|");
-                        } else {
-                        	sb.append(cell.getNote().toString()).append("|");
-                        }
-                        sb.append(cell.isEditable() ? "1" : "0").append("|");
+                        cell.toStringBuilder(data);
                 }
         }
-        
-        return sb.toString();
 	}
 }

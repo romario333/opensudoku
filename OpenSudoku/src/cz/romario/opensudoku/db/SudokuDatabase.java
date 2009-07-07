@@ -219,7 +219,7 @@ public class SudokuDatabase {
             	s = new SudokuGame();
             	s.setId(id);
             	s.setCreated(created);
-            	s.setCells(CellCollection.deserialize(data));
+            	s.setCells(CellCollection.fromString(data));
             	s.setLastPlayed(lastPlayed);
             	s.setState(state);
             	s.setTime(time);
@@ -244,7 +244,7 @@ public class SudokuDatabase {
      */
     public long insertSudoku(long folderID, SudokuGame sudoku) {
         ContentValues values = new ContentValues();
-        values.put(SudokuColumns.DATA, sudoku.getCells().serialize());
+        values.put(SudokuColumns.DATA, sudoku.getCells().toString());
         values.put(SudokuColumns.CREATED, sudoku.getCreated().getTime());
         values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
         values.put(SudokuColumns.STATE, sudoku.getState());
@@ -273,7 +273,7 @@ public class SudokuDatabase {
      */
     public void updateSudoku(SudokuGame sudoku) {
         ContentValues values = new ContentValues();
-        values.put(SudokuColumns.DATA, sudoku.getCells().serialize());
+        values.put(SudokuColumns.DATA, sudoku.getCells().toString());
         values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
         values.put(SudokuColumns.STATE, sudoku.getState());
         values.put(SudokuColumns.TIME, sudoku.getTime());

@@ -112,8 +112,7 @@ public class SudokuListActivity extends ListActivity {
 				case R.id.sudoku_board:
 					String data = c.getString(columnIndex);
 					// TODO: still can be faster, I don't have to call initCollection and read notes
-					CellCollection cells = CellCollection
-							.deserialize(data);
+					CellCollection cells = CellCollection.fromString(data);
 					SudokuBoardView board = (SudokuBoardView) view;
 					board.setReadOnly(true);
 					board.setFocusable(false);

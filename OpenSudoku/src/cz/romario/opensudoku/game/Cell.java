@@ -1,5 +1,9 @@
 package cz.romario.opensudoku.game;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -38,10 +42,13 @@ public class Cell implements Parcelable {
 	 */
 	public Cell(int value) {
 		this(value, new CellNote(), true, true);
-		mValue = value;
 	}
 	
 	private Cell(int value, CellNote note, boolean editable, boolean valid) {
+		if (value < 0 || value > 9) {
+			throw new IllegalArgumentException("Value must be between 0-9.");
+		}
+		
 		mValue = value;
 		mNote = note;
 		mEditable = editable;
@@ -188,6 +195,61 @@ public class Cell implements Parcelable {
 	public boolean isValid() {
 		return mValid;
 	}
+	
+	
+	/**
+	 * Creates instance from given <code>StringTokenizer</code>.
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public static Cell fromStringTokenizer(StringTokenizer data) {
+        Cell cell = new Cell();
+        cell.setValue(Integer.parseInt(data.nextToken()));
+    	cell.setNote(CellNote.fromString(data.nextToken()));
+    	cell.setEditable(data.nextToken().equals("1"));
+    	
+    	return cell;
+	}
+	
+	/**
+	 * Creates instance from given string (string which has been 
+	 * created by {@link #toStringBuilder(StringBuilder)} or {@link #toString()} method).
+	 * earlier.
+	 * 
+	 * @param note
+	 */
+	public static Cell fromString(String cellData) {
+		StringTokenizer data = new StringTokenizer(cellData, "|");
+		return fromStringTokenizer(data);
+	}
+
+	
+	/**
+	 * Appends string representation of this object to the given <code>StringBuilder</code>.
+	 * You can later recreate object from this string by calling {@link #fromString}.
+	 * 
+	 * @param data
+	 */	
+	public void toStringBuilder(StringBuilder data) {
+        data.append(mValue).append("|");
+        if (mNote == null || mNote.equals("")) {
+        	data.append("-").append("|");
+        } else {
+        	mNote.toStringBuilder(data);
+        	data.append("|");
+        }
+        data.append(mEditable ? "1" : "0").append("|");
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		toStringBuilder(sb);
+		return sb.toString();
+	}
+	
+	// TODO: remove parcelable
 	
 	// constructor for Parcelable
 	private Cell(Parcel in) {

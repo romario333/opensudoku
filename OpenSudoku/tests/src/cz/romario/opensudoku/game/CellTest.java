@@ -1,8 +1,11 @@
 package cz.romario.opensudoku.game;
 
+import android.util.Log;
 import junit.framework.TestCase;
 
 public class CellTest extends TestCase {
+	
+	private static final String TAG = "CellTest";
 
 	public void testSetValue() {
 		Cell cell = new Cell();
@@ -18,10 +21,29 @@ public class CellTest extends TestCase {
 		try { cell.setValue(10);} catch (IllegalArgumentException e) {}
 	}
 	
+	public void testToString() {
+		Cell cell = new Cell();
+		assertEquals("0|-|1|", cell.toString());
+		
+		cell.setValue(5);
+		assertEquals("5|-|1|", cell.toString());
+		
+		cell.setEditable(false);
+		assertEquals("5|-|0|", cell.toString());
+		
+		cell.getNote().toggleNumber(4);
+		assertEquals("5|4,|0|", cell.toString());
+	}
 	
-	
-//	public void testSudokuCell() {
-//		fail("Not yet implemented");
-//	}
+	public void testFromString() {
+		Cell cell = Cell.fromString("5|-|1|");
+		assertEquals(5, cell.getValue());
+		assertEquals(true, cell.getNote().isEmpty());
+		assertEquals(true, cell.isEditable());
 
+		cell = Cell.fromString("5|4,|0|");
+		assertEquals(5, cell.getValue());
+		assertEquals(false, cell.getNote().isEmpty());
+		assertEquals(false, cell.isEditable());
+	}
 }

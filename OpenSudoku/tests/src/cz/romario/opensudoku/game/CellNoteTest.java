@@ -1,11 +1,14 @@
 package cz.romario.opensudoku.game;
 
+import android.util.Log;
 import junit.framework.TestCase;
 
 // TODO: check whether tests affect release apk size
 
 public class CellNoteTest extends TestCase {
 
+	private static final String TAG = "CellNoteTest";
+	
 	public void testCellNote() {
 		CellNote note = new CellNote();
 		assertNotNull(note.getNotedNumbers());
@@ -84,6 +87,28 @@ public class CellNoteTest extends TestCase {
 		assertTrue(note.isEmpty());
 	}
 	
-	// TODO: test serialization related methods
-
+	public void testToString() {
+		CellNote note = new CellNote();
+		assertEquals("-", note.toString());
+		
+		note.toggleNumber(5);
+		assertEquals("5,", note.toString());
+		
+		note.toggleNumber(7);
+		assertEquals("5,7,", note.toString());
+	}
+	
+	public void testFromString() {
+		CellNote note = CellNote.fromString("-");
+		assertEquals(0, note.getNotedNumbers().size());
+		
+		note = CellNote.fromString("5,");
+		assertEquals(1, note.getNotedNumbers().size());
+		assertTrue(note.getNotedNumbers().contains(5));
+		
+		note = CellNote.fromString("5,7,");
+		assertEquals(2, note.getNotedNumbers().size());
+		assertTrue(note.getNotedNumbers().contains(5));
+		assertTrue(note.getNotedNumbers().contains(7));
+	}
 }

@@ -23,18 +23,23 @@ public class CellNote {
 	}
 	
 	/**
-	 * Creates note instance from given string (string which has been created by <code>toString</code>
+	 * Creates instance from given string (string which has been 
+	 * created by {@link #toStringBuilder(StringBuilder)} or {@link #toString()} method).
 	 * earlier.
 	 * 
-	 * @param note String representation of note object.
-	 * @return New note instance.
+	 * @param note
 	 */
 	public static CellNote fromString(String note) {
+		// TODO: optimalization: CellNote object don't have to be created for empty note
+		
 		Set<Integer> notedNumbers = new HashSet<Integer>();
 		if (note != null && !note.equals("")) {
 			StringTokenizer tokenizer = new StringTokenizer(note, ",");
 	        while (tokenizer.hasMoreTokens()) {
-	        	notedNumbers.add(Integer.parseInt(tokenizer.nextToken()));
+	        	String value = tokenizer.nextToken();
+	        	if (!value.equals("-")) {
+		        	notedNumbers.add(Integer.parseInt(value));
+	        	}
 	        }
 		}
 		
@@ -42,7 +47,7 @@ public class CellNote {
 	}
 	
 	/**
-	 * Creates note instance from given int array.
+	 * Creates note instance from given <code>Integer</code> array.
 	 * 
 	 * @param notedNums Array of integers, which should be part of note.
 	 * @return New note instance.
@@ -56,20 +61,28 @@ public class CellNote {
 
 		return new CellNote(notedNumbers);
 	}
+
+	/**
+	 * Appends string representation of this object to the given <code>StringBuilder</code>.
+	 * You can later recreate object from this string by calling {@link #fromString}.
+	 * 
+	 * @param data
+	 */	
+	public void toStringBuilder(StringBuilder data) {
+		if (mNotedNumbers.size() == 0) {
+			data.append("-");
+		} else {
+			for (Integer num : mNotedNumbers) {
+				data.append(num).append(",");
+			}
+		}
+	}
 	
-	// TODO: serialization
 	@Override
 	public String toString() {
-		if (mNotedNumbers.size() == 0) {
-			return "-";
-		} else {
-			// TODO: do not create new StringBuffer for each note.
-			StringBuffer sb = new StringBuffer();
-			for (Integer num : mNotedNumbers) {
-				sb.append(num).append(",");
-			}
-			return sb.toString();
-		}
+		StringBuilder sb = new StringBuilder();
+		toStringBuilder(sb);
+		return sb.toString();
 	}
 
 	/**
