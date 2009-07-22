@@ -204,7 +204,7 @@ public class CellCollection  implements Parcelable {
 		}
 	}
 
-	// TODO: Parcelable pujde pryc
+	// TODO: remove parcelable and use my serialization?
 	
 	/**
 	 * Contructor because of Parcelable support.

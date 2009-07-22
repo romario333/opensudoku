@@ -46,6 +46,8 @@ public class CellNote {
 		return new CellNote(notedNumbers);
 	}
 	
+	
+	
 	/**
 	 * Creates note instance from given <code>Integer</code> array.
 	 * 
@@ -105,10 +107,12 @@ public class CellNote {
 		mNotedNumbers.clear();
 	}
 	
+	// TODO: do not use clone(), use static newInstance (see effective java, p. 61)
 	/**
 	 * Creates deep copy of object's instance.
 	 */
 	public CellNote clone() {
+		// TODO: Would Integer -> int improve performance significantly?
 		Set<Integer> copy = new HashSet<Integer>();
 		for (Integer n : mNotedNumbers) {
 			copy.add(n);

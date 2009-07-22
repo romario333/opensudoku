@@ -1,0 +1,13 @@
+/*
+ * TODO: revize kodu
+ * - pristupnost prvku
+ * 		- class pokud to jde by mela byt package-private
+ * 		- jinak obecne private - package-private - protected - public
+ * - nepouzivat gettery a settery tam kde je to zbytecne (see 71)
+ * - mozna bych mohl mit vic immutable trid? (see 77)
+ */
+
+// TODO: revize kodu:
+//  
+//- class pokud to jde by mela byt package-private
+//  - private - package-private - protected - public
