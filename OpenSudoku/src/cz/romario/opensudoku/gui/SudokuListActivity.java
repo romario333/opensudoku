@@ -32,6 +32,7 @@ import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.utils.SudokuXml;
 
 public class SudokuListActivity extends ListActivity {
 
@@ -48,6 +49,8 @@ public class SudokuListActivity extends ListActivity {
 	
 	public static final String EXTRAS_FOLDER_ID = "folder_id";
 	private static final String TAG = "SudokuListActivity";
+	
+	private static final String ACTION_VIEW = "android.intent.action.VIEW";
 
 	// TODO: duplicated code
 	private StringBuilder mTimeText;
@@ -75,18 +78,25 @@ public class SudokuListActivity extends ListActivity {
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 
 		Intent intent = getIntent();
+		final String action = intent.getAction();
+		Log.i(TAG, "action "+action);
+
+		// Inform the list we provide context menus for items
+		getListView().setOnCreateContextMenuListener(this);
+
+		mCursorDB = new SudokuDatabase(getApplicationContext());
+		
 		if (intent.hasExtra(EXTRAS_FOLDER_ID)) {
 			mFolderID = intent.getLongExtra(EXTRAS_FOLDER_ID, 0);
+		}else if(action!=null && action.equals(ACTION_VIEW) && intent.getData()!=null){
+			mFolderID = SudokuXml.importUri(intent.getData(),mCursorDB);//mimeType=application/x-opensudoku
 		} else {
 			Log.d(TAG, "No 'folder_id' extra provided, exiting.");
 			finish();
 			return;
 		}
 
-		// Inform the list we provide context menus for items
-		getListView().setOnCreateContextMenuListener(this);
 
-		mCursorDB = new SudokuDatabase(getApplicationContext());
 
 		mTimeText = new StringBuilder();
 		mGameTimeFormatter = new Formatter(mTimeText);

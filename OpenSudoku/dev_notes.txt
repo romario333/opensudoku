@@ -11,3 +11,7 @@
 //  
 //- class pokud to jde by mela byt package-private
 //  - private - package-private - protected - public
+
+// TODO:
+- prehodit na 1.5
+- zmenit verzi u dev verze

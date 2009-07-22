@@ -7,6 +7,11 @@
         <uses-library android:name="android.test.runner" />
         <activity android:name=".gui.SudokuListActivity"
                   android:label="@string/app_name">
+            <intent-filter>
+                    <action android:name="android.intent.action.VIEW"></action>
+                    <category android:name="android.intent.category.DEFAULT"></category>
+                    <data android:scheme="http" android:mimeType="application/x-opensudoku" />
+            </intent-filter> 
         </activity>
         <activity android:name=".gui.SudokuEditActivity"
                   android:label="@string/edit_sudoku">
@@ -42,5 +47,7 @@
     <instrumentation android:name="android.test.InstrumentationTestRunner"
                      android:targetPackage="cz.romario.opensudoku"
                      android:label="OpenSudoku tests"/>
+    
+    <uses-permission android:name="android.permission.INTERNET" />
     
 </manifest> 
