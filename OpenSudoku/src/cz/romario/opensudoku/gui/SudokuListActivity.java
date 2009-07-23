@@ -475,6 +475,7 @@ public class SudokuListActivity extends ListActivity {
 			mEditNoteInput.setText(game.getNote());
 			break;
 		}
+		}
 	}
 
 	@Override
