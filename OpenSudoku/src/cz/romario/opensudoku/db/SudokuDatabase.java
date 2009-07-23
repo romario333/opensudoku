@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.gui.SudokuListFilter;
 
 /**
  * 
@@ -175,12 +176,24 @@ public class SudokuDatabase {
      * @param folderID Primary key of folder.
      * @return
      */
-    public Cursor getSudokuList(long folderID) {
+    public Cursor getSudokuList(long folderID, SudokuListFilter filter) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
         qb.setTables(SUDOKU_TABLE_NAME);
         //qb.setProjectionMap(sPlacesProjectionMap);
         qb.appendWhere(SudokuColumns.FOLDER_ID + "=" + folderID);
+        
+        if (filter != null) {
+        	if (!filter.showStateCompleted) {
+        		qb.appendWhere(" and " + SudokuColumns.STATE + "!=" + SudokuGame.GAME_STATE_COMPLETED);
+        	}
+        	if (!filter.showStateNotStarted) {
+        		qb.appendWhere(" and " + SudokuColumns.STATE + "!=" + SudokuGame.GAME_STATE_NOT_STARTED);
+        	}
+        	if (!filter.showStatePlaying) {
+        		qb.appendWhere(" and " + SudokuColumns.STATE + "!=" + SudokuGame.GAME_STATE_PLAYING);
+        	}
+        }
         
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
         return qb.query(db, sudokuListProjection, null, null, null, null, "created DESC");

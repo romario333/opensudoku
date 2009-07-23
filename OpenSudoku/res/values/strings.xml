@@ -41,18 +41,22 @@
 	
 	<string name="solved">Solved</string>
 	<string name="playing">Playing</string>
+	<string name="not_started">Not started</string>
 	<string name="last_played_at">Last played %s</string>
 	<string name="created_at">Created %s</string>
 	<string name="at_time">at %s</string>
 	<string name="yesterday_at_time">yesterday at %s</string>
 	<string name="on_date">on %s</string>
 	<string name="add_sudoku">Add sudoku</string>
+	<string name="filter">Filter</string>
+	<string name="filter_by_gamestate">Filter by game state</string>
 	<string name="delete_puzzle_confirm">Are you sure you want to delete selected puzzle?</string>
 	<string name="reset_puzzle_confirm">Are you sure you want to reset selected puzzle?</string>
 	<string name="play_puzzle">Play this puzzle</string>
 	<string name="reset_puzzle">Reset puzzle</string>
 	<string name="edit_puzzle">Edit puzzle</string>
 	<string name="delete_puzzle">Delete puzzle</string>
+	<string name="filter_active">Filtered: %s</string>
 	
 	<string name="undo">Undo</string>
 	<string name="clear_all_notes">Clear all notes</string>

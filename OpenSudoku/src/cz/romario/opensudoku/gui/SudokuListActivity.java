@@ -11,9 +11,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -42,10 +44,16 @@ public class SudokuListActivity extends ListActivity {
 	public static final int MENU_ITEM_PLAY = Menu.FIRST + 3;
 	public static final int MENU_ITEM_RESET = Menu.FIRST + 4;
 	public static final int MENU_ITEM_EDIT_NOTE = Menu.FIRST + 5;
+	public static final int MENU_ITEM_FILTER = Menu.FIRST + 6;
 	
 	private static final int DIALOG_DELETE_PUZZLE = 0;
 	private static final int DIALOG_RESET_PUZZLE = 1;
 	private static final int DIALOG_EDIT_NOTE = 2;
+	private static final int DIALOG_FILTER = 3;
+	
+	private static final String FILTER_STATE_NOT_STARTED = "filter" + SudokuGame.GAME_STATE_NOT_STARTED;
+	private static final String FILTER_STATE_PLAYING = "filter" + SudokuGame.GAME_STATE_PLAYING;
+	private static final String FILTER_STATE_SOLVED = "filter" + SudokuGame.GAME_STATE_COMPLETED;
 	
 	public static final String EXTRAS_FOLDER_ID = "folder_id";
 	private static final String TAG = "SudokuListActivity";
@@ -60,6 +68,9 @@ public class SudokuListActivity extends ListActivity {
 	private DateFormat mTimeFormatter = DateFormat
 			.getTimeInstance(DateFormat.SHORT);
 
+	private TextView mFilterStatus;
+	
+	private SimpleCursorAdapter mAdapter;
 	private Cursor mCursor;
 	private SudokuDatabase mCursorDB;
 
@@ -70,10 +81,15 @@ public class SudokuListActivity extends ListActivity {
 	private long mResetPuzzleID;
 	private long mEditNotePuzzleID;
 	private TextView mEditNoteInput;
+	private SudokuListFilter mListFilter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.sudoku_list);
+		
+		mFilterStatus = (TextView)findViewById(R.id.filter_status);
 
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 
@@ -100,24 +116,31 @@ public class SudokuListActivity extends ListActivity {
 
 		mTimeText = new StringBuilder();
 		mGameTimeFormatter = new Formatter(mTimeText);
+		
+		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		mListFilter = new SudokuListFilter(getApplicationContext());
+		mListFilter.showStateNotStarted = settings.getBoolean(FILTER_STATE_NOT_STARTED, true);
+		mListFilter.showStatePlaying = settings.getBoolean(FILTER_STATE_PLAYING, true);
+		mListFilter.showStateCompleted = settings.getBoolean(FILTER_STATE_SOLVED, true);
+		updateFilterStatus();
 
-		mCursor = mCursorDB.getSudokuList(mFolderID);
+		mCursor = mCursorDB.getSudokuList(mFolderID, mListFilter);
 		startManagingCursor(mCursor);
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.sudoku_list_item,
+		mAdapter = new SimpleCursorAdapter(this, R.layout.sudoku_list_item,
 				mCursor, new String[] { SudokuColumns.DATA, SudokuColumns.STATE,
 						SudokuColumns.TIME, SudokuColumns.LAST_PLAYED,
 						SudokuColumns.CREATED, SudokuColumns.PUZZLE_NOTE },
 				new int[] { R.id.sudoku_board, R.id.state, R.id.time,
 						R.id.last_played, R.id.created, R.id.note });
 
-		adapter.setViewBinder(new ViewBinder() {
+		mAdapter.setViewBinder(new ViewBinder() {
 			@Override
 			public boolean setViewValue(View view, Cursor c, int columnIndex) {
 
 				int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
 				
 				TextView label = null;
-
+				
 				switch (view.getId()) {
 				case R.id.sudoku_board:
 					String data = c.getString(columnIndex);
@@ -210,8 +233,9 @@ public class SudokuListActivity extends ListActivity {
 				return true;
 			}
 		});
-
-		setListAdapter(adapter);
+		
+		setListAdapter(mAdapter);
+		
 	}
 
 	@Override
@@ -257,6 +281,26 @@ public class SudokuListActivity extends ListActivity {
 		mCursor.requery();
 	}
 	
+	// TODO: find out how to filter items
+	private void update2() {
+		if (mCursor != null) {
+			stopManagingCursor(mCursor);
+		}
+		mCursor = mCursorDB.getSudokuList(mFolderID, mListFilter);
+		startManagingCursor(mCursor);
+		mAdapter.changeCursor(mCursor);
+	}
+	
+	private void updateFilterStatus() {
+		
+		if (mListFilter.showStateCompleted && mListFilter.showStateNotStarted && mListFilter.showStatePlaying) {
+			mFilterStatus.setVisibility(View.GONE);
+		} else {
+			mFilterStatus.setText(getString(R.string.filter_active, mListFilter));
+			mFilterStatus.setVisibility(View.VISIBLE);
+		}
+	}
+	
 	private void updateTitle() {
 		Context context = getApplicationContext();
 		SudokuDatabase sudokuDB = new SudokuDatabase(context);
@@ -295,8 +339,10 @@ public class SudokuListActivity extends ListActivity {
 
 		// This is our one standard application action -- inserting a
 		// new note into the list.
-		menu.add(0, MENU_ITEM_INSERT, 0, R.string.add_sudoku).setShortcut('3', 'a')
-				.setIcon(android.R.drawable.ic_menu_add);
+		menu.add(0, MENU_ITEM_FILTER, 0, R.string.filter).setShortcut('1', 'f')
+		.setIcon(android.R.drawable.ic_menu_view);
+		menu.add(0, MENU_ITEM_INSERT, 1, R.string.add_sudoku).setShortcut('3', 'a')
+		.setIcon(android.R.drawable.ic_menu_add);
 
 		// Generate any additional actions that can be performed on the
 		// overall list. In a normal install, there are no additional
@@ -369,7 +415,51 @@ public class SudokuListActivity extends ListActivity {
 									update();
 								}
 							}).setNegativeButton(android.R.string.no, null).create();
+		case DIALOG_FILTER:
+			final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_menu_view)
+				.setTitle(R.string.filter_by_gamestate)
+				.setMultiChoiceItems(
+						R.array.game_states,
+						new boolean[] {
+							mListFilter.showStateNotStarted,
+							mListFilter.showStatePlaying,
+							mListFilter.showStateCompleted,
+						},
+                        new DialogInterface.OnMultiChoiceClickListener() {
+			                public void onClick(DialogInterface dialog, int whichButton,
+			                        boolean isChecked) {
+			                	switch (whichButton) {
+			                	case 0:
+			                		mListFilter.showStateNotStarted = isChecked;
+			                		break;
+			                	case 1:
+			                		mListFilter.showStatePlaying = isChecked;
+			                		break;
+			                	case 2:
+			                		mListFilter.showStateCompleted = isChecked;
+			                		break;
+			                	}
+			                }
+			            })
+			    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int whichButton) {
+			        	settings.edit()
+			        		.putBoolean(FILTER_STATE_NOT_STARTED, mListFilter.showStateNotStarted)
+			        		.putBoolean(FILTER_STATE_PLAYING, mListFilter.showStatePlaying)
+			        		.putBoolean(FILTER_STATE_SOLVED, mListFilter.showStateCompleted)
+			        		.commit();
+			        	update2();
+			        	updateFilterStatus();
+			        }
+			    })
+			    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int whichButton) {
 			
+			            /* User clicked No so do some stuff */
+			        }
+			    }).create();
 		}
 		return null;
 	}
@@ -384,7 +474,6 @@ public class SudokuListActivity extends ListActivity {
 			SudokuGame game = db.getSudoku(mEditNotePuzzleID);
 			mEditNoteInput.setText(game.getNote());
 			break;
-		}
 		}
 	}
 
@@ -460,6 +549,9 @@ public class SudokuListActivity extends ListActivity {
 			i.setAction(Intent.ACTION_INSERT);
 			i.putExtra(SudokuEditActivity.EXTRAS_FOLDER_ID, mFolderID);
 			startActivity(i);
+			return true;
+		case MENU_ITEM_FILTER:
+			showDialog(DIALOG_FILTER);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
