@@ -43,15 +43,14 @@ public class ImportSudokuActivity extends Activity {
 				throw new IllegalArgumentException("Only one URI expected.");
 			}
 
-			SudokuDatabase sudokuDB = new SudokuDatabase(
-					getApplicationContext());
-
-			return importUri(params[0], sudokuDB);
+			return importUri(params[0]);
 		}
 
 		@Override
 		protected void onProgressUpdate(Integer... values) {
-			mProgress.setMax(values[1]);
+			if (values.length == 2) {
+				mProgress.setMax(values[1]);
+			}
 			mProgress.setProgress(values[0]);
 		}
 		
@@ -68,7 +67,7 @@ public class ImportSudokuActivity extends Activity {
 			finish();
 		}
 
-		public FolderInfo importUri(android.net.Uri auri, SudokuDatabase sudokuDB) {
+		public FolderInfo importUri(android.net.Uri auri) {
 			Log.i(TAG, auri.toString());
 			try {
 				java.net.URI juri;
@@ -78,7 +77,7 @@ public class ImportSudokuActivity extends Activity {
 						.openStream());
 				FolderInfo newFolderInfo;
 				try {
-					newFolderInfo = importXml(isr, sudokuDB);
+					newFolderInfo = importXml(isr);
 				} finally {
 					isr.close();
 				}
@@ -93,7 +92,7 @@ public class ImportSudokuActivity extends Activity {
 
 		}
 
-		public FolderInfo importXml(Reader in, SudokuDatabase sudokuDB) {
+		public FolderInfo importXml(Reader in) {
 			String name = "import";
 			List<String> games = new ArrayList<String>();
 
@@ -136,13 +135,31 @@ public class ImportSudokuActivity extends Activity {
 
 			publishProgress(0, games.size());
 
-			// store to db
-			long folderID = sudokuDB.insertFolder(name);
-			for (int i = 0; i < games.size(); i++) {
-				sudoku.parseString(games.get(i));
-				sudokuDB.insertSudoku(folderID, sudoku);
-				publishProgress(i, games.size());
+			SudokuDatabase sudokuDB = new SudokuDatabase(
+					getApplicationContext());
+			
+			long start = System.currentTimeMillis();
+			long folderID = -1;
+			try {
+
+				// store to db
+				folderID = sudokuDB.insertFolder(name);
+				for (int i = 0; i < games.size(); i++) {
+					sudoku.parseString(games.get(i));
+					sudokuDB.insertSudokuFast(folderID, sudoku);
+					// if (i % 10 == 0) {
+					publishProgress(i);
+					// }
+				}
+			} finally {
+				if (sudokuDB != null) {
+					sudokuDB.close();
+				}
 			}
+			
+			long end = System.currentTimeMillis();
+			
+			Log.i(TAG, String.format("Imported in %f seconds.", (end - start) / 1000f));
 			
 			return new FolderInfo(folderID, name);
 		}

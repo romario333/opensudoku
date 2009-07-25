@@ -256,6 +256,18 @@ public class SudokuDatabase {
      * @return
      */
     public long insertSudoku(long folderID, SudokuGame sudoku) {
+        SQLiteDatabase db = null;
+        try {
+	        db = mOpenHelper.getWritableDatabase();
+	        return insertSudokuFast(folderID, sudoku);
+        } finally {
+        	// TODO: debug
+        	if (db != null) db.close();
+        }
+    }
+
+    // TODO: 
+    public long insertSudokuFast(long folderID, SudokuGame sudoku) {
         ContentValues values = new ContentValues();
         values.put(SudokuColumns.DATA, sudoku.getCells().toString());
         values.put(SudokuColumns.CREATED, sudoku.getCreated().getTime());
@@ -266,14 +278,10 @@ public class SudokuDatabase {
         values.put(SudokuColumns.FOLDER_ID, folderID);
         
         SQLiteDatabase db = null;
-        try {
-	        db = mOpenHelper.getWritableDatabase();
-	        long rowId = db.insert(SUDOKU_TABLE_NAME, FolderColumns.NAME, values);
-	        if (rowId > 0) {
-	            return rowId;
-	        }
-        } finally {
-        	if (db != null) db.close();
+        db = mOpenHelper.getWritableDatabase();
+        long rowId = db.insert(SUDOKU_TABLE_NAME, FolderColumns.NAME, values);
+        if (rowId > 0) {
+            return rowId;
         }
 
         throw new SQLException("Failed to insert sudoku.");
