@@ -64,12 +64,12 @@ public class FolderListActivity extends ListActivity {
 		
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 		
-		// TODO: is there easier way?
 		View getMorePuzzles = (View)findViewById(R.id.get_more_puzzles);
 		getMorePuzzles.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://draculik.eu/opensudoku/"));
+				intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 				startActivity(intent);
 			}
 		});
@@ -131,9 +131,6 @@ public class FolderListActivity extends ListActivity {
 			}
 		});
 		
-		// TODO: pravdepodobne se nebude aktualizovat se zmenou stavu
-        
-        
         setListAdapter(adapter);
 	}
     

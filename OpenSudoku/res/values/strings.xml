@@ -107,6 +107,9 @@
 	<string name="puzzle_inserted">New puzzle has been saved.</string>
 	<string name="puzzle_updated">Puzzle has been updated.</string>
 	
+	<string name="importing">Importing folder with puzzles...</string>
+	<string name="puzzles_saved">Puzzles have been saved into \'%s\' folder.</string>
+	
 	<string name="credits">Credits:\nRoman Mašek (creator)\nMartin Sobola (UI design)</string>
 	
 </resources>
