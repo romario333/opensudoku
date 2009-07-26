@@ -19,6 +19,7 @@ import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.game.SudokuGame;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -137,24 +138,26 @@ public class ImportSudokuActivity extends Activity {
 
 			SudokuDatabase sudokuDB = new SudokuDatabase(
 					getApplicationContext());
+			SQLiteDatabase db = sudokuDB.getWritableDatabase();
 			
 			long start = System.currentTimeMillis();
 			long folderID = -1;
+			db.beginTransaction();
 			try {
 
 				// store to db
-				folderID = sudokuDB.insertFolder(name);
+				folderID = sudokuDB.insertFolder(name, db);
 				for (int i = 0; i < games.size(); i++) {
 					sudoku.parseString(games.get(i));
-					sudokuDB.insertSudokuFast(folderID, sudoku);
+					sudokuDB.insertSudoku(folderID, sudoku, db);
 					// if (i % 10 == 0) {
 					publishProgress(i);
 					// }
 				}
+				db.setTransactionSuccessful();
 			} finally {
-				if (sudokuDB != null) {
-					sudokuDB.close();
-				}
+				db.endTransaction();
+				db.close();
 			}
 			
 			long end = System.currentTimeMillis();

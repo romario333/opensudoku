@@ -102,25 +102,33 @@ public class SudokuDatabase {
         return folder;
     }
     
+    public long insertFolder(String name) {
+    	return insertFolder(name, null);
+    }
+    
     /**
      * Inserts new puzzle folder into the database. 
      * @param name Name of the folder.
      * @return
      */
-    public long insertFolder(String name) {
+    public long insertFolder(String name, SQLiteDatabase db) {
         Long created = Long.valueOf(System.currentTimeMillis());
 
         ContentValues values = new ContentValues();
         values.put(FolderColumns.CREATED, created);
         values.put(FolderColumns.NAME, name);
 
-        SQLiteDatabase db = null;
+        SQLiteDatabase ldb = null;
         long rowId;
         try {
-	        db = mOpenHelper.getWritableDatabase();
+	        if (db != null) {
+	        	ldb = db;
+	        } else {
+	        	ldb = mOpenHelper.getWritableDatabase();
+	        }
 	        rowId = db.insert(FOLDER_TABLE_NAME, FolderColumns._ID, values);
         } finally {
-        	if (db != null) db.close();
+        	if (db == null && ldb != null) ldb.close();
         }
 
         if (rowId > 0) {
@@ -248,6 +256,11 @@ public class SudokuDatabase {
         
     }
     
+
+    public long insertSudoku(long folderID, SudokuGame sudoku) {
+    	return insertSudoku(folderID, sudoku, null);
+    }
+
     /**
      * Inserts new puzzle into the database.
      * 
@@ -255,36 +268,32 @@ public class SudokuDatabase {
      * @param sudoku 
      * @return
      */
-    public long insertSudoku(long folderID, SudokuGame sudoku) {
-        SQLiteDatabase db = null;
+    public long insertSudoku(long folderID, SudokuGame sudoku, SQLiteDatabase db) {
+    	SQLiteDatabase ldb = null;
         try {
-	        db = mOpenHelper.getWritableDatabase();
-	        return insertSudokuFast(folderID, sudoku);
+	        if (db != null) {
+	        	ldb = db;
+	        } else {
+	        	ldb = mOpenHelper.getWritableDatabase();
+	        }
+	        ContentValues values = new ContentValues();
+	        values.put(SudokuColumns.DATA, sudoku.getCells().toString());
+	        values.put(SudokuColumns.CREATED, sudoku.getCreated().getTime());
+	        values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
+	        values.put(SudokuColumns.STATE, sudoku.getState());
+	        values.put(SudokuColumns.TIME, sudoku.getTime());
+	        values.put(SudokuColumns.PUZZLE_NOTE, sudoku.getNote());
+	        values.put(SudokuColumns.FOLDER_ID, folderID);
+	        
+	        long rowId = db.insert(SUDOKU_TABLE_NAME, FolderColumns.NAME, values);
+	        if (rowId > 0) {
+	            return rowId;
+	        }
+
+	        throw new SQLException("Failed to insert sudoku.");
         } finally {
-        	// TODO: debug
-        	if (db != null) db.close();
+        	if (db == null && ldb != null) ldb.close();
         }
-    }
-
-    // TODO: 
-    public long insertSudokuFast(long folderID, SudokuGame sudoku) {
-        ContentValues values = new ContentValues();
-        values.put(SudokuColumns.DATA, sudoku.getCells().toString());
-        values.put(SudokuColumns.CREATED, sudoku.getCreated().getTime());
-        values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
-        values.put(SudokuColumns.STATE, sudoku.getState());
-        values.put(SudokuColumns.TIME, sudoku.getTime());
-        values.put(SudokuColumns.PUZZLE_NOTE, sudoku.getNote());
-        values.put(SudokuColumns.FOLDER_ID, folderID);
-        
-        SQLiteDatabase db = null;
-        db = mOpenHelper.getWritableDatabase();
-        long rowId = db.insert(SUDOKU_TABLE_NAME, FolderColumns.NAME, values);
-        if (rowId > 0) {
-            return rowId;
-        }
-
-        throw new SQLException("Failed to insert sudoku.");
     }
     
     /**
@@ -344,6 +353,12 @@ public class SudokuDatabase {
     public void close() {
     	mOpenHelper.close();
     }
+    
+    // TODO:
+    public SQLiteDatabase getWritableDatabase() {
+    	return mOpenHelper.getWritableDatabase();
+    }
+
     
     static {
     	sudokuListProjection = new String[] {
