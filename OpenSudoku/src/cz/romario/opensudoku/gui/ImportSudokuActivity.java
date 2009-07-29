@@ -6,8 +6,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -32,8 +35,12 @@ import android.widget.Toast;
 public class ImportSudokuActivity extends Activity {
 
 	private static final String TAG = "ImportSudokuActivity";
-
+	static final Pattern SUDOKU_PATT = Pattern.compile(".*\\D([\\d]{81})\\D.*");
+	static final int MAX_FOLDER_SIZE = 250;
+	
 	private ProgressBar mProgress;
+	
+	
 
 	private class ImportSudokuTask extends AsyncTask<Uri, Integer, FolderInfo> {
 
@@ -122,6 +129,29 @@ public class ImportSudokuActivity extends Activity {
 							name = xpp.getText();
 						} else if (lastTag.equals("game")) {
 							games.add(xpp.getText());
+						} else if (lastTag.equals("sdm-file")) {
+							//download file and parse
+							URL url=new URL(xpp.getText());
+							InputStreamReader isr = new InputStreamReader(url.openStream());
+							BufferedReader br=new BufferedReader(isr);
+							String s;
+							while ((s=br.readLine())!=null) {
+								if(!s.equals("")){
+									games.add(s);
+								}								
+							}
+						} else if (lastTag.equals("parse-page")) {
+							//download page and find sudoku strings
+							URL url=new URL(xpp.getText());
+							InputStreamReader isr = new InputStreamReader(url.openStream());
+							BufferedReader br=new BufferedReader(isr);
+							String s;
+							while ((s=br.readLine())!=null) {
+								Matcher m=SUDOKU_PATT.matcher(s);
+								if(m.find()){
+									games.add(m.group(1));
+								}
+							}
 						}
 
 					}
@@ -141,30 +171,47 @@ public class ImportSudokuActivity extends Activity {
 			SQLiteDatabase db = sudokuDB.getWritableDatabase();
 			
 			long start = System.currentTimeMillis();
+			long firstFolderID = -1;
 			long folderID = -1;
-			db.beginTransaction();
 			try {
-
-				// store to db
-				folderID = sudokuDB.insertFolder(name, db);
-				for (int i = 0; i < games.size(); i++) {
-					sudoku.parseString(games.get(i));
-					sudokuDB.insertSudoku(folderID, sudoku, db);
-					// if (i % 10 == 0) {
-					publishProgress(i);
-					// }
+				for(int j=0;j<=(games.size()-1)/MAX_FOLDER_SIZE;j++){
+					db.beginTransaction();
+					try {
+						// store to db
+						if(j==0){
+							folderID = sudokuDB.insertFolder(name, db);
+							firstFolderID=folderID;
+						}else{
+							folderID = sudokuDB.insertFolder(name+" ("+j+")", db);
+						}
+						
+						for (int i = j*MAX_FOLDER_SIZE; i < games.size(); i++) {
+							if(i>=(j+1)*MAX_FOLDER_SIZE){
+								break;
+							}
+							sudoku.parseString(games.get(i));
+							sudokuDB.insertSudoku(folderID, sudoku, db);
+							// if (i % 10 == 0) {
+							publishProgress(i);
+							// }
+						}
+						db.setTransactionSuccessful();
+					} finally {
+						db.endTransaction();
+					}
 				}
-				db.setTransactionSuccessful();
 			} finally {
-				db.endTransaction();
+				games=null;
+				System.gc();
 				db.close();
 			}
+
 			
 			long end = System.currentTimeMillis();
 			
 			Log.i(TAG, String.format("Imported in %f seconds.", (end - start) / 1000f));
 			
-			return new FolderInfo(folderID, name);
+			return new FolderInfo(firstFolderID, name);
 		}
 
 	}
