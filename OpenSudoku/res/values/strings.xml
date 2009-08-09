@@ -50,6 +50,7 @@
 	<string name="add_sudoku">Add sudoku</string>
 	<string name="filter">Filter</string>
 	<string name="filter_by_gamestate">Filter by game state</string>
+	<string name="folders">Folders</string>
 	<string name="delete_puzzle_confirm">Are you sure you want to delete selected puzzle?</string>
 	<string name="reset_puzzle_confirm">Are you sure you want to reset selected puzzle?</string>
 	<string name="play_puzzle">Play this puzzle</string>

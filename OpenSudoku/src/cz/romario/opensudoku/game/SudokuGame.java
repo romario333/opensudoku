@@ -46,7 +46,7 @@ public class SudokuGame implements Parcelable {
 	
 	public void parseString(String data) {
 		
-		// TODO:
+		// TODO: createEmptyGame
 		if (getCells() == null) {
 			setCells(CellCollection.createEmpty());
 		}

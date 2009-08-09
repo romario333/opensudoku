@@ -44,6 +44,7 @@ public class SudokuListActivity extends ListActivity {
 	public static final int MENU_ITEM_RESET = Menu.FIRST + 4;
 	public static final int MENU_ITEM_EDIT_NOTE = Menu.FIRST + 5;
 	public static final int MENU_ITEM_FILTER = Menu.FIRST + 6;
+	public static final int MENU_ITEM_FOLDERS = Menu.FIRST + 7;
 	
 	private static final int DIALOG_DELETE_PUZZLE = 0;
 	private static final int DIALOG_RESET_PUZZLE = 1;
@@ -336,9 +337,11 @@ public class SudokuListActivity extends ListActivity {
 
 		// This is our one standard application action -- inserting a
 		// new note into the list.
-		menu.add(0, MENU_ITEM_FILTER, 0, R.string.filter).setShortcut('1', 'f')
+		menu.add(0, MENU_ITEM_FOLDERS, 0, R.string.folders).setShortcut('1', 'f')
+		.setIcon(android.R.drawable.ic_menu_sort_by_size);
+		menu.add(0, MENU_ITEM_FILTER, 1, R.string.filter).setShortcut('1', 'f')
 		.setIcon(android.R.drawable.ic_menu_view);
-		menu.add(0, MENU_ITEM_INSERT, 1, R.string.add_sudoku).setShortcut('3', 'a')
+		menu.add(0, MENU_ITEM_INSERT, 2, R.string.add_sudoku).setShortcut('3', 'a')
 		.setIcon(android.R.drawable.ic_menu_add);
 
 		// Generate any additional actions that can be performed on the
@@ -541,16 +544,23 @@ public class SudokuListActivity extends ListActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case MENU_ITEM_INSERT:
+		case MENU_ITEM_INSERT: {
 			// Launch activity to insert a new item
 			Intent i = new Intent(this, SudokuEditActivity.class);
 			i.setAction(Intent.ACTION_INSERT);
 			i.putExtra(SudokuEditActivity.EXTRAS_FOLDER_ID, mFolderID);
 			startActivity(i);
 			return true;
+		}
 		case MENU_ITEM_FILTER:
 			showDialog(DIALOG_FILTER);
 			return true;
+		case MENU_ITEM_FOLDERS: {
+			Intent i = new Intent(this, FolderListActivity.class);
+			startActivity(i);
+			finish();
+			return true;
+		}
 		}
 		return super.onOptionsItemSelected(item);
 	}
