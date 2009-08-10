@@ -22,7 +22,11 @@
             <intent-filter>
                     <action android:name="android.intent.action.VIEW"></action>
                     <category android:name="android.intent.category.DEFAULT"></category>
-                    <data android:scheme="http" android:mimeType="application/x-opensudoku" />
+                    <category android:name="android.intent.category.BROWSABLE"></category>
+                    <data android:scheme="file" android:host="*"  android:pathPattern=".*\\.sdm" />
+                    <data android:scheme="http" android:host="*"  android:pathPattern=".*\\.sdm" />
+                    <data android:scheme="http" android:host="*"  android:pathPattern=".*\\.opensudoku" />
+                    <!-- data android:scheme="http" android:mimeType="application/x-opensudoku" /-->
             </intent-filter> 
         </activity>
         <activity android:name=".gui.SudokuPlayActivity"

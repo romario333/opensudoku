@@ -201,8 +201,6 @@ public class ImportSudokuActivity extends Activity {
 					}
 				}
 			} finally {
-				games=null;
-				System.gc();
 				db.close();
 			}
 
