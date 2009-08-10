@@ -15,8 +15,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String TAG = "DatabaseHelper";
 	
+	public static final int DATABASE_VERSION = 7;
+	
     DatabaseHelper(Context context) {
-        super(context, SudokuDatabase.DATABASE_NAME, null, SudokuDatabase.DATABASE_VERSION);
+        super(context, SudokuDatabase.DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
@@ -131,6 +133,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         insertSudoku(db, 3, 88, "Hard28", "0 6 2 0 8 0 5 0 4 0 0 8 0 5 0 0 9 0 7 0 0 3 2 0 0 0 1 0 0 0 7 4 0 6 2 0 0 0 0 2 0 3 0 0 0 0 2 7 0 6 5 0 0 0 2 0 0 0 3 6 0 0 7 0 4 0 0 7 0 1 0 0 8 0 3 0 9 0 2 4 0");
         insertSudoku(db, 3, 89, "Hard29", "0 0 2 0 0 1 0 0 0 0 6 8 0 0 0 0 0 3 0 0 0 0 8 6 0 9 0 9 0 0 0 0 2 0 8 6 8 0 4 0 0 0 1 0 2 5 2 0 8 0 0 0 0 9 0 8 0 1 4 0 0 0 0 1 0 0 0 0 0 9 2 0 0 0 0 7 0 0 5 0 0");
         insertSudoku(db, 3, 90, "Hard30", "0 0 0 0 3 0 0 6 5 4 6 0 9 5 0 2 0 0 0 0 0 0 8 6 0 0 4 0 0 3 0 7 0 0 0 6 0 0 4 0 9 0 1 0 0 5 0 0 0 1 0 3 0 0 2 0 0 1 4 0 0 0 0 0 0 7 0 6 5 0 2 8 6 3 0 0 2 0 0 0 0");
+        
+        createIndexes(db);
     }
     
     private void insertFolder(SQLiteDatabase db, long folderID, String folderName) {
@@ -163,10 +167,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-                + newVersion + ", which will destroy all old data");
-        db.execSQL("DROP TABLE IF EXISTS " + SudokuDatabase.SUDOKU_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + SudokuDatabase.FOLDER_TABLE_NAME);
-        onCreate(db);
+        Log.i(TAG, "Upgrading database from version " + oldVersion + " to "
+                + newVersion + ".");
+        
+        createIndexes(db);
+    }
+    
+    private void createIndexes(SQLiteDatabase db) {
+    	db.execSQL("create index "+SudokuDatabase.SUDOKU_TABLE_NAME+
+     		   "_idx1 on "+
+     		   SudokuDatabase.SUDOKU_TABLE_NAME+" ("+SudokuColumns.FOLDER_ID+");");    	
     }
 }
