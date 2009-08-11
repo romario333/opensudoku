@@ -226,9 +226,7 @@ public class ImportSudokuActivity extends Activity {
 		mProgress = (ProgressBar) findViewById(R.id.progress);
 		
 		Intent intent = getIntent();
-		String action = intent.getAction();
-		if (action != null && action.equals(Intent.ACTION_VIEW)
-				&& intent.getData() != null) {
+		if (intent.getData() != null) {
 			new ImportSudokuTask().execute(intent.getData());
 		} else {
 			Log.e(TAG, "No data provided, exiting.");

@@ -351,7 +351,7 @@ public class SudokuListActivity extends ListActivity {
 		Intent intent = new Intent(null, getIntent().getData());
 		intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
 		menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0,
-				new ComponentName(this, FolderListActivity.class), null,
+				new ComponentName(this, SudokuListActivity.class), null,
 				intent, 0, null);
 
 		return true;
