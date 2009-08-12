@@ -35,11 +35,13 @@ public class ImportSudokuActivity extends Activity {
 
 	private static final String TAG = "ImportSudokuActivity";
 	static final Pattern SUDOKU_PATT = Pattern.compile(".*\\D([\\d]{81})\\D.*");
-	static final int MAX_FOLDER_SIZE = 250;
+	
 	
 	private ProgressBar mProgress;
 	
 	private abstract class AbstractImportTask extends AsyncTask<Uri, Integer, Boolean> {
+		static final int MAX_FOLDER_SIZE = 250;
+		static final int NUM_OF_PROGRESS_UPDATES = 20;
 		
 		
 		private FolderInfo mFolderInfo = new FolderInfo();
@@ -110,6 +112,7 @@ public class ImportSudokuActivity extends Activity {
 			long start = System.currentTimeMillis();
 			long firstFolderID = -1;
 			long folderID = -1;
+			int updateStatusEveryNItems = mGames.size() / NUM_OF_PROGRESS_UPDATES;
 			try {
 				for(int j=0;j<=(mGames.size()-1)/MAX_FOLDER_SIZE;j++){
 					db.beginTransaction();
@@ -128,9 +131,9 @@ public class ImportSudokuActivity extends Activity {
 							}
 							sudoku.parseString(mGames.get(i));
 							sudokuDB.insertSudoku(folderID, sudoku, db);
-							// if (i % 10 == 0) {
-							publishProgress(i);
-							// }
+							if (i % updateStatusEveryNItems == 0) {
+								publishProgress(i);
+							}
 						}
 						db.setTransactionSuccessful();
 					} finally {
