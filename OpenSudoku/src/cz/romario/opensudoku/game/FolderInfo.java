@@ -36,6 +36,10 @@ public class FolderInfo {
 	 */
 	public int playingCount;
 	
+	public FolderInfo() {
+		
+	}
+	
 	public FolderInfo(long id, String name) {
 		this.id = id;
 		this.name = name;

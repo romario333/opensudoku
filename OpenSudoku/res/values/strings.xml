@@ -110,6 +110,8 @@
 	
 	<string name="importing">Importing folder with puzzles...</string>
 	<string name="puzzles_saved">Puzzles have been saved into \'%s\' folder.</string>
+	<string name="no_puzzles_found">No puzzles found.</string>
+	<string name="unknown_import_error">Unknown error occurred while importing puzzles, import was canceled.</string>
 	
 	<string name="credits">Credits:\nRoman Mašek (creator)\nMartin Sobola (UI design)</string>
 	
