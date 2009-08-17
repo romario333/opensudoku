@@ -15,7 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String TAG = "DatabaseHelper";
 	
-	public static final int DATABASE_VERSION = 7;
+	public static final int DATABASE_VERSION = 8;
 	
     DatabaseHelper(Context context) {
         super(context, SudokuDatabase.DATABASE_NAME, null, DATABASE_VERSION);

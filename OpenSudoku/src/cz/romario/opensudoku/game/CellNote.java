@@ -24,12 +24,12 @@ public class CellNote {
 	
 	/**
 	 * Creates instance from given string (string which has been 
-	 * created by {@link #toStringBuilder(StringBuilder)} or {@link #toString()} method).
+	 * created by {@link #serialize(StringBuilder)} or {@link #serialize()} method).
 	 * earlier.
 	 * 
 	 * @param note
 	 */
-	public static CellNote fromString(String note) {
+	public static CellNote deserialize(String note) {
 		// TODO: optimalization: CellNote object don't have to be created for empty note
 		
 		Set<Integer> notedNumbers = new HashSet<Integer>();
@@ -66,11 +66,11 @@ public class CellNote {
 
 	/**
 	 * Appends string representation of this object to the given <code>StringBuilder</code>.
-	 * You can later recreate object from this string by calling {@link #fromString}.
+	 * You can later recreate object from this string by calling {@link #deserialize(String)}.
 	 * 
 	 * @param data
 	 */	
-	public void toStringBuilder(StringBuilder data) {
+	public void serialize(StringBuilder data) {
 		if (mNotedNumbers.size() == 0) {
 			data.append("-");
 		} else {
@@ -80,10 +80,9 @@ public class CellNote {
 		}
 	}
 	
-	@Override
-	public String toString() {
+	public String serialize() {
 		StringBuilder sb = new StringBuilder();
-		toStringBuilder(sb);
+		serialize(sb);
 		return sb.toString();
 	}
 

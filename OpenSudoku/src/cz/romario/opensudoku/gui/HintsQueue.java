@@ -37,7 +37,7 @@ public class HintsQueue {
 			@Override
 			public void onSharedPreferenceChanged(
 					SharedPreferences sharedPreferences, String key) {
-				if (key == "show_hints") {
+				if (key.equals("show_hints")) {
 					mOneTimeHintsEnabled = sharedPreferences.getBoolean("show_hints", true);
 				}
 			}

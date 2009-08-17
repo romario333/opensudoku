@@ -90,7 +90,7 @@ public class PerformanceTest extends TestCase implements PerformanceTestCase {
 		
 		for (int r=0; r < CellCollection.SUDOKU_SIZE; r++) {
 			for (int c=0; c < CellCollection.SUDOKU_SIZE; c++) {
-				cells.getCell(r, c).setNote(CellNote.fromString("1,2,3,4,5,6,7,8,9,"));
+				cells.getCell(r, c).setNote(CellNote.deserialize("1,2,3,4,5,6,7,8,9,"));
 			}
 		}
 		

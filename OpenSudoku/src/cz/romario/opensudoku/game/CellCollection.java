@@ -251,12 +251,12 @@ public class CellCollection  implements Parcelable {
 	 * @param data
 	 * @return
 	 */
-	public static CellCollection fromStringTokenizer(StringTokenizer data) {
+	public static CellCollection deserialize(StringTokenizer data) {
 		Cell[][] cells = new Cell[SUDOKU_SIZE][SUDOKU_SIZE];
 		
 		int r = 0, c = 0;
         while (data.hasMoreTokens() && r < 9) {
-            cells[r][c] = Cell.fromStringTokenizer(data);
+            cells[r][c] = Cell.deserialize(data);
             c++;
             
             if (c == 9) {
@@ -270,39 +270,72 @@ public class CellCollection  implements Parcelable {
 	
 	/**
 	 * Creates instance from given string (string which has been 
-	 * created by {@link #toStringBuilder(StringBuilder)} or {@link #toString()} method).
+	 * created by {@link #serialize(StringBuilder)} or {@link #serialize()} method).
 	 * earlier.
 	 * 
 	 * @param note
 	 */
-	public static CellCollection fromString(String data) {
-		// TODO: version handling
-        String[] lines = data.split("\n");
+	public static CellCollection deserialize(String data) {
+		// TODO: this could be maybe more defensive
+		String[] lines = data.split("\n");
         if (lines.length == 0) {
             throw new IllegalArgumentException("Cannot deserialize Sudoku, data corrupted.");
         }
         
-        if (!lines[0].equals("version: 1")) {
-            throw new IllegalArgumentException(String.format("Unknown version of data: %s", lines[0]));
+        if (lines[0].equals("version: 1")) {
+            StringTokenizer st = new StringTokenizer(lines[1], "|");
+            return deserialize(st);	
+        } else {
+        	return fromString(data);
         }
-        
-        StringTokenizer st = new StringTokenizer(lines[1], "|");
-        return fromStringTokenizer(st);	
     }
 	
-	@Override
-	public String toString() {
+	/**
+	 * Creates collection instance from given string. String is expected
+	 * to be in format "00002343243202...", where each number represents
+	 * cell value, no other information can be set using this method.
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public static CellCollection fromString(String data) {
+		Cell[][] cells = new Cell[SUDOKU_SIZE][SUDOKU_SIZE];
+
+		int pos = 0;
+		for (int r = 0; r < CellCollection.SUDOKU_SIZE; r++) {
+			for (int c = 0; c < CellCollection.SUDOKU_SIZE; c++) {
+				int value = 0;
+				while (pos < data.length()) {
+					pos++;
+					if (data.charAt(pos - 1) >= '0'
+							&& data.charAt(pos - 1) <= '9') {
+						// value=Integer.parseInt(data.substring(pos-1, pos));
+						value = data.charAt(pos - 1) - '0';
+						break;
+					}
+				}
+				Cell cell = new Cell();
+				cell.setValue(value);
+				cell.setEditable(value == 0);
+				cells[r][c] = cell;
+			}
+		}
+
+		return new CellCollection(cells);
+	}
+	
+	public String serialize() {
 		StringBuilder sb = new StringBuilder();
-		toStringBuilder(sb);
+		serialize(sb);
 		return sb.toString();
 	}
 	
 	/**
-	 * Writes collection to String. You can later recreate the object instance
-	 * by calling createFromString method.
+	 * Writes collection to given StringBuilder. You can later recreate the object instance
+	 * by calling {@link #deserialize(String)} method.
 	 * @return
 	 */
-	public void toStringBuilder(StringBuilder data) {
+	public void serialize(StringBuilder data) {
 		data.append("version: 1\n");
         
         for (int r=0; r<SUDOKU_SIZE; r++)
@@ -310,7 +343,7 @@ public class CellCollection  implements Parcelable {
                 for (int c=0; c<SUDOKU_SIZE; c++)
                 {
                         Cell cell = mCells[r][c];
-                        cell.toStringBuilder(data);
+                        cell.serialize(data);
                 }
         }
 	}

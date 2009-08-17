@@ -1,6 +1,7 @@
 package cz.romario.opensudoku.db;
 
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteStatement;
 import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
@@ -240,7 +242,7 @@ public class SudokuDatabase {
             	s = new SudokuGame();
             	s.setId(id);
             	s.setCreated(created);
-            	s.setCells(CellCollection.fromString(data));
+            	s.setCells(CellCollection.deserialize(data));
             	s.setLastPlayed(lastPlayed);
             	s.setState(state);
             	s.setTime(time);
@@ -295,6 +297,36 @@ public class SudokuDatabase {
         	if (db == null && ldb != null) ldb.close();
         }
     }
+    
+    private static Pattern mSudokuPattern = Pattern.compile("^\\d{81}$");
+    private static SQLiteStatement mInsertSudokuStatement;
+    
+    public void beginSudokuImport(SQLiteDatabase db) {
+    	mInsertSudokuStatement = db.compileStatement(
+				"insert into sudoku (folder_id, created, state, time, last_played, data) values (?, 0, " + SudokuGame.GAME_STATE_NOT_STARTED + ", 0, 0, ?)"
+		); 
+    }
+    
+	public long insertSudokuImport(long folderID, String sudoku,
+			SQLiteDatabase db) throws SudokuInvalidFormatException {
+		if (sudoku == null || !mSudokuPattern.matcher(sudoku).matches()) {
+			throw new SudokuInvalidFormatException(sudoku);
+		}
+		
+		mInsertSudokuStatement.bindLong(1, folderID);
+		mInsertSudokuStatement.bindString(2, sudoku);
+		
+		long rowId = mInsertSudokuStatement.executeInsert();
+		if (rowId > 0) {
+			return rowId;
+		}
+
+		throw new SQLException("Failed to insert sudoku.");
+	}
+	
+	public void finishSudokuImport() {
+		mInsertSudokuStatement.close();
+	}
     
     /**
      * Updates sudoku game in the database.

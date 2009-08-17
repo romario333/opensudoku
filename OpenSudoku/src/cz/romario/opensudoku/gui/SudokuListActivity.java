@@ -58,8 +58,6 @@ public class SudokuListActivity extends ListActivity {
 	public static final String EXTRAS_FOLDER_ID = "folder_id";
 	private static final String TAG = "SudokuListActivity";
 	
-	private static final String ACTION_VIEW = "android.intent.action.VIEW";
-
 	// TODO: duplicated code
 	private StringBuilder mTimeText;
 	private Formatter mGameTimeFormatter;
@@ -94,8 +92,6 @@ public class SudokuListActivity extends ListActivity {
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 
 		Intent intent = getIntent();
-		//final String action = intent.getAction();
-		//Log.i(TAG, "action "+action);
 
 		// Inform the list we provide context menus for items
 		getListView().setOnCreateContextMenuListener(this);
@@ -143,7 +139,7 @@ public class SudokuListActivity extends ListActivity {
 				case R.id.sudoku_board:
 					String data = c.getString(columnIndex);
 					// TODO: still can be faster, I don't have to call initCollection and read notes
-					CellCollection cells = CellCollection.fromString(data);
+					CellCollection cells = CellCollection.deserialize(data);
 					SudokuBoardView board = (SudokuBoardView) view;
 					board.setReadOnly(true);
 					board.setFocusable(false);

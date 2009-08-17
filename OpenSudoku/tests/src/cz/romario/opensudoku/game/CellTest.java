@@ -35,13 +35,13 @@ public class CellTest extends TestCase {
 		assertEquals("5|4,|0|", cell.toString());
 	}
 	
-	public void testFromString() {
-		Cell cell = Cell.fromString("5|-|1|");
+	public void testDeserialize() {
+		Cell cell = Cell.deserialize("5|-|1|");
 		assertEquals(5, cell.getValue());
 		assertEquals(true, cell.getNote().isEmpty());
 		assertEquals(true, cell.isEditable());
 
-		cell = Cell.fromString("5|4,|0|");
+		cell = Cell.deserialize("5|4,|0|");
 		assertEquals(5, cell.getValue());
 		assertEquals(false, cell.getNote().isEmpty());
 		assertEquals(false, cell.isEditable());

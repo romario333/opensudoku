@@ -42,35 +42,7 @@ public class SudokuGame implements Parcelable {
 		game.setCells(CellCollection.createEmpty());
 		return game;
 	}
-	
-	
-	public void parseString(String data) {
-		
-		// TODO: createEmptyGame
-		if (getCells() == null) {
-			setCells(CellCollection.createEmpty());
-		}
-		
-		int pos = 0;
-		for (int r=0; r<CellCollection.SUDOKU_SIZE; r++) {
-			for (int c=0; c<CellCollection.SUDOKU_SIZE; c++) {
-    			int value = 0;
-    			while(pos<data.length()){
-    				pos++;
-    				if(data.charAt(pos-1)>='0' && data.charAt(pos-1)<='9'){
-    					//value=Integer.parseInt(data.substring(pos-1, pos));
-    					value=data.charAt(pos-1)-'0';
-    					break;
-    				}
-    			}
-				Cell cell = mCells.getCell(r, c);
-				cell.setValue(value);
-				cell.setEditable(value == 0);
-				
-			}
-		}
-	}
-	
+
 	public SudokuGame() {
 		mTime = 0;
 		// TODO: check that this does not mean any performance impact in sudoku list

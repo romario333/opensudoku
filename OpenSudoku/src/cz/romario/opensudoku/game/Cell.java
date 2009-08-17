@@ -203,10 +203,10 @@ public class Cell implements Parcelable {
 	 * @param data
 	 * @return
 	 */
-	public static Cell fromStringTokenizer(StringTokenizer data) {
+	public static Cell deserialize(StringTokenizer data) {
         Cell cell = new Cell();
         cell.setValue(Integer.parseInt(data.nextToken()));
-    	cell.setNote(CellNote.fromString(data.nextToken()));
+    	cell.setNote(CellNote.deserialize(data.nextToken()));
     	cell.setEditable(data.nextToken().equals("1"));
     	
     	return cell;
@@ -214,38 +214,37 @@ public class Cell implements Parcelable {
 	
 	/**
 	 * Creates instance from given string (string which has been 
-	 * created by {@link #toStringBuilder(StringBuilder)} or {@link #toString()} method).
+	 * created by {@link #serialize(StringBuilder)} or {@link #serialize()} method).
 	 * earlier.
 	 * 
 	 * @param note
 	 */
-	public static Cell fromString(String cellData) {
+	public static Cell deserialize(String cellData) {
 		StringTokenizer data = new StringTokenizer(cellData, "|");
-		return fromStringTokenizer(data);
+		return deserialize(data);
 	}
 
 	
 	/**
 	 * Appends string representation of this object to the given <code>StringBuilder</code>.
-	 * You can later recreate object from this string by calling {@link #fromString}.
+	 * You can later recreate object from this string by calling {@link #deserialize}.
 	 * 
 	 * @param data
 	 */	
-	public void toStringBuilder(StringBuilder data) {
+	public void serialize(StringBuilder data) {
         data.append(mValue).append("|");
         if (mNote == null || mNote.equals("")) {
         	data.append("-").append("|");
         } else {
-        	mNote.toStringBuilder(data);
+        	mNote.serialize(data);
         	data.append("|");
         }
         data.append(mEditable ? "1" : "0").append("|");
 	}
 	
-	@Override
-	public String toString() {
+	public String serialize() {
 		StringBuilder sb = new StringBuilder();
-		toStringBuilder(sb);
+		serialize(sb);
 		return sb.toString();
 	}
 	
@@ -254,7 +253,7 @@ public class Cell implements Parcelable {
 	// constructor for Parcelable
 	private Cell(Parcel in) {
 		mValue = in.readInt();
-		setNote(CellNote.fromString(in.readString()));
+		setNote(CellNote.deserialize(in.readString()));
 		mEditable = (Boolean)in.readValue(null);
 		mValid = (Boolean)in.readValue(null);
 	}

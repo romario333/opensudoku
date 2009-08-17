@@ -99,14 +99,14 @@ public class CellNoteTest extends TestCase {
 	}
 	
 	public void testFromString() {
-		CellNote note = CellNote.fromString("-");
+		CellNote note = CellNote.deserialize("-");
 		assertEquals(0, note.getNotedNumbers().size());
 		
-		note = CellNote.fromString("5,");
+		note = CellNote.deserialize("5,");
 		assertEquals(1, note.getNotedNumbers().size());
 		assertTrue(note.getNotedNumbers().contains(5));
 		
-		note = CellNote.fromString("5,7,");
+		note = CellNote.deserialize("5,7,");
 		assertEquals(2, note.getNotedNumbers().size());
 		assertTrue(note.getNotedNumbers().contains(5));
 		assertTrue(note.getNotedNumbers().contains(7));
