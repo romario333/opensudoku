@@ -27,6 +27,7 @@ import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.inputmethod.IMControlPanel;
 import cz.romario.opensudoku.gui.inputmethod.IMNumpad;
+import cz.romario.opensudoku.gui.inputmethod.InputMethod;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -120,11 +121,16 @@ public class SudokuEditActivity extends Activity {
         }
         mBoard.setGame(mGame);
         
-        // TODO: OMG, rethink input methods initialization !
         mInputMethods = (IMControlPanel)findViewById(R.id.input_methods);
         mInputMethods.setGame(mGame);
         mInputMethods.setBoard(mBoard);
-        mInputMethods.addInputMethod(new IMNumpad());
+        
+        // only numpad input method will be enabled
+        for (InputMethod im : mInputMethods.getInputMethods()) {
+        	im.enabled = false;
+        }
+        mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_NUMPAD).enabled = true;
+        mInputMethods.activateFirstInputMethod();
 	}
 	
 	@Override

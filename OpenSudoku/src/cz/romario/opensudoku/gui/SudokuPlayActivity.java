@@ -129,12 +129,10 @@ public class SudokuPlayActivity extends Activity{
         mInputMethods.setBoard(mSudokuBoard);
         mInputMethods.setGame(mSudokuGame);
         mInputMethods.setHintsQueue(mHintsQueue);
-        mIMPopup = new IMPopup();
-        mInputMethods.addInputMethod(mIMPopup);
-        mIMSingleNumber = new IMSingleNumber();
-        mInputMethods.addInputMethod(mIMSingleNumber);
-        mIMNumpad = new IMNumpad();
-        mInputMethods.addInputMethod(mIMNumpad);
+        
+        mIMPopup = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_POPUP);
+        mIMSingleNumber = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_SINGLE_NUMBER);
+        mIMNumpad = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_NUMPAD);
     }
 	
 	@Override
@@ -160,7 +158,7 @@ public class SudokuPlayActivity extends Activity{
         mIMNumpad.enabled = gameSettings.getBoolean("im_numpad", true);
         mIMNumpad.moveCellSelectionOnPress = gameSettings.getBoolean("im_numpad_move_right", false);
 
-        mInputMethods.ensureSomethingIsActive();
+        mInputMethods.activateFirstInputMethod();
 
 		updateTitle();
 	}

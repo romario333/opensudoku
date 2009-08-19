@@ -21,6 +21,7 @@
 package cz.romario.opensudoku.gui.inputmethod;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import cz.romario.opensudoku.R;
@@ -46,8 +47,13 @@ import android.widget.LinearLayout;
  *
  */
 public class IMControlPanel extends LinearLayout {
+	public static final int INPUT_METHOD_POPUP = 0;
+	public static final int INPUT_METHOD_SINGLE_NUMBER = 1;
+	public static final int INPUT_METHOD_NUMPAD = 2;
+	
 	private Context mContext;
 	private SudokuBoardView mBoard;
+	// TODO: why does control panel need access tu SudokuGame? CellCollection should be enough.
 	private SudokuGame mGame;
 	private HintsQueue mHintsQueue;
 	
@@ -101,21 +107,13 @@ public class IMControlPanel extends LinearLayout {
 		mHintsQueue = hintsQueue;
 	}
 	
-	public void addInputMethod(InputMethod im) {
-		assert mContext != null;
-		assert mGame != null;
-		assert mBoard != null;
-		
-		im.initialize(mContext, mGame, mBoard, mHintsQueue);
-		mInputMethods.add(im);
-		
-		if (mActiveMethodIndex == -1 && im.enabled) {
-			activateInputMethod(mInputMethods.size() - 1);
-		}
-	}
-	
-	// TODO: this is weird, find better solution
-	public void ensureSomethingIsActive() {
+	// TODO: 
+	/**
+	 * Activates first enabled input method. If such method does not exists, nothing
+	 * happens.
+	 */
+	public void activateFirstInputMethod() {
+		ensureInputMethods();
 		if (mActiveMethodIndex == -1 || !mInputMethods.get(mActiveMethodIndex).enabled) {
 			activateInputMethod(0);
 		}
@@ -130,7 +128,11 @@ public class IMControlPanel extends LinearLayout {
 	 * @return
 	 */
 	public void activateInputMethod(int methodID) {
-		assert methodID >= -1 && methodID < mInputMethods.size();
+		if (methodID < -1 || methodID >= mInputMethods.size()) {
+			throw new IllegalArgumentException(String.format("Invalid method id: %s.", methodID));
+		}
+		
+		ensureInputMethods();
 		
 		if (mActiveMethodIndex != -1) {
 			mInputMethods.get(mActiveMethodIndex).onDeactivated();
@@ -179,6 +181,8 @@ public class IMControlPanel extends LinearLayout {
 	}
 	
 	public void activateNextInputMethod() {
+		ensureInputMethods();
+		
 		int id = mActiveMethodIndex + 1;
 		if (id >= mInputMethods.size()) {
 			if (mHintsQueue != null) {
@@ -189,11 +193,30 @@ public class IMControlPanel extends LinearLayout {
 		activateInputMethod(id);
 	}
 	
+	/**
+	 * Returns input method object by its ID (see INPUT_METHOD_* constants).
+	 * 
+	 * @param methodId
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends InputMethod> T getInputMethod(int methodId) {
+		ensureInputMethods();
+		
+		return (T)mInputMethods.get(methodId);
+	}
+	
+	public List<InputMethod> getInputMethods() {
+		return Collections.unmodifiableList(mInputMethods);
+	}
+	
 	public int getActiveMethodIndex() {
 		return mActiveMethodIndex;
 	}
 	
 	public void showHelpForActiveMethod() {
+		ensureInputMethods();
+		
 		if (mActiveMethodIndex != -1) {
 			InputMethod activeMethod = mInputMethods.get(mActiveMethodIndex);
 			activeMethod.onActivated();
@@ -212,6 +235,33 @@ public class IMControlPanel extends LinearLayout {
 		}
 	}
 	
+	/**
+	 * Ensures that all input method objects are created.
+	 */
+	private void ensureInputMethods() {
+		synchronized (mInputMethods) {
+			if (mInputMethods.size() == 0) {
+				addInputMethod(INPUT_METHOD_POPUP, new IMPopup());
+				addInputMethod(INPUT_METHOD_SINGLE_NUMBER, new IMSingleNumber());
+				addInputMethod(INPUT_METHOD_NUMPAD, new IMNumpad());
+			}
+		}
+	}
+	
+	private void addInputMethod(int methodIndex, InputMethod im) {
+		if (mContext == null ) throw new IllegalStateException("Context is not set.");
+		if (mGame == null ) throw new IllegalStateException("Game is not set. Call setGame() first.");
+		if (mBoard == null ) throw new IllegalStateException("Board is not set. Call setBoard() first.");
+		
+		im.initialize(mContext, mGame, mBoard, mHintsQueue);
+		mInputMethods.add(methodIndex, im);
+	}
+
+	/**
+	 * Ensures that control panel for given input method is created.
+	 * 
+	 * @param methodID
+	 */
 	private void ensureControlPanel(int methodID) {
 		InputMethod im = mInputMethods.get(methodID);
 		if (!im.isControlPanelCreated()) {
@@ -265,7 +315,7 @@ public class IMControlPanel extends LinearLayout {
 	}
 	
     /**
-     * Used to save / restore state of time picker
+     * Used to save / restore state of control panel.
      */
     private static class SavedState extends BaseSavedState {
     	private final int mActiveMethodIndex;

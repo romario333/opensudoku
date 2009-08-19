@@ -296,8 +296,7 @@ public class Cell implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(mValue);
-		// TODO: maybe I don't need to use Parcelable at all? I could use my own serialization.
-		dest.writeString(mNote.toString());
+		dest.writeString(mNote.serialize());
 		dest.writeValue(mEditable);
 		dest.writeValue(mValid);
 	}
