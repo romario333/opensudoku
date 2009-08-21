@@ -75,7 +75,7 @@ public class IMControlPanel extends LinearLayout {
 	}
 	
 	/**
-	 * Sets sudoku board for this control panel. Don't forget to call initialize().
+	 * Sets sudoku board for this control panel.
 	 * 
 	 * @param board
 	 */
@@ -91,7 +91,7 @@ public class IMControlPanel extends LinearLayout {
 	}
 	
 	/**
-	 * Sets game for this control panel.  Don't forget to call initialize().
+	 * Sets game for this control panel.
 	 * 
 	 * @param game
 	 */
