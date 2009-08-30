@@ -26,6 +26,7 @@ import cz.romario.opensudoku.game.Cell;
 import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.CellNote;
 import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.game.CellCollection.OnChangeListener;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -86,14 +87,21 @@ public class SudokuBoardView extends View {
 		setCells(game.getCells());
 	}
 
-	// TODO: not used
 	public void setCells(CellCollection cells) {
 		mCells = cells;
 		if (!mReadonly) {
 			mSelectedCell = mCells.getCell(0, 0); // first cell will be selected by default
 			onCellSelected(mSelectedCell);
 		}
-		invalidate();
+		
+		mCells.addOnChangeListener(new OnChangeListener() {
+			@Override
+			public void onChange() {
+				postInvalidate();
+			}
+		});
+		
+		postInvalidate();
 	}
 	
 	public CellCollection getCells() {
@@ -106,6 +114,7 @@ public class SudokuBoardView extends View {
 	
 	public void setReadOnly(boolean readonly) {
 		mReadonly = readonly;
+		postInvalidate();
 	}
 	
 	public boolean isReadOnly() {
@@ -375,7 +384,7 @@ public class SudokuBoardView extends View {
 				mTouchedCell = null;
 				break;
 			}
-			invalidate();
+			postInvalidate();
 		}
 		
 		return !mReadonly;
@@ -408,7 +417,6 @@ public class SudokuBoardView extends View {
 					if (mSelectedCell != null) {
 						if (event.isShiftPressed() || event.isAltPressed()) {
 							setCellNote(mSelectedCell, null);
-							postInvalidate();
 						} else {
 							setCellValue(mSelectedCell, 0);
 							moveCellSelectionRight();
@@ -427,11 +435,8 @@ public class SudokuBoardView extends View {
 				Cell cell = mSelectedCell;
 				
 				if (event.isShiftPressed() || event.isAltPressed()) {
-					// add or remove number to notes
-					CellNote newNote = cell.getNote().clone();
-					newNote.toggleNumber(selNumber);
-					setCellNote(cell, newNote);
-					invalidate();
+					// add or remove number in cell's note
+					setCellNote(cell, cell.getNote().toggleNumber(selNumber));
 				} else {
 					// enter number in cell
 					setCellValue(cell, selNumber);
@@ -479,6 +484,7 @@ public class SudokuBoardView extends View {
 				moveCellSelectionTo(0, 0);
 			}
 		}
+		postInvalidate();
 	}
 	
 	/**
@@ -503,6 +509,7 @@ public class SudokuBoardView extends View {
 	
 	/**
 	 * Moves selection to the cell given by row and column index.
+	 * 
 	 * @param row Row index of cell which should be selected.
 	 * @param col Columnd index of cell which should be selected.
 	 * @return True, if cell was successfuly selected.
@@ -521,7 +528,8 @@ public class SudokuBoardView extends View {
 	}
 	
 	/**
-	 * Get cell at given screen coordinates. Returns null if no cell is found.
+	 * Returns cell at given screen coordinates. Returns null if no cell is found.
+	 * 
 	 * @param x
 	 * @param y
 	 * @return
@@ -564,25 +572,25 @@ public class SudokuBoardView extends View {
 		void onCellSelected(Cell cell);
 	}
 
-	private String getMeasureSpecModeString(int mode) {
-		String modeString = null;
-		switch (mode) {
-		case MeasureSpec.AT_MOST:
-			modeString = "MeasureSpec.AT_MOST";
-			break;
-		case MeasureSpec.EXACTLY:
-			modeString = "MeasureSpec.EXACTLY";
-			break;
-		case MeasureSpec.UNSPECIFIED:
-			modeString = "MeasureSpec.UNSPECIFIED";
-			break;
-		}
-		
-		if (modeString == null)
-			modeString = new Integer(mode).toString();
-		
-		return modeString;
-	}
+//	private String getMeasureSpecModeString(int mode) {
+//		String modeString = null;
+//		switch (mode) {
+//		case MeasureSpec.AT_MOST:
+//			modeString = "MeasureSpec.AT_MOST";
+//			break;
+//		case MeasureSpec.EXACTLY:
+//			modeString = "MeasureSpec.EXACTLY";
+//			break;
+//		case MeasureSpec.UNSPECIFIED:
+//			modeString = "MeasureSpec.UNSPECIFIED";
+//			break;
+//		}
+//		
+//		if (modeString == null)
+//			modeString = new Integer(mode).toString();
+//		
+//		return modeString;
+//	}
 
 	public void setAutoHideTouchedCellHint(boolean autoHideTouchedCellHint) {
 		mAutoHideTouchedCellHint = autoHideTouchedCellHint;
@@ -594,7 +602,7 @@ public class SudokuBoardView extends View {
 	
 	public void hideTouchedCellHint() {
 		mTouchedCell = null;
-		invalidate();
+		postInvalidate();
 	}
 	
 

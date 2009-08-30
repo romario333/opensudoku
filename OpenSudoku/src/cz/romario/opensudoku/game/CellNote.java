@@ -21,25 +21,27 @@
 package cz.romario.opensudoku.game;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
- * Note attached to cell.
+ * Note attached to cell. This object is immutable by design.
  * 
  * @author romario
  *
  */
 public class CellNote {
-	private Set<Integer> mNotedNumbers;
+	// TODO: int would be better
+	private final Set<Integer> mNotedNumbers;
 	
 	public CellNote() {
-		mNotedNumbers = new HashSet<Integer>();
+		mNotedNumbers = Collections.unmodifiableSet(new HashSet<Integer>());
 	}
 	
 	private CellNote(Set<Integer> notedNumbers) {
-		mNotedNumbers = notedNumbers;
+		mNotedNumbers = Collections.unmodifiableSet(notedNumbers);
 	}
 	
 	/**
@@ -68,6 +70,7 @@ public class CellNote {
 	
 	
 	
+	// TODO: this should be int[]
 	/**
 	 * Creates note instance from given <code>Integer</code> array.
 	 * 
@@ -115,45 +118,32 @@ public class CellNote {
 	 * 
 	 * @return
 	 */
-	public Collection<Integer> getNotedNumbers() {
+	public Set<Integer> getNotedNumbers() {
 		return mNotedNumbers;		
-	}
-	
-	/**
-	 * Clears note.
-	 */
-	public void clear() {
-		mNotedNumbers.clear();
-	}
-	
-	// TODO: do not use clone(), use static newInstance (see effective java, p. 61)
-	/**
-	 * Creates deep copy of object's instance.
-	 */
-	public CellNote clone() {
-		// TODO: Would Integer -> int improve performance significantly?
-		Set<Integer> copy = new HashSet<Integer>();
-		for (Integer n : mNotedNumbers) {
-			copy.add(n);
-		}
-		return new CellNote(copy);
 	}
 	
 	/**
 	 * Toggles noted number: if number is already noted, it will be removed otherwise it will be added. 
 	 * 
 	 * @param number Number to toggle.
+	 * @return New CellNote instance with changes.
 	 */
-	public void toggleNumber(int number) {
+	public CellNote toggleNumber(int number) {
 		if (number < 1 || number > 9)
 			throw new IllegalArgumentException("Number must be between 1-9.");
 
-		Integer n = new Integer(number);
-		if (mNotedNumbers.contains(n)) {
-			mNotedNumbers.remove(n);
+		Set<Integer> notedNumbers = new HashSet<Integer>(getNotedNumbers());
+		if (notedNumbers.contains(number)) {
+			notedNumbers.remove(number);
 		} else {
-			mNotedNumbers.add(n);
+			notedNumbers.add(number);
 		}
+		
+		return new CellNote(notedNumbers);
+	}
+	
+	public CellNote clear() {
+		return new CellNote();
 	}
 	
 	/**

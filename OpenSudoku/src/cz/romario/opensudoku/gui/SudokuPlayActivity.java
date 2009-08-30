@@ -251,7 +251,6 @@ public class SudokuPlayActivity extends Activity{
         	return true;
         case MENU_ITEM_UNDO:
         	mSudokuGame.undo();
-        	mSudokuBoard.postInvalidate();
         	return true;
         case MENU_ITEM_SETTINGS:
         	Intent i = new Intent();
@@ -290,7 +289,6 @@ public class SudokuPlayActivity extends Activity{
                 	mSudokuGame.reset();
                 	mSudokuGame.start();
                 	mSudokuBoard.setReadOnly(false);
-                	mSudokuBoard.postInvalidate();
                 	if (mShowTime) {
                 		mGameTimer.start();
                 	}
@@ -306,7 +304,6 @@ public class SudokuPlayActivity extends Activity{
             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	mSudokuGame.clearAllNotes();
-                	mSudokuBoard.postInvalidate();
                 }
             })
             .setNegativeButton(android.R.string.no, null)
@@ -323,7 +320,6 @@ public class SudokuPlayActivity extends Activity{
 		@Override
 		public void onPuzzleSolved() {
 			mSudokuBoard.setReadOnly(true);
-			mSudokuBoard.postInvalidate();
 			showDialog(DIALOG_WELL_DONE);
 		}
     	

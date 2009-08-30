@@ -46,7 +46,7 @@ public class ClearAllNotesCommand implements Command {
 				CellNote note = cell.getNote();
 				if (!note.isEmpty()) {
 					mOldNotes.add(new NoteEntry(r, c, note));
-					cell.setNote(null);
+					cell.setNote(new CellNote());
 				}
 			}
 		}

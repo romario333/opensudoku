@@ -17,31 +17,8 @@ public class CellNoteTest extends TestCase {
 	public void testGetNotedNumbers() {
 		CellNote note = new CellNote();
 		assertEquals(0, note.getNotedNumbers().size());
-		note.toggleNumber(1);
+		note = note.toggleNumber(1);
 		assertEquals(1, note.getNotedNumbers().size());
-	}
-
-	public void testClear() {
-		CellNote note = new CellNote();
-		note.toggleNumber(1);
-		note.toggleNumber(2);
-		assertEquals(2, note.getNotedNumbers().size());
-		note.clear();
-		assertEquals(0, note.getNotedNumbers().size());
-	}
-
-	public void testClone() {
-		CellNote noteA = new CellNote();
-		noteA.toggleNumber(1);
-		CellNote noteB = noteA.clone();
-		noteB.toggleNumber(2);
-		
-		assertTrue(noteA.getNotedNumbers().contains(1));
-		assertEquals(1, noteA.getNotedNumbers().size());
-
-		assertTrue(noteB.getNotedNumbers().contains(1));
-		assertTrue(noteB.getNotedNumbers().contains(2));
-		assertEquals(2, noteB.getNotedNumbers().size());
 	}
 
 	public void testToggleNumberOutOfBounds() {
@@ -54,22 +31,22 @@ public class CellNoteTest extends TestCase {
 	public void testToggleNumber() {
 		CellNote note = new CellNote();
 		
-		note.toggleNumber(1);
+		note = note.toggleNumber(1);
 		assertTrue(note.getNotedNumbers().contains(1));
 		assertFalse(note.getNotedNumbers().contains(2));
 		assertEquals(1, note.getNotedNumbers().size());
 		
-		note.toggleNumber(2);
+		note = note.toggleNumber(2);
 		assertTrue(note.getNotedNumbers().contains(1));
 		assertTrue(note.getNotedNumbers().contains(2));
 		assertEquals(2, note.getNotedNumbers().size());
 
-		note.toggleNumber(1);
+		note = note.toggleNumber(1);
 		assertFalse(note.getNotedNumbers().contains(1));
 		assertTrue(note.getNotedNumbers().contains(2));
 		assertEquals(1, note.getNotedNumbers().size());
 
-		note.toggleNumber(2);
+		note = note.toggleNumber(2);
 		assertFalse(note.getNotedNumbers().contains(1));
 		assertFalse(note.getNotedNumbers().contains(2));
 		assertEquals(0, note.getNotedNumbers().size());
@@ -80,25 +57,25 @@ public class CellNoteTest extends TestCase {
 		CellNote note = new CellNote();
 		assertTrue(note.isEmpty());
 		
-		note.toggleNumber(1);
+		note = note.toggleNumber(1);
 		assertFalse(note.isEmpty());
 		
-		note.toggleNumber(1);
+		note = note.toggleNumber(1);
 		assertTrue(note.isEmpty());
 	}
 	
-	public void testToString() {
+	public void testSerialize() {
 		CellNote note = new CellNote();
-		assertEquals("-", note.toString());
+		assertEquals("-", note.serialize());
 		
-		note.toggleNumber(5);
-		assertEquals("5,", note.toString());
+		note = note.toggleNumber(5);
+		assertEquals("5,", note.serialize());
 		
-		note.toggleNumber(7);
-		assertEquals("5,7,", note.toString());
+		note = note.toggleNumber(7);
+		assertEquals("5,7,", note.serialize());
 	}
 	
-	public void testFromString() {
+	public void testDeserialize() {
 		CellNote note = CellNote.deserialize("-");
 		assertEquals(0, note.getNotedNumbers().size());
 		

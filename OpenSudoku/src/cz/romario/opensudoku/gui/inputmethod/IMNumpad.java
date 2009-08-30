@@ -125,12 +125,8 @@ public class IMNumpad extends InputMethod {
 				case MODE_EDIT_NOTE:
 					if (selNumber == 0) {
 						mGame.setCellNote(selCell, null);
-						mBoard.postInvalidate();
 					} else if (selNumber > 0 && selNumber <= 9) {
-						CellNote newNote = selCell.getNote().clone();
-						newNote.toggleNumber(selNumber);
-						mGame.setCellNote(selCell, newNote);
-						mBoard.postInvalidate();
+						mGame.setCellNote(selCell, selCell.getNote().toggleNumber(selNumber));
 					}
 					break;
 				case MODE_EDIT_VALUE:
@@ -139,7 +135,6 @@ public class IMNumpad extends InputMethod {
 						if (moveCellSelectionOnPress) {
 							mBoard.moveCellSelectionRight();
 						}
-						mBoard.postInvalidate();
 					}
 					break;
 				}

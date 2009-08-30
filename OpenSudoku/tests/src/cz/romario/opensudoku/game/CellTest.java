@@ -21,18 +21,18 @@ public class CellTest extends TestCase {
 		try { cell.setValue(10);} catch (IllegalArgumentException e) {}
 	}
 	
-	public void testToString() {
+	public void testSerialize() {
 		Cell cell = new Cell();
-		assertEquals("0|-|1|", cell.toString());
+		assertEquals("0|-|1|", cell.serialize());
 		
 		cell.setValue(5);
-		assertEquals("5|-|1|", cell.toString());
+		assertEquals("5|-|1|", cell.serialize());
 		
 		cell.setEditable(false);
-		assertEquals("5|-|0|", cell.toString());
+		assertEquals("5|-|0|", cell.serialize());
 		
 		cell.getNote().toggleNumber(4);
-		assertEquals("5|4,|0|", cell.toString());
+		assertEquals("5|4,|0|", cell.serialize());
 	}
 	
 	public void testDeserialize() {

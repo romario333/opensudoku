@@ -20,6 +20,8 @@
 
 package cz.romario.opensudoku.game;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import android.os.Parcel;
@@ -33,6 +35,8 @@ import android.os.Parcelable;
  */
 public class CellCollection  implements Parcelable {
 	
+	public static final int SUDOKU_SIZE = 9;
+	
 	// TODO: An array of ints is a much better than an array of Integers, but this also generalizes to the fact that two parallel arrays of ints are also a lot more efficient than an array of (int,int) objects
 	// Cell's data.
 	private Cell[][] mCells;
@@ -42,8 +46,8 @@ public class CellCollection  implements Parcelable {
 	private CellGroup[] mSectors;
 	private CellGroup[] mRows;
 	private CellGroup[] mColumns;
-	
-	public static final int SUDOKU_SIZE = 9;
+
+	private final List<OnChangeListener> mChangeListeners = new ArrayList<OnChangeListener>();
 	
 	/**
 	 * Creates empty sudoku.
@@ -215,7 +219,7 @@ public class CellCollection  implements Parcelable {
 			{
 				Cell cell = mCells[r][c];
 				
-				cell.initCollection(r, c,
+				cell.initCollection(this, r, c,
 						mSectors[((c/3) * 3) + (r/3)],
 						mRows[c],
 						mColumns[r]
@@ -366,5 +370,47 @@ public class CellCollection  implements Parcelable {
                         cell.serialize(data);
                 }
         }
+	}
+	
+	public void addOnChangeListener(OnChangeListener listener) {
+		if (listener == null) {
+			throw new IllegalArgumentException("The listener is null.");
+		}
+		synchronized (mChangeListeners) {
+			if (mChangeListeners.contains(listener)) {
+				throw new IllegalStateException("Listener " + listener + "is already registered.");
+			}
+			mChangeListeners.add(listener);
+		}
+	}
+	
+	public void removeOnChangeListener(OnChangeListener listener) {
+		if (listener == null) {
+			throw new IllegalArgumentException("The listener is null.");
+		}
+		synchronized (mChangeListeners) {
+			if (!mChangeListeners.contains(listener)) {
+				throw new IllegalStateException("Listener " + listener + " was not registered.");
+			}
+			mChangeListeners.remove(listener);
+		}
+	}
+	
+	/** 
+	 * Notify all registered listeners that something has changed.
+	 */
+	protected void onChange() {
+		synchronized (mChangeListeners) {
+			for (OnChangeListener l : mChangeListeners) {
+				l.onChange();
+			}
+		}
+	}
+	
+	public interface OnChangeListener {
+		/**
+		 * Called when anything in the collection changes (cell's value, note, etc.)
+		 */
+		void onChange();
 	}
 }

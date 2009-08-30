@@ -20,8 +20,6 @@
 
 package cz.romario.opensudoku.game;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import android.os.Parcel;
@@ -37,7 +35,10 @@ import android.os.Parcelable;
  *
  */
 public class Cell implements Parcelable {
-	// if cell is included in collection, here are some information about cell's position
+	// if cell is included in collection, here are some additional information 
+	// about collection and cell's position in it
+	private CellCollection mCellCollection;
+	private final Object mCellCollectionLock = new Object(); 
 	private int mRowIndex = -1;
 	private int mColumnIndex = -1;
 	private CellGroup mSector; // sector containing this cell
@@ -100,7 +101,12 @@ public class Cell implements Parcelable {
 	 * @param row Reference to row group in which cell is included.
 	 * @param column Reference to column group in which cell is included. 
 	 */
-	protected void initCollection(int rowIndex, int colIndex, CellGroup sector, CellGroup row, CellGroup column) {
+	protected void initCollection(CellCollection cellCollection, int rowIndex, int colIndex, 
+			CellGroup sector, CellGroup row, CellGroup column) {
+		synchronized (mCellCollectionLock) {
+			mCellCollection = cellCollection;
+		}
+		
 		mRowIndex = rowIndex;
 		mColumnIndex = colIndex;
 		mSector = sector;
@@ -148,10 +154,8 @@ public class Cell implements Parcelable {
 		if (value < 0 || value > 9) {
 			throw new IllegalArgumentException("Value must be between 0-9.");
 		}
-			
-		assert value >= 0 && value < 10;
-		
 		mValue = value;
+		onChange();
 	}
 
 	/**
@@ -180,6 +184,7 @@ public class Cell implements Parcelable {
 	 */
 	public void setNote(CellNote note) {
 		mNote = note;
+		onChange();
 	}
 	
 	/**
@@ -196,6 +201,7 @@ public class Cell implements Parcelable {
 	 */
 	public void setEditable(Boolean editable) {
 		mEditable = editable;
+		onChange();
 	}
 	
 	/**
@@ -205,6 +211,7 @@ public class Cell implements Parcelable {
 	 */
 	public void setValid(Boolean valid) {
 		mValid = valid;
+		onChange();
 	}
 
 	/**
@@ -296,8 +303,20 @@ public class Cell implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(mValue);
-		dest.writeString(mNote.serialize());
+		dest.writeString(mNote.toString());
 		dest.writeValue(mEditable);
 		dest.writeValue(mValid);
+	}
+	
+	/**
+	 * Notify CellCollection that something has changed.
+	 */
+	private void onChange() {
+		synchronized (mCellCollectionLock) {
+			if (mCellCollection != null) {
+				mCellCollection.onChange();
+			}
+			
+		}
 	}
 }

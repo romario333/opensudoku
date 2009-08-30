@@ -152,6 +152,7 @@ public class SudokuGame implements Parcelable {
 	 * @param value
 	 */
 	public void setCellValue(Cell cell, int value) {
+		// TODO: get rid of asserts
 		assert cell != null;
 		assert value >= 0 && value <= 9;
 		
@@ -246,7 +247,7 @@ public class SudokuGame implements Parcelable {
 				Cell cell = mCells.getCell(r, c);
 				if (cell.isEditable()) {
 					cell.setValue(0);
-					cell.getNote().clear();
+					cell.setNote(new CellNote());
 				}
 			}
 		}

@@ -168,14 +168,8 @@ public class IMSingleNumber extends InputMethod {
 		case MODE_EDIT_NOTE:
 			if (selNumber == 0) {
 				mGame.setCellNote(cell, null);
-				mBoard.postInvalidate();
-				
 			} else if (selNumber > 0 && selNumber <= 9) {
-				CellNote newNote = cell.getNote().clone();
-				newNote.toggleNumber(selNumber);
-				mGame.setCellNote(cell, newNote);
-				// TODO: board should know when data changes on itself
-				mBoard.postInvalidate();
+				mGame.setCellNote(cell, cell.getNote().toggleNumber(selNumber));
 			}
 			break;
 		case MODE_EDIT_VALUE:
@@ -184,7 +178,6 @@ public class IMSingleNumber extends InputMethod {
 					selNumber = 0;
 				}
 				mGame.setCellValue(cell, selNumber);
-				mBoard.postInvalidate();
 			}
 			break;
 		}
@@ -201,7 +194,6 @@ public class IMSingleNumber extends InputMethod {
 	
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onRestoreInstanceState(savedInstanceState);
 		
 		mSelectedNumber = savedInstanceState.getInt(getInputMethodName() + ".sel_number");
