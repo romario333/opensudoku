@@ -62,6 +62,8 @@ public class SudokuPlayActivity extends Activity{
 	private static final int DIALOG_WELL_DONE = 2;
 	private static final int DIALOG_CLEAR_NOTES = 3;
 
+	private SudokuDatabase mDatabase;
+	
 	private long mSudokuGameID;
 	private SudokuGame mSudokuGame;
 	
@@ -87,6 +89,8 @@ public class SudokuPlayActivity extends Activity{
         super.onCreate(savedInstanceState);
         
 		setContentView(R.layout.sudoku_play);
+		
+		mDatabase = new SudokuDatabase(getApplicationContext());
     
 		mHintsQueue = new HintsQueue(this);
 		
@@ -102,8 +106,7 @@ public class SudokuPlayActivity extends Activity{
         if (savedInstanceState == null) {
         	// activity runs for the first time, read game from database
         	mSudokuGameID = getIntent().getLongExtra(EXTRAS_SUDOKU_ID, 0);
-        	SudokuDatabase sudokuDB = new SudokuDatabase(getApplicationContext());
-        	mSudokuGame = sudokuDB.getSudoku(mSudokuGameID);
+        	mSudokuGame = mDatabase.getSudoku(mSudokuGameID);
         	//gameTimer.setTime(sudokuGame.getTime());
         } else {
         	// activity has been running before, restore its state
@@ -175,12 +178,18 @@ public class SudokuPlayActivity extends Activity{
 		}
     	
     	// we will save game to the database as we might not be able to get back
-		SudokuDatabase sudokuDB = new SudokuDatabase(getApplicationContext());
-		sudokuDB.updateSudoku(mSudokuGame);
+		mDatabase.updateSudoku(mSudokuGame);
 		
 		mGameTimer.stop();
 		
 		mInputMethods.pause();
+    }
+    
+    @Override
+    protected void onDestroy() {
+    	// TODO Auto-generated method stub
+    	super.onDestroy();
+    	mDatabase.close();
     }
     
     @Override

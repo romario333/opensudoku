@@ -60,7 +60,7 @@ public class SudokuEditActivity extends Activity {
     private long mFolderID;
     private long mSudokuID;
     
-    private SudokuDatabase mSudokuDB;
+    private SudokuDatabase mDatabase;
     private SudokuGame mGame;
     private SudokuBoardView mBoard;
     private IMControlPanel mInputMethods;
@@ -69,17 +69,13 @@ public class SudokuEditActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		int orientation = getResources().getConfiguration().orientation;
-		if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			// TODO: landscape
-			setContentView(R.layout.sudoku_edit);
-		} else {
-			setContentView(R.layout.sudoku_edit);
-		}
+		setContentView(R.layout.sudoku_edit);
+		
+        mDatabase = new SudokuDatabase(getApplicationContext());
+
 
 		mBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
 		
-        mSudokuDB = new SudokuDatabase(getApplicationContext());
 		
 		Intent intent = getIntent();
         String action = intent.getAction();
@@ -113,7 +109,7 @@ public class SudokuEditActivity extends Activity {
         } else {
         	if (mSudokuID != 0) {
         		// existing sudoku, read it from database
-        		mGame = mSudokuDB.getSudoku(mSudokuID);
+        		mGame = mDatabase.getSudoku(mSudokuID);
         		mGame.getCells().markAllCellsAsEditable();
         	} else {
         		mGame = SudokuGame.createEmptyGame();
@@ -147,6 +143,12 @@ public class SudokuEditActivity extends Activity {
 		if (isFinishing() && mState != STATE_CANCEL) {
 			savePuzzle();
 		}
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mDatabase.close();
 	}
 	
 	@Override
@@ -192,12 +194,12 @@ public class SudokuEditActivity extends Activity {
 		
 		switch (mState) {
 		case STATE_EDIT:
-			mSudokuDB.updateSudoku(mGame);
+			mDatabase.updateSudoku(mGame);
 			Toast.makeText(getApplicationContext(), R.string.puzzle_updated, Toast.LENGTH_SHORT).show();
 			break;
 		case STATE_INSERT:
 			mGame.setCreated(new Date());
-			mSudokuDB.insertSudoku(mFolderID, mGame);
+			mDatabase.insertSudoku(mFolderID, mGame);
 			Toast.makeText(getApplicationContext(), R.string.puzzle_inserted, Toast.LENGTH_SHORT).show();
 			break;
 		}

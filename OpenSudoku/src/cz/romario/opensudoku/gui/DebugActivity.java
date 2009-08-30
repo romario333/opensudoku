@@ -31,6 +31,7 @@ import android.widget.EditText;
 
 public class DebugActivity extends Activity {
 
+	// TODO: delete
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

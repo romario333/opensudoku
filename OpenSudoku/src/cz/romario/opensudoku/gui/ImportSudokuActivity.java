@@ -130,7 +130,6 @@ public class ImportSudokuActivity extends Activity {
 
 			SudokuDatabase sudokuDB = new SudokuDatabase(
 					getApplicationContext());
-			SQLiteDatabase db = sudokuDB.getWritableDatabase();
 
 			// TODO: quick & dirty version
 			long start = System.currentTimeMillis();
@@ -140,14 +139,12 @@ public class ImportSudokuActivity extends Activity {
 				updateStatusEveryNItems = mGames.size() / NUM_OF_PROGRESS_UPDATES;
 			}
 			try {
-				sudokuDB.beginSudokuImport(db);
+				sudokuDB.beginTransaction();
 
-				db.beginTransaction();
-
-				folderID = sudokuDB.insertFolder(mFolderInfo.name, db);
+				folderID = sudokuDB.insertFolder(mFolderInfo.name);
 				for (int i = 0; i < mGames.size(); i++) {
 					try {
-						sudokuDB.insertSudokuImport(folderID, mGames.get(i), db);
+						sudokuDB.insertSudokuImport(folderID, mGames.get(i));
 					} catch (SudokuInvalidFormatException e) {
 						setError(getString(R.string.invalid_format));
 						return false;
@@ -157,11 +154,10 @@ public class ImportSudokuActivity extends Activity {
 						publishProgress(i);
 					}
 				}
-				db.setTransactionSuccessful();
+				sudokuDB.setTransactionSuccessful();
 			} finally {
-				db.endTransaction();
-				sudokuDB.finishSudokuImport();
-				db.close();
+				sudokuDB.endTransaction();
+				sudokuDB.close();
 			}
 			mFolderInfo.id = folderID;
 

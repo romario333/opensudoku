@@ -37,6 +37,17 @@ import cz.romario.opensudoku.gui.SudokuListFilter;
 
 /**
  * 
+ * Wrapper around opensudoku's database.
+ * 
+ * You have to pass application context when creating instance:
+ * <code>SudokuDatabase db = new SudokuDatabase(getApplicationContext());</code>
+ * 
+ * You have to explicitly close connection when you're done with database (see {@link #close()}).
+ * 
+ * This class supports database transactions using {@link #beginTransaction()}, \
+ * {@link #setTransactionSuccessful()} and {@link #endTransaction()}. 
+ * See {@link SQLiteDatabase} for details on how to use them.
+ * 
  * @author romario
  *
  */
@@ -58,7 +69,6 @@ public class SudokuDatabase {
 
     /**
      * Returns list of puzzle folders.
-     * TODO: Other methods are closing database attached to cursor, which this method returns.
      * 
      * @return
      */
@@ -84,8 +94,6 @@ public class SudokuDatabase {
     	Cursor c = null;
     	try
         {
-    		
-    		
 	    	db = mOpenHelper.getReadableDatabase();
 	        
 	        // selectionArgs: You may include ?s in where clause in the query, which will be replaced by the values from selectionArgs. The values will be bound as Strings.
@@ -115,17 +123,9 @@ public class SudokuDatabase {
         	if (c != null) {
         		c.close();
         	}
-        	// TODO: I think that db should be closed explicitly by client
-        	if (db != null) {
-        		db.close();
-        	}
         }
         
         return folder;
-    }
-    
-    public long insertFolder(String name) {
-    	return insertFolder(name, null);
     }
     
     /**
@@ -133,25 +133,16 @@ public class SudokuDatabase {
      * @param name Name of the folder.
      * @return
      */
-    public long insertFolder(String name, SQLiteDatabase db) {
+    public long insertFolder(String name) {
         Long created = Long.valueOf(System.currentTimeMillis());
 
         ContentValues values = new ContentValues();
         values.put(FolderColumns.CREATED, created);
         values.put(FolderColumns.NAME, name);
 
-        SQLiteDatabase ldb = null;
         long rowId;
-        try {
-	        if (db != null) {
-	        	ldb = db;
-	        } else {
-	        	ldb = mOpenHelper.getWritableDatabase();
-	        }
-	        rowId = ldb.insert(FOLDER_TABLE_NAME, FolderColumns._ID, values);
-        } finally {
-        	if (db == null && ldb != null) ldb.close();
-        }
+    	SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        rowId = db.insert(FOLDER_TABLE_NAME, FolderColumns._ID, values);
 
         if (rowId > 0) {
             return rowId;
@@ -171,12 +162,8 @@ public class SudokuDatabase {
         values.put(FolderColumns.NAME, name);
 
         SQLiteDatabase db = null;
-        try {
-	        db = mOpenHelper.getWritableDatabase();
-	        db.update(FOLDER_TABLE_NAME, values, FolderColumns._ID + "=" + folderID, null);
-        } finally {
-        	if (db != null) db.close();
-        }
+        db = mOpenHelper.getWritableDatabase();
+        db.update(FOLDER_TABLE_NAME, values, FolderColumns._ID + "=" + folderID, null);
     }
     
     /**
@@ -185,23 +172,17 @@ public class SudokuDatabase {
      * @param folderID Primary key of folder.
      */
     public void deleteFolder(long folderID) {
-    	SQLiteDatabase db = null;
-    	try {
-	    	db = mOpenHelper.getWritableDatabase();
-	        // delete all puzzles in folder we are going to delete
-	    	db.delete(SUDOKU_TABLE_NAME, SudokuColumns.FOLDER_ID + "=" + folderID, null);
-	    	// delete the folder
-	    	db.delete(FOLDER_TABLE_NAME, FolderColumns._ID + "=" + folderID, null);
-	    } finally {
-	    	if (db != null) db.close();
-	    }
-
+    	
+    	// TODO: should run in transaction
+    	SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        // delete all puzzles in folder we are going to delete
+    	db.delete(SUDOKU_TABLE_NAME, SudokuColumns.FOLDER_ID + "=" + folderID, null);
+    	// delete the folder
+    	db.delete(FOLDER_TABLE_NAME, FolderColumns._ID + "=" + folderID, null);
     }
     
     /**
      * Returns list of puzzles in the given folder.
-     * 
-     * TODO: Other methods are closing database attached to cursor, which this method returns.
      * 
      * @param folderID Primary key of folder.
      * @return
@@ -270,18 +251,12 @@ public class SudokuDatabase {
         	}
         } finally {
         	if (c != null) c.close();
-        	
-        	if (db != null) db.close();
         }
         
         return s;
         
     }
     
-
-    public long insertSudoku(long folderID, SudokuGame sudoku) {
-    	return insertSudoku(folderID, sudoku, null);
-    }
 
     /**
      * Inserts new puzzle into the database.
@@ -290,47 +265,37 @@ public class SudokuDatabase {
      * @param sudoku 
      * @return
      */
-    public long insertSudoku(long folderID, SudokuGame sudoku, SQLiteDatabase db) {
-    	SQLiteDatabase ldb = null;
-        try {
-	        if (db != null) {
-	        	ldb = db;
-	        } else {
-	        	ldb = mOpenHelper.getWritableDatabase();
-	        }
-	        ContentValues values = new ContentValues();
-	        values.put(SudokuColumns.DATA, sudoku.getCells().serialize());
-	        values.put(SudokuColumns.CREATED, sudoku.getCreated().getTime());
-	        values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
-	        values.put(SudokuColumns.STATE, sudoku.getState());
-	        values.put(SudokuColumns.TIME, sudoku.getTime());
-	        values.put(SudokuColumns.PUZZLE_NOTE, sudoku.getNote());
-	        values.put(SudokuColumns.FOLDER_ID, folderID);
-	        
-	        long rowId = ldb.insert(SUDOKU_TABLE_NAME, FolderColumns.NAME, values);
-	        if (rowId > 0) {
-	            return rowId;
-	        }
-
-	        throw new SQLException("Failed to insert sudoku.");
-        } finally {
-        	if (db == null && ldb != null) ldb.close();
+    public long insertSudoku(long folderID, SudokuGame sudoku) {
+    	SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SudokuColumns.DATA, sudoku.getCells().serialize());
+        values.put(SudokuColumns.CREATED, sudoku.getCreated().getTime());
+        values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
+        values.put(SudokuColumns.STATE, sudoku.getState());
+        values.put(SudokuColumns.TIME, sudoku.getTime());
+        values.put(SudokuColumns.PUZZLE_NOTE, sudoku.getNote());
+        values.put(SudokuColumns.FOLDER_ID, folderID);
+        
+        long rowId = db.insert(SUDOKU_TABLE_NAME, FolderColumns.NAME, values);
+        if (rowId > 0) {
+            return rowId;
         }
+
+        throw new SQLException("Failed to insert sudoku.");
     }
     
     private static Pattern mSudokuPattern = Pattern.compile("^\\d{81}$");
     private static SQLiteStatement mInsertSudokuStatement;
-    
-    public void beginSudokuImport(SQLiteDatabase db) {
-    	mInsertSudokuStatement = db.compileStatement(
-				"insert into sudoku (folder_id, created, state, time, last_played, data) values (?, 0, " + SudokuGame.GAME_STATE_NOT_STARTED + ", 0, 0, ?)"
-		); 
-    }
-    
-	public long insertSudokuImport(long folderID, String sudoku,
-			SQLiteDatabase db) throws SudokuInvalidFormatException {
+    public long insertSudokuImport(long folderID, String sudoku) throws SudokuInvalidFormatException {
 		if (sudoku == null || !mSudokuPattern.matcher(sudoku).matches()) {
 			throw new SudokuInvalidFormatException(sudoku);
+		}
+		
+		if (mInsertSudokuStatement == null) {
+			SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+	    	mInsertSudokuStatement = db.compileStatement(
+					"insert into sudoku (folder_id, created, state, time, last_played, data) values (?, 0, " + SudokuGame.GAME_STATE_NOT_STARTED + ", 0, 0, ?)"
+			); 
 		}
 		
 		mInsertSudokuStatement.bindLong(1, folderID);
@@ -344,10 +309,6 @@ public class SudokuDatabase {
 		throw new SQLException("Failed to insert sudoku.");
 	}
 	
-	public void finishSudokuImport() {
-		mInsertSudokuStatement.close();
-	}
-    
     /**
      * Updates sudoku game in the database.
      * 
@@ -361,13 +322,8 @@ public class SudokuDatabase {
         values.put(SudokuColumns.TIME, sudoku.getTime());
         values.put(SudokuColumns.PUZZLE_NOTE, sudoku.getNote());
         
-        SQLiteDatabase db = null;
-        try {
-	        db = mOpenHelper.getWritableDatabase();
-	        db.update(SUDOKU_TABLE_NAME, values, SudokuColumns._ID + "=" + sudoku.getId(), null);
-        } finally {
-        	if (db != null) db.close();
-        }
+    	SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        db.update(SUDOKU_TABLE_NAME, values, SudokuColumns._ID + "=" + sudoku.getId(), null);
     }
     
 
@@ -377,15 +333,11 @@ public class SudokuDatabase {
      * @param sudokuID
      */
     public void deleteSudoku(long sudokuID) {
-    	SQLiteDatabase db = null;
-    	try {
-	    	db = mOpenHelper.getWritableDatabase();
-	        db.delete(SUDOKU_TABLE_NAME, SudokuColumns._ID + "=" + sudokuID, null);
-	    } finally {
-	    	if (db != null) db.close();
-	    }
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        db.delete(SUDOKU_TABLE_NAME, SudokuColumns._ID + "=" + sudokuID, null);
     }
     
+    // TODO: remove
     public void generateDebugPuzzles(int numOfFolders, int puzzlesPerFolder) {
     	for (int f=0; f<numOfFolders; f++) {
     		long folderID = insertFolder("debug" + f);
@@ -397,21 +349,29 @@ public class SudokuDatabase {
     	}
     }
     
-    /**
-     * TODO: You need to call this in activity's onDestroy when using getFolderList
-     * or getSudokuList and let activity to manage the cursor.
-     * 
-     */
     public void close() {
+    	// TODO: do I have to explicitly close statements?
+    	if (mInsertSudokuStatement != null) {
+    		mInsertSudokuStatement.close();
+    	}
+
     	mOpenHelper.close();
     }
+
+    public void beginTransaction() {
+    	mOpenHelper.getWritableDatabase().beginTransaction();
+    }
     
-    // TODO:
-    public SQLiteDatabase getWritableDatabase() {
-    	return mOpenHelper.getWritableDatabase();
+    public void setTransactionSuccessful() {
+    	mOpenHelper.getWritableDatabase().setTransactionSuccessful();
+    }
+    
+    public void endTransaction() {
+    	mOpenHelper.getWritableDatabase().endTransaction();
     }
 
     
+    // TODO: do I really need this?
     static {
     	sudokuListProjection = new String[] {
     		SudokuColumns._ID,

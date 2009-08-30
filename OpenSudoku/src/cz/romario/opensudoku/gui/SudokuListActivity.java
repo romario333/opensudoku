@@ -90,7 +90,7 @@ public class SudokuListActivity extends ListActivity {
 	
 	private SimpleCursorAdapter mAdapter;
 	private Cursor mCursor;
-	private SudokuDatabase mCursorDB;
+	private SudokuDatabase mDatabase;
 
 	private long mFolderID;
 	
@@ -106,7 +106,9 @@ public class SudokuListActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.sudoku_list);
-		
+
+		mDatabase = new SudokuDatabase(getApplicationContext());
+
 		mFilterStatus = (TextView)findViewById(R.id.filter_status);
 
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
@@ -116,7 +118,6 @@ public class SudokuListActivity extends ListActivity {
 		// Inform the list we provide context menus for items
 		getListView().setOnCreateContextMenuListener(this);
 
-		mCursorDB = new SudokuDatabase(getApplicationContext());
 		
 		if (intent.hasExtra(EXTRAS_FOLDER_ID)) {
 			mFolderID = intent.getLongExtra(EXTRAS_FOLDER_ID, 0);
@@ -138,7 +139,7 @@ public class SudokuListActivity extends ListActivity {
 		mListFilter.showStateCompleted = settings.getBoolean(FILTER_STATE_SOLVED, true);
 		updateFilterStatus();
 
-		mCursor = mCursorDB.getSudokuList(mFolderID, mListFilter);
+		mCursor = mDatabase.getSudokuList(mFolderID, mListFilter);
 		startManagingCursor(mCursor);
 		mAdapter = new SimpleCursorAdapter(this, R.layout.sudoku_list_item,
 				mCursor, new String[] { SudokuColumns.DATA, SudokuColumns.STATE,
@@ -281,7 +282,7 @@ public class SudokuListActivity extends ListActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		
-		mCursorDB.close();
+		mDatabase.close();
 	}
 	
 	/**
@@ -300,7 +301,7 @@ public class SudokuListActivity extends ListActivity {
 		if (mCursor != null) {
 			stopManagingCursor(mCursor);
 		}
-		mCursor = mCursorDB.getSudokuList(mFolderID, mListFilter);
+		mCursor = mDatabase.getSudokuList(mFolderID, mListFilter);
 		startManagingCursor(mCursor);
 		mAdapter.changeCursor(mCursor);
 	}
@@ -317,8 +318,7 @@ public class SudokuListActivity extends ListActivity {
 	
 	private void updateTitle() {
 		Context context = getApplicationContext();
-		SudokuDatabase sudokuDB = new SudokuDatabase(context);
-		FolderInfo folder = sudokuDB.getFolderInfo(mFolderID);
+		FolderInfo folder = mDatabase.getFolderInfo(mFolderID);
 		setTitle(folder.name + " - " + folder.getDetail(context));
 	}
 
@@ -385,9 +385,7 @@ public class SudokuListActivity extends ListActivity {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
-									SudokuDatabase db = new SudokuDatabase(
-											getApplicationContext());
-									db.deleteSudoku(mDeletePuzzleID);
+									mDatabase.deleteSudoku(mDeletePuzzleID);
 									update();
 								}
 							}).setNegativeButton(android.R.string.no, null).create();
@@ -403,13 +401,10 @@ public class SudokuListActivity extends ListActivity {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
-									SudokuDatabase db = new SudokuDatabase(
-											getApplicationContext());
-									
-									SudokuGame game = db.getSudoku(mEditNotePuzzleID);
+									SudokuGame game = mDatabase.getSudoku(mEditNotePuzzleID);
 									game.setNote(mEditNoteInput.getText()
 											.toString());
-									db.updateSudoku(game);
+									mDatabase.updateSudoku(game);
 									update();
 								}
 							}).setNegativeButton(android.R.string.cancel, null).create();
@@ -421,12 +416,10 @@ public class SudokuListActivity extends ListActivity {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
-									SudokuDatabase db = new SudokuDatabase(
-											getApplicationContext());
-									SudokuGame game = db.getSudoku(mResetPuzzleID);
+									SudokuGame game = mDatabase.getSudoku(mResetPuzzleID);
 									if (game != null) {
 										game.reset();
-										db.updateSudoku(game);
+										mDatabase.updateSudoku(game);
 									}
 									update();
 								}

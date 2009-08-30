@@ -48,6 +48,7 @@ import cz.romario.opensudoku.db.FolderColumns;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.FolderInfo;
 
+// TODO: do some revision of activities code, this is mess
 public class FolderListActivity extends ListActivity {
     
 	public static final int MENU_ITEM_ADD = Menu.FIRST;
@@ -66,9 +67,7 @@ public class FolderListActivity extends ListActivity {
     //private Handler mGuiHandler;
     //private TaskQueue mBackgroundTaskQueue;
     private Cursor mCursor;
-    private SudokuDatabase mSudokuDB;
-    
-    private SudokuDatabase mCursorDB;
+    private SudokuDatabase mDatabase;
     
     // input parameters for dialogs
     private TextView mAddFolderNameInput;
@@ -81,8 +80,9 @@ public class FolderListActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.folder_list);
-		
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
+		
+		mDatabase = new SudokuDatabase(getApplicationContext());
 		
 		View getMorePuzzles = (View)findViewById(R.id.get_more_puzzles);
 		getMorePuzzles.setOnClickListener(new OnClickListener() {
@@ -97,14 +97,12 @@ public class FolderListActivity extends ListActivity {
 		//mGuiHandler = new Handler();
 		//mBackgroundTaskQueue = new TaskQueue();
 		
-		mSudokuDB = new SudokuDatabase(getApplicationContext());
+		
 		
 		// Inform the list we provide context menus for items
         getListView().setOnCreateContextMenuListener(this);
 
-        // TODO: it is important that only getFolderList is called on this instance of SudokuDatabase.
-        mCursorDB = new SudokuDatabase(getApplicationContext());
-        mCursor = mCursorDB.getFolderList();
+        mCursor = mDatabase.getFolderList();
 		startManagingCursor(mCursor);
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.folder_list_item,
 				mCursor, new String[] { FolderColumns.NAME, FolderColumns._ID},
@@ -123,7 +121,7 @@ public class FolderListActivity extends ListActivity {
 					final TextView detailView = (TextView)view;
 					//final Handler guiHandler = mGuiHandler;
 					// TODO: lazy load detail or improve detail loading performance
-					String detail = mSudokuDB.getFolderInfo(folderID).getDetail(getApplicationContext());
+					String detail = mDatabase.getFolderInfo(folderID).getDetail(getApplicationContext());
 					detailView.setText(detail);
 //					detailView.setTag(folderID);
 //					// folder detail will be loaded asynchronously
@@ -174,11 +172,11 @@ public class FolderListActivity extends ListActivity {
     	//mBackgroundTaskQueue.stop();
     }
     
+    
     @Override
     protected void onDestroy() {
     	super.onDestroy();
-    	
-    	mCursorDB.close();
+    	mDatabase.close();
     }
     
     @Override
@@ -283,8 +281,7 @@ public class FolderListActivity extends ListActivity {
                 .setView(addFolderView)
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                    	SudokuDatabase db = new SudokuDatabase(getApplicationContext());
-                    	db.insertFolder(mAddFolderNameInput.getText().toString().trim());
+                    	mDatabase.insertFolder(mAddFolderNameInput.getText().toString().trim());
                     	update();
                     }
                 })
@@ -300,8 +297,8 @@ public class FolderListActivity extends ListActivity {
             .setView(renameFolderView)
             .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	SudokuDatabase db = new SudokuDatabase(getApplicationContext());
-                	db.updateFolder(mRenameFolderID, mRenameFolderNameInput.getText().toString().trim());
+                	// TODO: retest
+                	mDatabase.updateFolder(mRenameFolderID, mRenameFolderNameInput.getText().toString().trim());
                 	update();
                 }
             })
@@ -315,8 +312,7 @@ public class FolderListActivity extends ListActivity {
             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	// TODO: this could take a while, I should show progress dialog
-                	SudokuDatabase db = new SudokuDatabase(getApplicationContext());
-                	db.deleteFolder(mDeleteFolderID);
+                	mDatabase.deleteFolder(mDeleteFolderID);
                 	update();
                 }
             })
@@ -341,14 +337,14 @@ public class FolderListActivity extends ListActivity {
     		break;
     	case DIALOG_RENAME_FOLDER:
     	{
-    		FolderInfo folder = mSudokuDB.getFolderInfo(mRenameFolderID);
+    		FolderInfo folder = mDatabase.getFolderInfo(mRenameFolderID);
     		dialog.setTitle(getString(R.string.rename_folder_title, folder.name));
     		mRenameFolderNameInput.setText(folder.name);
     		break;
     	}
     	case DIALOG_DELETE_FOLDER:
     	{
-    		FolderInfo folder = mSudokuDB.getFolderInfo(mDeleteFolderID);
+    		FolderInfo folder = mDatabase.getFolderInfo(mDeleteFolderID);
     		dialog.setTitle(getString(R.string.delete_folder_title, folder.name));
     		break;
     	}
