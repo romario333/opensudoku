@@ -54,6 +54,9 @@ import android.widget.Toast;
 
 public class ImportSudokuActivity extends Activity {
 
+	public static final String EXTRA_FOLDER_NAME = "FOLDER_NAME";
+	public static final String EXTRA_GAMES = "GAMES";
+	
 	private static final String TAG = "ImportSudokuActivity";
 	static final Pattern SUDOKU_PATT = Pattern.compile(".*\\D([\\d]{81})\\D.*");
 	private ProgressBar mProgress;
@@ -70,12 +73,12 @@ public class ImportSudokuActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(Uri... params) {
 
-			if (params.length != 1) {
+			if (params != null && params.length != 1) {
 				throw new IllegalArgumentException("Only one URI expected.");
 			}
 
 			try {
-				return importUri(params[0]);
+				return importUri(params != null ? params[0] : null);
 			} catch (Exception e) {
 				Log.e(TAG, "Exception occurred during import.", e);
 				setError(getString(R.string.unknown_import_error));
@@ -132,8 +135,10 @@ public class ImportSudokuActivity extends Activity {
 			// TODO: quick & dirty version
 			long start = System.currentTimeMillis();
 			long folderID = -1;
-			int updateStatusEveryNItems = mGames.size()
-					/ NUM_OF_PROGRESS_UPDATES;
+			int updateStatusEveryNItems = 1;
+			if (mGames.size() > NUM_OF_PROGRESS_UPDATES) {
+				updateStatusEveryNItems = mGames.size() / NUM_OF_PROGRESS_UPDATES;
+			}
 			try {
 				sudokuDB.beginSudokuImport(db);
 
@@ -293,6 +298,31 @@ public class ImportSudokuActivity extends Activity {
 		}
 
 	}
+	
+	private class StringImportTask extends AbstractImportTask {
+
+		private String mFolderName;
+		private String mGames;
+		
+		public StringImportTask(String folderName, String games) {
+			mFolderName = folderName;
+			mGames = games;
+		}
+		
+		@Override
+		protected Boolean processUri(Uri uri) {
+			setFolderName(mFolderName);
+			
+			for (String game : mGames.split("\n")) {
+				importGame(game);
+			}
+			
+			return true;
+		}
+		
+	}
+		
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -309,22 +339,19 @@ public class ImportSudokuActivity extends Activity {
 		Uri dataUri = intent.getData();
 
 		if (dataUri != null) {
-			if (intent.getType() == "application/x-opensudoku"
-					|| dataUri.toString().endsWith(".opensudoku")) {
+			if (intent.getType() == "application/x-opensudoku" || dataUri.toString().endsWith(".opensudoku")) {
 				new ImportOpenSudokuTask().execute(dataUri);
 			} else if (dataUri.toString().endsWith(".sdm")) {
 				new SdmImportTask().execute(dataUri);
 			} else {
-				Log
-						.e(
-								TAG,
-								String
-										.format(
-												"Unknown type of data provided (mime-type=%s; uri=%s), exiting.",
-												intent.getType(), dataUri));
+				Log.e(TAG, String.format("Unknown type of data provided (mime-type=%s; uri=%s), exiting.", intent.getType(), dataUri));
 				finish();
 				return;
 			}
+		} else if (intent.getStringExtra(EXTRA_FOLDER_NAME) != null) {
+			String folderName = intent.getStringExtra(EXTRA_FOLDER_NAME);
+			String games = intent.getStringExtra(EXTRA_GAMES);
+			new StringImportTask(folderName, games).execute(null);
 		} else {
 			Log.e(TAG, "No data provided, exiting.");
 			finish();

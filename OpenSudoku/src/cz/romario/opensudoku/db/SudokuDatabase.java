@@ -299,7 +299,7 @@ public class SudokuDatabase {
 	        	ldb = mOpenHelper.getWritableDatabase();
 	        }
 	        ContentValues values = new ContentValues();
-	        values.put(SudokuColumns.DATA, sudoku.getCells().toString());
+	        values.put(SudokuColumns.DATA, sudoku.getCells().serialize());
 	        values.put(SudokuColumns.CREATED, sudoku.getCreated().getTime());
 	        values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
 	        values.put(SudokuColumns.STATE, sudoku.getState());
@@ -355,7 +355,7 @@ public class SudokuDatabase {
      */
     public void updateSudoku(SudokuGame sudoku) {
         ContentValues values = new ContentValues();
-        values.put(SudokuColumns.DATA, sudoku.getCells().toString());
+        values.put(SudokuColumns.DATA, sudoku.getCells().serialize());
         values.put(SudokuColumns.LAST_PLAYED, sudoku.getLastPlayed().getTime());
         values.put(SudokuColumns.STATE, sudoku.getState());
         values.put(SudokuColumns.TIME, sudoku.getTime());

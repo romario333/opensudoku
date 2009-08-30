@@ -67,6 +67,7 @@
 	
 	<string name="undo">卸载</string>
 	<string name="clear_all_notes">清除所有提示</string>
+	<string name="fill_in_notes">Fill in notes</string>
 	<string name="restart">重启</string>
 	<string name="congrats">恭喜您已解决所有谜团 %s.</string>
 	<string name="restart_confirm">您确定要重新启动这个游戏？</string>

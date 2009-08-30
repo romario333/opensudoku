@@ -26,6 +26,7 @@ import java.util.Stack;
 import cz.romario.opensudoku.game.command.ClearAllNotesCommand;
 import cz.romario.opensudoku.game.command.Command;
 import cz.romario.opensudoku.game.command.EditCellNoteCommand;
+import cz.romario.opensudoku.game.command.FillInNotesCommand;
 import cz.romario.opensudoku.game.command.SetCellValueCommand;
 
 
@@ -268,6 +269,13 @@ public class SudokuGame implements Parcelable {
 	
 	public void clearAllNotes() {
 		executeCommand(new ClearAllNotesCommand(mCells));
+	}
+	
+	/**
+	 * Fills in possible values which can be entered in each cell.
+	 */
+	public void fillInNotes() {
+		executeCommand(new FillInNotesCommand(mCells));
 	}
 	
 	public void setHighlightWrongVals(boolean highlightWrongVals) {

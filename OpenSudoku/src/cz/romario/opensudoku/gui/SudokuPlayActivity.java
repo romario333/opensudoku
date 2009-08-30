@@ -48,9 +48,10 @@ public class SudokuPlayActivity extends Activity{
 	
 	public static final int MENU_ITEM_RESTART = Menu.FIRST;
 	public static final int MENU_ITEM_CLEAR_ALL_NOTES = Menu.FIRST + 1;
-	public static final int MENU_ITEM_UNDO = Menu.FIRST + 2;
-	public static final int MENU_ITEM_HELP = Menu.FIRST + 3; 
-	public static final int MENU_ITEM_SETTINGS = Menu.FIRST + 4;
+	public static final int MENU_ITEM_FILL_IN_NOTES = Menu.FIRST + 2;
+	public static final int MENU_ITEM_UNDO = Menu.FIRST + 3;
+	public static final int MENU_ITEM_HELP = Menu.FIRST + 4; 
+	public static final int MENU_ITEM_SETTINGS = Menu.FIRST + 5;
 	
 	
 	//private static final String TAG = "SudokuPlayActivity";
@@ -203,6 +204,9 @@ public class SudokuPlayActivity extends Activity{
         .setShortcut('3', 'a')
         .setIcon(android.R.drawable.ic_menu_delete);
 
+        menu.add(0, MENU_ITEM_FILL_IN_NOTES, 0, R.string.fill_in_notes)
+        .setIcon(android.R.drawable.ic_menu_edit);
+        
         menu.add(0, MENU_ITEM_RESTART, 1, R.string.restart)
         .setShortcut('7', 'r')
         .setIcon(android.R.drawable.ic_menu_rotate);
@@ -248,6 +252,9 @@ public class SudokuPlayActivity extends Activity{
             return true;
         case MENU_ITEM_CLEAR_ALL_NOTES:
         	showDialog(DIALOG_CLEAR_NOTES);
+        	return true;
+        case MENU_ITEM_FILL_IN_NOTES:
+        	mSudokuGame.fillInNotes();
         	return true;
         case MENU_ITEM_UNDO:
         	mSudokuGame.undo();

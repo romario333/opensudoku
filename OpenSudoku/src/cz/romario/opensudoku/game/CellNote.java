@@ -142,6 +142,38 @@ public class CellNote {
 		return new CellNote(notedNumbers);
 	}
 	
+	/** 
+	 * Adds number to the cell's note (if not present already).
+	 * 
+	 * @param number
+	 * @return
+	 */
+	public CellNote addNumber(int number) {
+		if (number < 1 || number > 9)
+			throw new IllegalArgumentException("Number must be between 1-9.");
+
+		Set<Integer> notedNumbers = new HashSet<Integer>(getNotedNumbers());
+		notedNumbers.add(number);
+		
+		return new CellNote(notedNumbers);
+	}
+
+	/** 
+	 * Removes number from the cell's note.
+	 * 
+	 * @param number
+	 * @return
+	 */
+	public CellNote removeNumber(int number) {
+		if (number < 1 || number > 9)
+			throw new IllegalArgumentException("Number must be between 1-9.");
+
+		Set<Integer> notedNumbers = new HashSet<Integer>(getNotedNumbers());
+		notedNumbers.remove(number);
+		
+		return new CellNote(notedNumbers);
+	}
+	
 	public CellNote clear() {
 		return new CellNote();
 	}

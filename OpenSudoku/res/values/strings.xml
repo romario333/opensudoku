@@ -61,6 +61,7 @@
 	
 	<string name="undo">Undo</string>
 	<string name="clear_all_notes">Clear all notes</string>
+	<string name="fill_in_notes">Fill in notes</string>
 	<string name="restart">Restart</string>
 	<string name="congrats">Congratulations, you have solved the puzzle in %s.</string>
 	<string name="restart_confirm">Are you sure you want to restart this game?</string>
