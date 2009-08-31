@@ -21,7 +21,6 @@
 package cz.romario.opensudoku.gui;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import android.content.Context;

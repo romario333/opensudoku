@@ -20,7 +20,6 @@
 
 package cz.romario.opensudoku.game;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -110,11 +109,7 @@ public class CellNote {
 	}
 
 	/**
-	 * TODO: find out how big performance impact would be to create new collection here
-	 * 
-	 * Returns reference to the data (for performance reasons, it's called from
-	 * SudokuBoardView's onDraw). Do not change
-	 * anything through this reference, use CellNote's methods !
+	 * Returns numbers currently noted in cell.
 	 * 
 	 * @return
 	 */

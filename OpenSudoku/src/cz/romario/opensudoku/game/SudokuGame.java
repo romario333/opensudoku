@@ -64,7 +64,6 @@ public class SudokuGame implements Parcelable {
 
 	public SudokuGame() {
 		mTime = 0;
-		// TODO: check that this does not mean any performance impact in sudoku list
 		mLastPlayed = new Date(0);
 		mCreated = new Date(0);
 		
@@ -130,6 +129,7 @@ public class SudokuGame implements Parcelable {
 
 	public void setCells(CellCollection cells) {
 		mCells = cells;
+		validate();
 	}
 	
 	public CellCollection getCells() {
@@ -151,9 +151,12 @@ public class SudokuGame implements Parcelable {
 	 * @param value
 	 */
 	public void setCellValue(Cell cell, int value) {
-		// TODO: get rid of asserts
-		assert cell != null;
-		assert value >= 0 && value <= 9;
+		if (cell == null) {
+			throw new IllegalArgumentException("Cell cannot be null.");
+		}
+		if (value < 0 || value > 9) {
+			throw new IllegalArgumentException("Value must be between 0-9.");
+		}
 		
 		if (cell.isEditable()) {
 			executeCommand(new SetCellValueCommand(cell, value));
@@ -175,7 +178,12 @@ public class SudokuGame implements Parcelable {
 	 * @param note
 	 */
 	public void setCellNote(Cell cell, CellNote note) {
-		assert cell != null;
+		if (cell == null) {
+			throw new IllegalArgumentException("Cell cannot be null.");
+		}
+		if (note == null) {
+			throw new IllegalArgumentException("Note cannot be null.");
+		}
 
 		if (cell.isEditable()) {
 			executeCommand(new EditCellNoteCommand(cell, note));
@@ -276,7 +284,7 @@ public class SudokuGame implements Parcelable {
 		executeCommand(new FillInNotesCommand(mCells));
 	}
 	
-	private void validate() {
+	public void validate() {
 		mCells.validate();
 	}
 	

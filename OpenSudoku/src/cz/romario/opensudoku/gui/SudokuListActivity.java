@@ -22,7 +22,6 @@ package cz.romario.opensudoku.gui;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Formatter;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -79,9 +78,7 @@ public class SudokuListActivity extends ListActivity {
 	public static final String EXTRAS_FOLDER_ID = "folder_id";
 	private static final String TAG = "SudokuListActivity";
 	
-	// TODO: duplicated code
-	private StringBuilder mTimeText;
-	private Formatter mGameTimeFormatter;
+	private GameTimeFormat mGameTimeFormatter = new GameTimeFormat();
 	private DateFormat mDateTimeFormatter = DateFormat.getDateTimeInstance(
 			DateFormat.SHORT, DateFormat.SHORT);
 	private DateFormat mTimeFormatter = DateFormat
@@ -128,11 +125,6 @@ public class SudokuListActivity extends ListActivity {
 			return;
 		}
 
-
-
-		mTimeText = new StringBuilder();
-		mGameTimeFormatter = new Formatter(mTimeText);
-		
 		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		mListFilter = new SudokuListFilter(getApplicationContext());
 		mListFilter.showStateNotStarted = settings.getBoolean(FILTER_STATE_NOT_STARTED, true);
@@ -194,7 +186,7 @@ public class SudokuListActivity extends ListActivity {
 					label = ((TextView) view);
 					String timeString = null;
 					if (time != 0) {
-						timeString = getTime(time);
+						timeString = mGameTimeFormatter.format(time);
 					}
 					label.setVisibility(timeString == null ? View.GONE
 							: View.VISIBLE);
@@ -336,12 +328,6 @@ public class SudokuListActivity extends ListActivity {
 		Context context = getApplicationContext();
 		FolderInfo folder = mDatabase.getFolderInfo(mFolderID);
 		setTitle(folder.name + " - " + folder.getDetail(context));
-	}
-
-	private String getTime(long time) {
-		mTimeText.setLength(0);
-		mGameTimeFormatter.format("%02d:%02d", time / 60000, time / 1000 % 60);
-		return mTimeText.toString();
 	}
 
 	private String getDateAndTimeForHumans(long datetime) {

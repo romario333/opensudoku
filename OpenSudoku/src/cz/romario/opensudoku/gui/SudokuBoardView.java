@@ -404,13 +404,6 @@ public class SudokuBoardView extends View {
 		return !mReadonly;
 	}
 	
-	// TODO: do I really need this?
-	@Override
-	public boolean onTrackballEvent(MotionEvent event) {
-    	// Actually, just let these come through as D-pad events.
-    	return false;
-	}
-	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (!mReadonly) {
@@ -549,8 +542,6 @@ public class SudokuBoardView extends View {
 	 * @return
 	 */
 	private Cell getCellAtPoint(int x, int y) {
-		// TODO: this is not nice, col/row vs x/y
-		
 		// take into account padding
 		int lx = x - getPaddingLeft();
 		int ly = y - getPaddingTop();

@@ -20,8 +20,6 @@
 
 package cz.romario.opensudoku.gui;
 
-import java.util.Formatter;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -74,8 +72,7 @@ public class SudokuPlayActivity extends Activity{
 	private IMSingleNumber mIMSingleNumber;
 	private IMNumpad mIMNumpad;
 	
-	private StringBuilder mTimeText;
-	private Formatter mTimeFormatter;
+	private GameTimeFormat mGameTimeFormatter = new GameTimeFormat();
 	
 	private GameTimer mGameTimer;
 	
@@ -96,8 +93,6 @@ public class SudokuPlayActivity extends Activity{
 		
         mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
         
-        mTimeText = new StringBuilder(5);
-        mTimeFormatter = new Formatter(mTimeText);
         mGameTimer = new GameTimer();
         
         
@@ -123,7 +118,7 @@ public class SudokuPlayActivity extends Activity{
         if (mSudokuGame.getState() == SudokuGame.GAME_STATE_COMPLETED) {
         	mSudokuBoard.setReadOnly(true);
         }
-
+        
         mSudokuBoard.setGame(mSudokuGame);
 		mSudokuGame.setOnPuzzleSolvedListener(onSolvedListener);
 		
@@ -290,7 +285,7 @@ public class SudokuPlayActivity extends Activity{
             return new AlertDialog.Builder(this)
             .setIcon(android.R.drawable.ic_dialog_info)
             .setTitle(R.string.well_done)
-            .setMessage(getString(R.string.congrats, getTime()))
+            .setMessage(getString(R.string.congrats, mGameTimeFormatter.format(mSudokuGame.getTime())))
             .setPositiveButton(android.R.string.ok, null)
             .create();
     	case DIALOG_RESTART:
@@ -340,23 +335,15 @@ public class SudokuPlayActivity extends Activity{
     	
     };
     
-	// TODO: can Chronometer replace this?
 	/**
      * Update the time of game-play.
      */
 	void updateTitle() {
 		if (mShowTime) {
-			setTitle(getTime());
+			setTitle(mGameTimeFormatter.format(mSudokuGame.getTime()));
 		} else {
 			setTitle(R.string.app_name);
 		}
-	}
-	
-	public String getTime() {
-		long time = mSudokuGame.getTime();
-		mTimeText.setLength(0);
-		mTimeFormatter.format("%02d:%02d", time / 60000, time / 1000 % 60);
-		return mTimeText.toString();
 	}
 	
 	// This class implements the game clock.  All it does is update the

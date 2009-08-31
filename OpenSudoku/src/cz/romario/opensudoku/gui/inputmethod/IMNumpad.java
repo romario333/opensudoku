@@ -32,7 +32,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.Cell;
-import cz.romario.opensudoku.game.CellNote;
 
 public class IMNumpad extends InputMethod {
 
@@ -163,7 +162,6 @@ public class IMNumpad extends InputMethod {
 	
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onRestoreInstanceState(savedInstanceState);
 		
 		mEditMode = savedInstanceState.getInt(getInputMethodName() + ".edit_mode");

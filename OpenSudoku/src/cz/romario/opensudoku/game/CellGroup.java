@@ -20,11 +20,8 @@
 
 package cz.romario.opensudoku.game;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 
 
@@ -49,38 +46,28 @@ public class CellGroup {
 
 	/**
 	 * Validates numbers in given sudoku group - numbers must be unique. Cells with invalid
-	 * numbers are marked (see {@link Cell#isInvalid}).
+	 * numbers are marked (see {@link Cell#isValid}).
 	 * 
 	 * Method expects that cell's invalid properties has been set to false 
 	 * ({@link CellCollection#validate} does this).
 	 * 
 	 * @return True if validation is successful.
 	 */
-	public boolean validate() {
-		// TODO: quick and dirty implementation
+	protected boolean validate() {
 		boolean valid = true;
 		
-		// count number of occurences of numbers in group
-		Map<Integer, List<Cell>> cellsByValue = 
-			new HashMap<Integer, List<Cell>>();
-		for (int i=0; i<mCells.length; i++) {
-			int value = mCells[i].getValue();
-			
-			if (value != 0) {
-				if (!cellsByValue.containsKey(value)) {
-					cellsByValue.put(value, new ArrayList<Cell>());
-				}
-				cellsByValue.get(value).add(mCells[i]);
-			}
-		}
-		
-		// if some number is in group more than once, mark cells holding this number as invalid.
-		for (Entry<Integer, List<Cell>> cellsForValue : cellsByValue.entrySet()) {
-			if (cellsForValue.getValue() != null && cellsForValue.getValue().size() > 1) {
-				for (Cell cell : cellsForValue.getValue()) {
-					cell.setValid(false);
-					valid = false;
-				}
+		Map<Integer, Cell> cellsByValue = new HashMap<Integer, Cell>();
+		for (int i = 0; i < mCells.length; i++) {
+			Cell cell = mCells[i];
+			int value = cell.getValue();
+			if (cellsByValue.get(value) != null) {
+				mCells[i].setValid(false);
+				cellsByValue.get(value).setValid(false);
+				valid = false;
+			} else {
+				cellsByValue.put(value, cell);
+				// we cannot set cell as valid here, because same cell can be invalid
+				// as part of another group 
 			}
 		}
 	

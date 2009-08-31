@@ -176,7 +176,6 @@ public class CellCollection  implements Parcelable {
 	 * Marks all cells as editable.
 	 */
 	public void markAllCellsAsEditable() {
-		// TODO: implement iterator? (consider also performance)
 		for (int r=0; r<SUDOKU_SIZE; r++) {
 			for (int c=0; c<SUDOKU_SIZE; c++){
 				Cell cell = mCells[r][c];

@@ -1,22 +1,33 @@
-/* 
- * Copyright (C) 2009 Roman Masek
- * 
- * This file is part of OpenSudoku.
- * 
- * OpenSudoku is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * OpenSudoku is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with OpenSudoku.  If not, see <http://www.gnu.org/licenses/>.
- * 
+/**
+ * NetScramble: unscramble a network and connect all the terminals.
+ *
+ * This is an Android implementation of the KDE game "knetwalk".
+ * The player is given a network diagram with the parts of the network
+ * randomly rotated; he/she must rotate them to connect all the terminals
+ * to the server.
+ *
+ * Original author:
+ *   QNetwalk, Copyright (C) 2004, Andi Peredri <andi@ukr.net>
+ *
+ * Ported to kde by:
+ *   Thomas Nagy <tnagyemail-mail@yahoo@fr>
+ *
+ * Cell-locking implemented by:
+ *   Reinhold Kainhofer <reinhold@kainhofer.com>
+ *
+ * Ported to Android by:
+ *   Ian Cameron Smith <johantheghost@yahoo.com>
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License version 2
+ *   as published by the Free Software Foundation (see COPYING).
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  */
+
 
 package cz.romario.opensudoku.gui;
 

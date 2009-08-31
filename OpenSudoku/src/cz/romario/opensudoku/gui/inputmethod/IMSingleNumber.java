@@ -35,7 +35,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.Cell;
-import cz.romario.opensudoku.game.CellNote;
 
 /**
  * This class represents following type of number input workflow: Number buttons are displayed

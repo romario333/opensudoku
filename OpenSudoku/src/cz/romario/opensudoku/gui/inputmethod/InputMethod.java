@@ -71,9 +71,6 @@ public abstract class InputMethod {
 		if (mControlPanel == null) {
 			mControlPanel = createControlPanel();
 			View switchModeView = mControlPanel.findViewById(R.id.switch_input_mode);
-			if (switchModeView == null) {
-				// TODO: exception + check that it is button
-			}
 			Button switchModeButton = (Button) switchModeView;
 			switchModeButton.setText(getAbbrName());
 			// TODO: color from resources

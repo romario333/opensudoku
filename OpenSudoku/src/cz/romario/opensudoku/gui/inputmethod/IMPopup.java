@@ -86,7 +86,6 @@ public class IMPopup extends InputMethod {
 	
 	@Override
 	public String getAbbrName() {
-		// TODO: Icon would be better?
 		return mContext.getString(R.string.popup_abbr);
 	}
 	

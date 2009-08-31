@@ -1,8 +1,6 @@
 package cz.romario.opensudoku.game;
 
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.telephony.CellLocation;
 import junit.framework.TestCase;
 
 public class CellCollectionTest extends TestCase {

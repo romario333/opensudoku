@@ -1,14 +1,11 @@
 package cz.romario.opensudoku.game;
 
-import android.util.Log;
 import junit.framework.TestCase;
 
-// TODO: check whether tests affect release apk size
+// TODO: check how much tests affect release apk size
 
 public class CellNoteTest extends TestCase {
 
-	private static final String TAG = "CellNoteTest";
-	
 	public void testCellNote() {
 		CellNote note = new CellNote();
 		assertNotNull(note.getNotedNumbers());

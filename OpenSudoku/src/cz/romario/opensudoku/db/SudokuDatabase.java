@@ -58,7 +58,6 @@ public class SudokuDatabase {
     public static final String SUDOKU_TABLE_NAME = "sudoku";
     public static final String FOLDER_TABLE_NAME = "folder";
     
-    private static final String[] sudokuListProjection;
     //private static final String TAG = "SudokuDatabase";
 
     private DatabaseHelper mOpenHelper;
@@ -243,7 +242,7 @@ public class SudokuDatabase {
         }
         
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        return qb.query(db, sudokuListProjection, null, null, null, null, "created DESC");
+        return qb.query(db, null, null, null, null, null, "created DESC");
     }
     
     /**
@@ -386,7 +385,6 @@ public class SudokuDatabase {
     }
     
     public void close() {
-    	// TODO: do I have to explicitly close statements?
     	if (mInsertSudokuStatement != null) {
     		mInsertSudokuStatement.close();
     	}
@@ -405,19 +403,4 @@ public class SudokuDatabase {
     public void endTransaction() {
     	mOpenHelper.getWritableDatabase().endTransaction();
     }
-
-    
-    // TODO: do I really need this?
-    static {
-    	sudokuListProjection = new String[] {
-    		SudokuColumns._ID,
-    		SudokuColumns.CREATED,
-    		SudokuColumns.STATE,
-    		SudokuColumns.TIME,
-    		SudokuColumns.DATA,
-    		SudokuColumns.LAST_PLAYED,
-    		SudokuColumns.PUZZLE_NOTE
-    	};
-    }
-
 }

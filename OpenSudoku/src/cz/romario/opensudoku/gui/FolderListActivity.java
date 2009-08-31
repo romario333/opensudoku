@@ -153,7 +153,6 @@ public class FolderListActivity extends ListActivity {
     
     @Override
     protected void onStart() {
-    	// TODO Auto-generated method stub
     	super.onStart();
     	
     	update();
@@ -239,8 +238,7 @@ public class FolderListActivity extends ListActivity {
             // For some reason the requested item isn't available, do nothing
             return;
         }
-        // TODO: don't assume that second column is name
-        menu.setHeaderTitle(cursor.getString(2));
+        menu.setHeaderTitle(cursor.getString(cursor.getColumnIndex(FolderColumns.NAME)));
 
         // Add a menu item to delete the note
         menu.add(0, MENU_ITEM_RENAME, 0, R.string.rename_folder);
@@ -293,7 +291,6 @@ public class FolderListActivity extends ListActivity {
             .setView(renameFolderView)
             .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	// TODO: retest
                 	mDatabase.updateFolder(mRenameFolderID, mRenameFolderNameInput.getText().toString().trim());
                 	update();
                 }
@@ -325,8 +322,8 @@ public class FolderListActivity extends ListActivity {
     protected void onPrepareDialog(int id, Dialog dialog) {
     	super.onPrepareDialog(id, dialog);
     	
-    	// TODO: when changing orientation, it seems that only onCreateDialog is called, delete folder than for
-    	// example does not have proper title
+    	// TODO: when changing orientation, it seems that only onCreateDialog is called, 
+    	// delete folder then does not have proper title (it has %s instead)
     	
     	switch (id) {
     	case DIALOG_ADD_FOLDER:

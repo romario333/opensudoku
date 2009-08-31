@@ -53,7 +53,6 @@ public class IMControlPanel extends LinearLayout {
 	
 	private Context mContext;
 	private SudokuBoardView mBoard;
-	// TODO: why does control panel need access tu SudokuGame? CellCollection should be enough.
 	private SudokuGame mGame;
 	private HintsQueue mHintsQueue;
 	
@@ -81,7 +80,6 @@ public class IMControlPanel extends LinearLayout {
 	 */
 	public void setBoard(SudokuBoardView board) {
 		mBoard = board;
-		// TODO: only one observer can be registered, implement observer pattern properly
 		mBoard.setOnCellTappedListener(mOnCellTapListener);
 		mBoard.setOnCellSelectedListener(mOnCellSelected);
 	}
@@ -267,9 +265,6 @@ public class IMControlPanel extends LinearLayout {
 		if (!im.isControlPanelCreated()) {
 			View controlPanel = im.getControlPanel();
 			Button switchModeButton = (Button)controlPanel.findViewById(R.id.switch_input_mode);
-			if (switchModeButton == null) {
-				// TODO: exception
-			}
 			switchModeButton.setOnClickListener(mSwitchModeListener);
 			this.addView(controlPanel, LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
 		}
@@ -324,8 +319,6 @@ public class IMControlPanel extends LinearLayout {
     	private SavedState(Parcelable superState, int activeMethodIndex, List<InputMethod> inputMethods) {
             super(superState);
             mActiveMethodIndex = activeMethodIndex;
-            
-            // TODO: consider thread-safety
             
             mInputMethodsState = new Bundle();
             for (InputMethod im : inputMethods) {

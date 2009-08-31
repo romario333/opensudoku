@@ -1,12 +1,9 @@
 package cz.romario.opensudoku.game;
 
-import android.util.Log;
 import junit.framework.TestCase;
 
 public class CellTest extends TestCase {
 	
-	private static final String TAG = "CellTest";
-
 	public void testSetValue() {
 		Cell cell = new Cell();
 		cell.setValue(0);
