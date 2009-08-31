@@ -56,8 +56,6 @@ public class SudokuGame implements Parcelable {
 	// Time when current activity has become active. 
 	private long mActiveFromTime = -1; 
 
-	private boolean mHighlightWrongVals = true;
-
 	public static SudokuGame createEmptyGame() {
 		SudokuGame game = new SudokuGame();
 		game.setCells(CellCollection.createEmpty());
@@ -278,23 +276,8 @@ public class SudokuGame implements Parcelable {
 		executeCommand(new FillInNotesCommand(mCells));
 	}
 	
-	public void setHighlightWrongVals(boolean highlightWrongVals) {
-		mHighlightWrongVals = highlightWrongVals;
-		mCells.markAllCellsAsValid();
-		
-		if (mHighlightWrongVals) {
-			validate();
-		}
-	}
-
-	public boolean getHighlightWrongVals() {
-		return mHighlightWrongVals;
-	}
-	
 	private void validate() {
-		if (mHighlightWrongVals) {
-			mCells.validate();
-		}
+		mCells.validate();
 	}
 	
 	// constructor for Parcelable

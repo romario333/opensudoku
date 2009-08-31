@@ -38,6 +38,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -283,6 +284,21 @@ public class SudokuListActivity extends ListActivity {
 		super.onDestroy();
 		
 		mDatabase.close();
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// if there is no activity in history and back button was pressed, go
+		// to FolderListActivity, which is the root activity.
+		if (isTaskRoot() && keyCode == KeyEvent.KEYCODE_BACK) {
+			Intent i = new Intent();
+			i.setClass(this, FolderListActivity.class);
+			startActivity(i);
+			finish(); 
+			return true;
+		}
+		
+		return super.onKeyDown(keyCode, event);
 	}
 	
 	/**

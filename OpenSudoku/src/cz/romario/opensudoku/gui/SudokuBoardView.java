@@ -62,7 +62,7 @@ public class SudokuBoardView extends View {
 	private Cell mTouchedCell;
 	private Cell mSelectedCell;
 	private boolean mReadonly = false;
-	
+	private boolean mHighlightWrongVals = true;
 	private boolean mAutoHideTouchedCellHint = true;
 	
 	private SudokuGame mGame;
@@ -120,6 +120,16 @@ public class SudokuBoardView extends View {
 	public boolean isReadOnly() {
 		return mReadonly;
 	}
+	
+	public void setHighlightWrongVals(boolean highlightWrongVals) {
+		mHighlightWrongVals = highlightWrongVals;
+		postInvalidate();
+	}
+
+	public boolean getHighlightWrongVals() {
+		return mHighlightWrongVals;
+	}
+	
 	
 	/**
 	 * Registers callback which will be invoked when user taps the cell.
@@ -285,7 +295,11 @@ public class SudokuBoardView extends View {
 					// draw cell Text
 					int value = cell.getValue();
 					if (value != 0) {
-						mNumberPaint.setColor(cell.isValid() ? Color.BLACK : Color.RED);
+						if (mHighlightWrongVals) {
+							mNumberPaint.setColor(cell.isValid() ? Color.BLACK : Color.RED);
+						} else {
+							mNumberPaint.setColor(Color.BLACK);
+						}
 						canvas.drawText(Integer.toString(value),
 								cellLeft + mNumberLeft, 
 								Math.round(cellTop) + mNumberTop - numberAscent, 
