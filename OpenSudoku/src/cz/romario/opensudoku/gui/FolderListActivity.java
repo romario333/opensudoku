@@ -48,19 +48,24 @@ import cz.romario.opensudoku.db.FolderColumns;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.FolderInfo;
 
-// TODO: do some revision of activities code, this is mess
+/**
+ * List of puzzle's folder. This activity also serves as root activity of application.
+ * 
+ * @author romario
+ *
+ */
 public class FolderListActivity extends ListActivity {
     
 	public static final int MENU_ITEM_ADD = Menu.FIRST;
     public static final int MENU_ITEM_RENAME = Menu.FIRST + 1;
     public static final int MENU_ITEM_DELETE = Menu.FIRST + 2;
     public static final int MENU_ITEM_ABOUT = Menu.FIRST + 3;
-    
-    private static final int DIALOG_ABOUT = 0;
+	
+	private static final int DIALOG_ABOUT = 0;
     private static final int DIALOG_ADD_FOLDER = 1;
     private static final int DIALOG_RENAME_FOLDER = 2;
     private static final int DIALOG_DELETE_FOLDER = 3;
-    
+	
     private static final String TAG = "FolderListActivity";
     
     //private Handler mGuiHandler;
@@ -77,13 +82,14 @@ public class FolderListActivity extends ListActivity {
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.folder_list);
-		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
-		
-		mDatabase = new SudokuDatabase(getApplicationContext());
-		
 		View getMorePuzzles = (View)findViewById(R.id.get_more_puzzles);
+		
+		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
+		// Inform the list we provide context menus for items
+        getListView().setOnCreateContextMenuListener(this);
+		
 		getMorePuzzles.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -95,13 +101,9 @@ public class FolderListActivity extends ListActivity {
 		
 		//mGuiHandler = new Handler();
 		//mBackgroundTaskQueue = new TaskQueue();
-		
-		
-		
-		// Inform the list we provide context menus for items
-        getListView().setOnCreateContextMenuListener(this);
 
-        mCursor = mDatabase.getFolderList();
+		mDatabase = new SudokuDatabase(getApplicationContext());
+		mCursor = mDatabase.getFolderList();
 		startManagingCursor(mCursor);
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.folder_list_item,
 				mCursor, new String[] { FolderColumns.NAME, FolderColumns._ID},
@@ -155,7 +157,7 @@ public class FolderListActivity extends ListActivity {
     protected void onStart() {
     	super.onStart();
     	
-    	update();
+    	updateList();
     }
     
     @Override
@@ -192,10 +194,6 @@ public class FolderListActivity extends ListActivity {
     	mRenameFolderID = state.getLong("mRenameFolderID");
     	mDeleteFolderID = state.getLong("mDeleteFolderID");
     }
-	
-	private void update() {
-		mCursor.requery();
-	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -276,7 +274,7 @@ public class FolderListActivity extends ListActivity {
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                     	mDatabase.insertFolder(mAddFolderNameInput.getText().toString().trim());
-                    	update();
+                    	updateList();
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -292,7 +290,7 @@ public class FolderListActivity extends ListActivity {
             .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	mDatabase.updateFolder(mRenameFolderID, mRenameFolderNameInput.getText().toString().trim());
-                	update();
+                	updateList();
                 }
             })
             .setNegativeButton(android.R.string.cancel, null)
@@ -306,7 +304,7 @@ public class FolderListActivity extends ListActivity {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	// TODO: this could take a while, I should show progress dialog
                 	mDatabase.deleteFolder(mDeleteFolderID);
-                	update();
+                	updateList();
                 }
             })
             .setNegativeButton(android.R.string.no, null)
@@ -344,8 +342,6 @@ public class FolderListActivity extends ListActivity {
     	}
     }
 
-    
-    
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info;
@@ -385,12 +381,12 @@ public class FolderListActivity extends ListActivity {
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		showFolder(id);
-	}
-	
-	private void showFolder(long folderId) {
 		Intent i = new Intent(this, SudokuListActivity.class);
-		i.putExtra(SudokuListActivity.EXTRAS_FOLDER_ID, folderId);
+		i.putExtra(SudokuListActivity.EXTRA_FOLDER_ID, id);
 		startActivity(i);
+	}
+
+	private void updateList() {
+		mCursor.requery();
 	}
 }

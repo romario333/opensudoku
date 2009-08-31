@@ -43,6 +43,8 @@ import cz.romario.opensudoku.gui.inputmethod.IMSingleNumber;
 /*
  */
 public class SudokuPlayActivity extends Activity{
+
+	public static final String EXTRA_SUDOKU_ID = "sudoku_id";
 	
 	public static final int MENU_ITEM_RESTART = Menu.FIRST;
 	public static final int MENU_ITEM_CLEAR_ALL_NOTES = Menu.FIRST + 1;
@@ -51,20 +53,15 @@ public class SudokuPlayActivity extends Activity{
 	public static final int MENU_ITEM_HELP = Menu.FIRST + 4; 
 	public static final int MENU_ITEM_SETTINGS = Menu.FIRST + 5;
 	
-	
-	//private static final String TAG = "SudokuPlayActivity";
-	
-	public static final String EXTRAS_SUDOKU_ID = "sudoku_id";
-	
 	private static final int DIALOG_RESTART = 1;
 	private static final int DIALOG_WELL_DONE = 2;
 	private static final int DIALOG_CLEAR_NOTES = 3;
 
-	private SudokuDatabase mDatabase;
-	
 	private long mSudokuGameID;
 	private SudokuGame mSudokuGame;
+
 	
+	private SudokuDatabase mDatabase;
 	private SudokuBoardView mSudokuBoard;
 	
 	private IMControlPanel mInputMethods;
@@ -72,37 +69,28 @@ public class SudokuPlayActivity extends Activity{
 	private IMSingleNumber mIMSingleNumber;
 	private IMNumpad mIMNumpad;
 	
+	private boolean mShowTime = true;
+	private GameTimer mGameTimer;
 	private GameTimeFormat mGameTimeFormatter = new GameTimeFormat();
 	
-	private GameTimer mGameTimer;
-	
 	private HintsQueue mHintsQueue;
-	
-	private boolean mShowTime = true;
-	
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
 		setContentView(R.layout.sudoku_play);
+		mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
 		
 		mDatabase = new SudokuDatabase(getApplicationContext());
-    
 		mHintsQueue = new HintsQueue(this);
-		
-        mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
-        
         mGameTimer = new GameTimer();
-        
-        
         
         // create sudoku game instance
         if (savedInstanceState == null) {
         	// activity runs for the first time, read game from database
-        	mSudokuGameID = getIntent().getLongExtra(EXTRAS_SUDOKU_ID, 0);
+        	mSudokuGameID = getIntent().getLongExtra(EXTRA_SUDOKU_ID, 0);
         	mSudokuGame = mDatabase.getSudoku(mSudokuGameID);
-        	//gameTimer.setTime(sudokuGame.getTime());
         } else {
         	// activity has been running before, restore its state
         	mSudokuGame = (SudokuGame)savedInstanceState.getParcelable("sudoku_game");
@@ -128,7 +116,6 @@ public class SudokuPlayActivity extends Activity{
         mInputMethods.setBoard(mSudokuBoard);
         mInputMethods.setGame(mSudokuGame);
         mInputMethods.setHintsQueue(mHintsQueue);
-        
         mIMPopup = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_POPUP);
         mIMSingleNumber = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_SINGLE_NUMBER);
         mIMNumpad = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_NUMPAD);
@@ -150,19 +137,15 @@ public class SudokuPlayActivity extends Activity{
 				mGameTimer.start();
 			}
 		}
-
         
         mIMPopup.enabled = gameSettings.getBoolean("im_popup", true);
         mIMSingleNumber.enabled = gameSettings.getBoolean("im_single_number", true);
         mIMNumpad.enabled = gameSettings.getBoolean("im_numpad", true);
         mIMNumpad.moveCellSelectionOnPress = gameSettings.getBoolean("im_numpad_move_right", false);
-
         mInputMethods.activateFirstInputMethod();
 
 		updateTitle();
 	}
-	
-	
 	
     @Override
     protected void onPause() {
@@ -176,13 +159,13 @@ public class SudokuPlayActivity extends Activity{
 		mDatabase.updateSudoku(mSudokuGame);
 		
 		mGameTimer.stop();
-		
 		mInputMethods.pause();
     }
     
     @Override
     protected void onDestroy() {
     	super.onDestroy();
+
     	mDatabase.close();
     }
     
@@ -221,10 +204,6 @@ public class SudokuPlayActivity extends Activity{
         menu.add(0, MENU_ITEM_SETTINGS, 1, R.string.settings)
         .setShortcut('9', 's')
         .setIcon(android.R.drawable.ic_menu_preferences);
-        
-        
-
-        
 
         // Generate any additional actions that can be performed on the
         // overall list.  In a normal install, there are no additional
@@ -233,7 +212,7 @@ public class SudokuPlayActivity extends Activity{
         Intent intent = new Intent(null, getIntent().getData());
         intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
         menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0,
-                new ComponentName(this, FolderListActivity.class), null, intent, 0, null);
+                new ComponentName(this, SudokuPlayActivity.class), null, intent, 0, null);
 
         return true;
 	}
@@ -243,7 +222,6 @@ public class SudokuPlayActivity extends Activity{
 		super.onPrepareOptionsMenu(menu);
 		
 		menu.findItem(MENU_ITEM_UNDO).setEnabled(mSudokuGame.hasSomethingToUndo());
-		
 		return true;
 	}
 	
@@ -277,10 +255,6 @@ public class SudokuPlayActivity extends Activity{
     @Override
     protected Dialog onCreateDialog(int id) {
     	switch (id){
-//    	case DIALOG_SELECT_NUMBER:
-//    		return selectNumberDialog.getDialog();
-//    	case DIALOG_SELECT_MULTIPLE_NUMBERS:
-//			return selectMultipleNumbersDialog.getDialog();
     	case DIALOG_WELL_DONE:
             return new AlertDialog.Builder(this)
             .setIcon(android.R.drawable.ic_dialog_info)

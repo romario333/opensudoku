@@ -55,8 +55,16 @@ import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 
+/**
+ * List of puzzles in folder.
+ * 
+ * @author romario
+ *
+ */
 public class SudokuListActivity extends ListActivity {
 
+	public static final String EXTRA_FOLDER_ID = "folder_id";
+	
 	public static final int MENU_ITEM_INSERT = Menu.FIRST;
 	public static final int MENU_ITEM_EDIT = Menu.FIRST + 1;
 	public static final int MENU_ITEM_DELETE = Menu.FIRST + 2;
@@ -75,10 +83,20 @@ public class SudokuListActivity extends ListActivity {
 	private static final String FILTER_STATE_PLAYING = "filter" + SudokuGame.GAME_STATE_PLAYING;
 	private static final String FILTER_STATE_SOLVED = "filter" + SudokuGame.GAME_STATE_COMPLETED;
 	
-	public static final String EXTRAS_FOLDER_ID = "folder_id";
 	private static final String TAG = "SudokuListActivity";
 	
+	private long mFolderID;
+	
+	// input parameters for dialogs
+	private long mDeletePuzzleID;
+	private long mResetPuzzleID;
+	private long mEditNotePuzzleID;
+	private TextView mEditNoteInput;
+	private SudokuListFilter mListFilter;
+
+	// TODO: put this to list view binder
 	private GameTimeFormat mGameTimeFormatter = new GameTimeFormat();
+	// TODO: get rid of these, encapsulate it with getDateTimeForHumans (and possibly move to Utils)
 	private DateFormat mDateTimeFormatter = DateFormat.getDateTimeInstance(
 			DateFormat.SHORT, DateFormat.SHORT);
 	private DateFormat mTimeFormatter = DateFormat
@@ -90,35 +108,21 @@ public class SudokuListActivity extends ListActivity {
 	private Cursor mCursor;
 	private SudokuDatabase mDatabase;
 
-	private long mFolderID;
-	
-	// input parameters for dialogs
-	private long mDeletePuzzleID;
-	private long mResetPuzzleID;
-	private long mEditNotePuzzleID;
-	private TextView mEditNoteInput;
-	private SudokuListFilter mListFilter;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.sudoku_list);
-
-		mDatabase = new SudokuDatabase(getApplicationContext());
-
 		mFilterStatus = (TextView)findViewById(R.id.filter_status);
 
+		getListView().setOnCreateContextMenuListener(this);
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
+		
+		mDatabase = new SudokuDatabase(getApplicationContext());
 
 		Intent intent = getIntent();
-
-		// Inform the list we provide context menus for items
-		getListView().setOnCreateContextMenuListener(this);
-
-		
-		if (intent.hasExtra(EXTRAS_FOLDER_ID)) {
-			mFolderID = intent.getLongExtra(EXTRAS_FOLDER_ID, 0);
+		if (intent.hasExtra(EXTRA_FOLDER_ID)) {
+			mFolderID = intent.getLongExtra(EXTRA_FOLDER_ID, 0);
 		} else {
 			Log.d(TAG, "No 'folder_id' extra provided, exiting.");
 			finish();
@@ -130,17 +134,15 @@ public class SudokuListActivity extends ListActivity {
 		mListFilter.showStateNotStarted = settings.getBoolean(FILTER_STATE_NOT_STARTED, true);
 		mListFilter.showStatePlaying = settings.getBoolean(FILTER_STATE_PLAYING, true);
 		mListFilter.showStateCompleted = settings.getBoolean(FILTER_STATE_SOLVED, true);
-		updateFilterStatus();
 
-		mCursor = mDatabase.getSudokuList(mFolderID, mListFilter);
-		startManagingCursor(mCursor);
 		mAdapter = new SimpleCursorAdapter(this, R.layout.sudoku_list_item,
-				mCursor, new String[] { SudokuColumns.DATA, SudokuColumns.STATE,
+				null, new String[] { SudokuColumns.DATA, SudokuColumns.STATE,
 						SudokuColumns.TIME, SudokuColumns.LAST_PLAYED,
 						SudokuColumns.CREATED, SudokuColumns.PUZZLE_NOTE },
 				new int[] { R.id.sudoku_board, R.id.state, R.id.time,
 						R.id.last_played, R.id.created, R.id.note });
 
+		// TODO: create non-anonymous ViewBinder class
 		mAdapter.setViewBinder(new ViewBinder() {
 			@Override
 			public boolean setViewValue(View view, Cursor c, int columnIndex) {
@@ -241,18 +243,20 @@ public class SudokuListActivity extends ListActivity {
 				return true;
 			}
 		});
+
+		updateList();
 		
 		setListAdapter(mAdapter);
 		
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
+	protected void onDestroy() {
+		super.onDestroy();
 		
-		updateTitle();
+		mDatabase.close();
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -272,13 +276,6 @@ public class SudokuListActivity extends ListActivity {
 	}
 	
 	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		
-		mDatabase.close();
-	}
-
-	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// if there is no activity in history and back button was pressed, go
 		// to FolderListActivity, which is the root activity.
@@ -291,62 +288,6 @@ public class SudokuListActivity extends ListActivity {
 		}
 		
 		return super.onKeyDown(keyCode, event);
-	}
-	
-	/**
-	 * Updates whole list.
-	 */
-	private void update() {
-		// update title
-		updateTitle();
-		
-		// update data bound to the list
-		mCursor.requery();
-	}
-	
-	// TODO: find out how to filter items
-	private void update2() {
-		if (mCursor != null) {
-			stopManagingCursor(mCursor);
-		}
-		mCursor = mDatabase.getSudokuList(mFolderID, mListFilter);
-		startManagingCursor(mCursor);
-		mAdapter.changeCursor(mCursor);
-	}
-	
-	private void updateFilterStatus() {
-		
-		if (mListFilter.showStateCompleted && mListFilter.showStateNotStarted && mListFilter.showStatePlaying) {
-			mFilterStatus.setVisibility(View.GONE);
-		} else {
-			mFilterStatus.setText(getString(R.string.filter_active, mListFilter));
-			mFilterStatus.setVisibility(View.VISIBLE);
-		}
-	}
-	
-	private void updateTitle() {
-		Context context = getApplicationContext();
-		FolderInfo folder = mDatabase.getFolderInfo(mFolderID);
-		setTitle(folder.name + " - " + folder.getDetail(context));
-	}
-
-	private String getDateAndTimeForHumans(long datetime) {
-		Date date = new Date(datetime);
-
-		// TODO: temporary version, find clearer way and perhaps optimize
-		Date now = new Date(System.currentTimeMillis());
-		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
-		Date yesterday = new Date(System.currentTimeMillis()
-				- (1000 * 60 * 60 * 24));
-
-		if (date.after(today)) {
-			return getString(R.string.at_time, mTimeFormatter.format(date));
-		} else if (date.after(yesterday)) {
-			return getString(R.string.yesterday_at_time, mTimeFormatter.format(date));
-		} else {
-			return getString(R.string.on_date, mDateTimeFormatter.format(date));
-		}
-
 	}
 
 	@Override
@@ -388,7 +329,7 @@ public class SudokuListActivity extends ListActivity {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
 									mDatabase.deleteSudoku(mDeletePuzzleID);
-									update();
+									updateList();
 								}
 							}).setNegativeButton(android.R.string.no, null).create();
 		case DIALOG_EDIT_NOTE:
@@ -407,7 +348,7 @@ public class SudokuListActivity extends ListActivity {
 									game.setNote(mEditNoteInput.getText()
 											.toString());
 									mDatabase.updateSudoku(game);
-									update();
+									updateList();
 								}
 							}).setNegativeButton(android.R.string.cancel, null).create();
 		case DIALOG_RESET_PUZZLE:
@@ -423,7 +364,7 @@ public class SudokuListActivity extends ListActivity {
 										game.reset();
 										mDatabase.updateSudoku(game);
 									}
-									update();
+									updateList();
 								}
 							}).setNegativeButton(android.R.string.no, null).create();
 		case DIALOG_FILTER:
@@ -461,8 +402,7 @@ public class SudokuListActivity extends ListActivity {
 			        		.putBoolean(FILTER_STATE_PLAYING, mListFilter.showStatePlaying)
 			        		.putBoolean(FILTER_STATE_SOLVED, mListFilter.showStateCompleted)
 			        		.commit();
-			        	update2();
-			        	updateFilterStatus();
+			        	updateList();
 			        }
 			    })
 			    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -533,7 +473,7 @@ public class SudokuListActivity extends ListActivity {
 		case MENU_ITEM_EDIT:
 			Intent i = new Intent(this, SudokuEditActivity.class);
 			i.setAction(Intent.ACTION_EDIT);
-			i.putExtra(SudokuEditActivity.EXTRAS_SUDOKU_ID, info.id);
+			i.putExtra(SudokuEditActivity.EXTRA_SUDOKU_ID, info.id);
 			startActivity(i);
 			return true;
 		case MENU_ITEM_DELETE:
@@ -559,7 +499,7 @@ public class SudokuListActivity extends ListActivity {
 			// Launch activity to insert a new item
 			Intent i = new Intent(this, SudokuEditActivity.class);
 			i.setAction(Intent.ACTION_INSERT);
-			i.putExtra(SudokuEditActivity.EXTRAS_FOLDER_ID, mFolderID);
+			i.putExtra(SudokuEditActivity.EXTRA_FOLDER_ID, mFolderID);
 			startActivity(i);
 			return true;
 		}
@@ -581,19 +521,59 @@ public class SudokuListActivity extends ListActivity {
 		playSudoku(id);
 	}
 
-	// private OnItemClickListener sudokuListItemListener = new
-	// OnItemClickListener() {
-	//
-	// @Override
-	// public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-	// long id) {
-	// playSudoku(id);
-	// }
-	// };
+	/**
+	 * Updates whole list.
+	 */
+	private void updateList() {
+		updateTitle();
+		updateFilterStatus();
+		
+		if (mCursor != null) {
+			stopManagingCursor(mCursor);
+		}
+		mCursor = mDatabase.getSudokuList(mFolderID, mListFilter);
+		startManagingCursor(mCursor);
+		mAdapter.changeCursor(mCursor);
+	}
+	
+	private void updateFilterStatus() {
+		
+		if (mListFilter.showStateCompleted && mListFilter.showStateNotStarted && mListFilter.showStatePlaying) {
+			mFilterStatus.setVisibility(View.GONE);
+		} else {
+			mFilterStatus.setText(getString(R.string.filter_active, mListFilter));
+			mFilterStatus.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	private void updateTitle() {
+		Context context = getApplicationContext();
+		FolderInfo folder = mDatabase.getFolderInfo(mFolderID);
+		setTitle(folder.name + " - " + folder.getDetail(context));
+	}
+
+	private String getDateAndTimeForHumans(long datetime) {
+		Date date = new Date(datetime);
+
+		// TODO: temporary version, find clearer way and perhaps optimize
+		Date now = new Date(System.currentTimeMillis());
+		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
+		Date yesterday = new Date(System.currentTimeMillis()
+				- (1000 * 60 * 60 * 24));
+
+		if (date.after(today)) {
+			return getString(R.string.at_time, mTimeFormatter.format(date));
+		} else if (date.after(yesterday)) {
+			return getString(R.string.yesterday_at_time, mTimeFormatter.format(date));
+		} else {
+			return getString(R.string.on_date, mDateTimeFormatter.format(date));
+		}
+
+	}
 
 	private void playSudoku(long sudokuID) {
 		Intent i = new Intent(SudokuListActivity.this, SudokuPlayActivity.class);
-		i.putExtra(SudokuPlayActivity.EXTRAS_SUDOKU_ID, sudokuID);
+		i.putExtra(SudokuPlayActivity.EXTRA_SUDOKU_ID, sudokuID);
 		startActivity(i);
 	}
 

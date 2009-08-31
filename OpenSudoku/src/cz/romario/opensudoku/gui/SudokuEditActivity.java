@@ -36,14 +36,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+/**
+ * Activity for editing content of puzzle.
+ * 
+ * @author romario
+ *
+ */
 public class SudokuEditActivity extends Activity {
-	private static final String TAG = "SudokuEditActivity";
 	
 	/**
 	 * When inserting new data, I need to know folder in which will new sudoku be stored.
 	 */
-	public static final String EXTRAS_FOLDER_ID = "folder_id";
-	public static final String EXTRAS_SUDOKU_ID = "sudoku_id";
+	public static final String EXTRA_FOLDER_ID = "folder_id";
+	public static final String EXTRA_SUDOKU_ID = "sudoku_id";
 	
 	public static final int MENU_ITEM_SAVE = Menu.FIRST;
 	public static final int MENU_ITEM_CANCEL = Menu.FIRST + 1;
@@ -52,9 +57,10 @@ public class SudokuEditActivity extends Activity {
     private static final int STATE_EDIT = 0;
     private static final int STATE_INSERT = 1;
     private static final int STATE_CANCEL = 2;
+    
+    private static final String TAG = "SudokuEditActivity";
 
     private int mState;
-    
     private long mFolderID;
     private long mSudokuID;
     
@@ -68,31 +74,28 @@ public class SudokuEditActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.sudoku_edit);
-		
-        mDatabase = new SudokuDatabase(getApplicationContext());
-
-
 		mBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
 		
+        mDatabase = new SudokuDatabase(getApplicationContext());
 		
 		Intent intent = getIntent();
         String action = intent.getAction();
         if (Intent.ACTION_EDIT.equals(action)) {
             // Requested to edit: set that state, and the data being edited.
             mState = STATE_EDIT;
-            if (intent.hasExtra(EXTRAS_SUDOKU_ID)) {
-            	mSudokuID = intent.getLongExtra(EXTRAS_SUDOKU_ID, 0);
+            if (intent.hasExtra(EXTRA_SUDOKU_ID)) {
+            	mSudokuID = intent.getLongExtra(EXTRA_SUDOKU_ID, 0);
             } else {
-            	throw new IllegalArgumentException(String.format("Extra with key '%s' is required.", EXTRAS_SUDOKU_ID));
+            	throw new IllegalArgumentException(String.format("Extra with key '%s' is required.", EXTRA_SUDOKU_ID));
             }
         } else if (Intent.ACTION_INSERT.equals(action)) {
         	mState = STATE_INSERT;
         	mSudokuID = 0;
         	
-            if (intent.hasExtra(EXTRAS_FOLDER_ID)) {
-            	mFolderID = intent.getLongExtra(EXTRAS_FOLDER_ID, 0);
+            if (intent.hasExtra(EXTRA_FOLDER_ID)) {
+            	mFolderID = intent.getLongExtra(EXTRA_FOLDER_ID, 0);
             } else {
-            	throw new IllegalArgumentException(String.format("Extra with key '%s' is required.", EXTRAS_FOLDER_ID));
+            	throw new IllegalArgumentException(String.format("Extra with key '%s' is required.", EXTRA_FOLDER_ID));
             }
         	
         } else {
@@ -128,13 +131,6 @@ public class SudokuEditActivity extends Activity {
 	}
 	
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		
-		outState.putParcelable("game", mGame);
-	}
-	
-	@Override
 	protected void onPause() {
 		super.onPause();
 		
@@ -147,6 +143,13 @@ public class SudokuEditActivity extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		mDatabase.close();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		outState.putParcelable("game", mGame);
 	}
 	
 	@Override
@@ -167,7 +170,7 @@ public class SudokuEditActivity extends Activity {
         Intent intent = new Intent(null, getIntent().getData());
         intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
         menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0,
-                new ComponentName(this, FolderListActivity.class), null, intent, 0, null);
+                new ComponentName(this, SudokuEditActivity.class), null, intent, 0, null);
 
         return true;
 	}

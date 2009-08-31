@@ -50,6 +50,13 @@ import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+/**
+ * This activity is responsible for importing puzzles from various sources
+ * (web, file, .opensudoku, .sdm, extras).
+ * 
+ * @author romario
+ *
+ */
 public class ImportSudokuActivity extends Activity {
 
 	/**
@@ -68,9 +75,55 @@ public class ImportSudokuActivity extends Activity {
 	public static final String EXTRA_GAMES = "GAMES";
 	
 	private static final String TAG = "ImportSudokuActivity";
-	static final Pattern SUDOKU_PATT = Pattern.compile(".*\\D([\\d]{81})\\D.*");
+	private static final Pattern SUDOKU_PATT = Pattern.compile(".*\\D([\\d]{81})\\D.*");
+	
 	private ProgressBar mProgress;
 
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		requestWindowFeature(Window.FEATURE_LEFT_ICON);
+		setContentView(R.layout.import_sudoku);
+		getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
+				R.drawable.opensudoku);
+
+		mProgress = (ProgressBar) findViewById(R.id.progress);
+
+		Intent intent = getIntent();
+		Uri dataUri = intent.getData();
+		if (dataUri != null) {
+			if (intent.getType() == "application/x-opensudoku"
+					|| dataUri.toString().endsWith(".opensudoku")) {
+				new ImportOpenSudokuTask().execute(new ImportOptions()
+						.setUri(dataUri));
+			} else if (dataUri.toString().endsWith(".sdm")) {
+				new SdmImportTask()
+						.execute(new ImportOptions().setUri(dataUri));
+			} else {
+				Log.e(
+					TAG,
+					String.format(
+						"Unknown type of data provided (mime-type=%s; uri=%s), exiting.",
+						intent.getType(), dataUri));
+				finish();
+				return;
+			}
+		} else if (intent.getStringExtra(EXTRA_FOLDER_NAME) != null) {
+			String folderName = intent.getStringExtra(EXTRA_FOLDER_NAME);
+			String games = intent.getStringExtra(EXTRA_GAMES);
+			boolean appendToFolder = intent.getBooleanExtra(
+					EXTRA_APPEND_TO_FOLDER, false);
+			new StringImportTask(games).execute(new ImportOptions()
+					.setFolderName(folderName)
+					.setAppendToFolder(appendToFolder));
+		} else {
+			Log.e(TAG, "No data provided, exiting.");
+			finish();
+			return;
+		}
+	}
+	
 	private static class ImportOptions {
 		private Uri mUri;
 		private String mFolderName;
@@ -168,7 +221,7 @@ public class ImportSudokuActivity extends Activity {
 
 				Intent i = new Intent(ImportSudokuActivity.this,
 						SudokuListActivity.class);
-				i.putExtra(SudokuListActivity.EXTRAS_FOLDER_ID, mFolderInfo.id);
+				i.putExtra(SudokuListActivity.EXTRA_FOLDER_ID, mFolderInfo.id);
 				startActivity(i);
 			} else {
 				Toast.makeText(ImportSudokuActivity.this, mImportError,
@@ -400,54 +453,5 @@ public class ImportSudokuActivity extends Activity {
 		}
 		
 	}
-		
-	
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		requestWindowFeature(Window.FEATURE_LEFT_ICON);
-		setContentView(R.layout.import_sudoku);
-		getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
-				R.drawable.opensudoku);
-
-		mProgress = (ProgressBar) findViewById(R.id.progress);
-
-		Intent intent = getIntent();
-		Uri dataUri = intent.getData();
-
-		if (dataUri != null) {
-			if (intent.getType() == "application/x-opensudoku"
-					|| dataUri.toString().endsWith(".opensudoku")) {
-				new ImportOpenSudokuTask().execute(new ImportOptions()
-						.setUri(dataUri));
-			} else if (dataUri.toString().endsWith(".sdm")) {
-				new SdmImportTask()
-						.execute(new ImportOptions().setUri(dataUri));
-			} else {
-				Log
-						.e(
-								TAG,
-								String
-										.format(
-												"Unknown type of data provided (mime-type=%s; uri=%s), exiting.",
-												intent.getType(), dataUri));
-				finish();
-				return;
-			}
-		} else if (intent.getStringExtra(EXTRA_FOLDER_NAME) != null) {
-			String folderName = intent.getStringExtra(EXTRA_FOLDER_NAME);
-			String games = intent.getStringExtra(EXTRA_GAMES);
-			boolean appendToFolder = intent.getBooleanExtra(
-					EXTRA_APPEND_TO_FOLDER, false);
-			new StringImportTask(games).execute(new ImportOptions()
-					.setFolderName(folderName)
-					.setAppendToFolder(appendToFolder));
-		} else {
-			Log.e(TAG, "No data provided, exiting.");
-			finish();
-			return;
-		}
-	}
 }
