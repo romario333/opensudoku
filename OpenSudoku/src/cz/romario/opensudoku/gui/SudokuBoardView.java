@@ -49,17 +49,8 @@ public class SudokuBoardView extends View {
 	private float mCellWidth;
 	private float mCellHeight;
 	
-	private Paint mLinePaint;
-	private Paint mNumberPaint;
-	private Paint mNotePaint;
-	private int mNumberLeft;
-	private int mNumberTop;
-	private float mNoteTop;
-	private Paint mReadonlyPaint;
-	private Paint mTouchedPaint;
-	private Paint mSelectedPaint;
-	
 	private Cell mTouchedCell;
+	// TODO: should I synchronize access to mSelectedCell?
 	private Cell mSelectedCell;
 	private boolean mReadonly = false;
 	private boolean mHighlightWrongVals = true;
@@ -70,6 +61,16 @@ public class SudokuBoardView extends View {
 	
 	private OnCellTappedListener mOnCellTappedListener;
 	private OnCellSelectedListener mOnCellSelectedListener;
+
+	private Paint mLinePaint;
+	private Paint mNumberPaint;
+	private Paint mNotePaint;
+	private int mNumberLeft;
+	private int mNumberTop;
+	private float mNoteTop;
+	private Paint mReadonlyPaint;
+	private Paint mTouchedPaint;
+	private Paint mSelectedPaint;
 	
 	public SudokuBoardView(Context context) {
 		super(context);
@@ -129,7 +130,14 @@ public class SudokuBoardView extends View {
 	public boolean getHighlightWrongVals() {
 		return mHighlightWrongVals;
 	}
-	
+
+	public void setAutoHideTouchedCellHint(boolean autoHideTouchedCellHint) {
+		mAutoHideTouchedCellHint = autoHideTouchedCellHint;
+	}
+
+	public boolean getAutoHideTouchedCellHint() {
+		return mAutoHideTouchedCellHint;
+	}
 	
 	/**
 	 * Registers callback which will be invoked when user taps the cell.
@@ -155,6 +163,12 @@ public class SudokuBoardView extends View {
 	public void setOnCellSelectedListener(OnCellSelectedListener l) {
 		mOnCellSelectedListener = l;
 	}
+	
+	public void hideTouchedCellHint() {
+		mTouchedCell = null;
+		postInvalidate();
+	}
+	
 	
 	protected void onCellSelected(Cell cell) {
 		if (mOnCellSelectedListener != null) {
@@ -458,27 +472,6 @@ public class SudokuBoardView extends View {
 	}
 	
 	
-	public void setCellValue(Cell cell, int value) {
-		if (cell.isEditable()) {
-			if (mGame != null) {
-				mGame.setCellValue(cell, value);
-			} else {
-				cell.setValue(value);
-			}
-		}
-	}
-	
-	public void setCellNote(Cell cell, CellNote note) {
-		if (cell.isEditable()) {
-			if (mGame != null) {
-				mGame.setCellNote(cell, note);
-			} else {
-				cell.setNote(note);
-			}
-		}
-	}
-	
-	
 	/**
 	 * Moves selected cell by one cell to the right. If edge is reached, selection
 	 * skips on beginning of another line. 
@@ -493,6 +486,27 @@ public class SudokuBoardView extends View {
 		}
 		postInvalidate();
 	}
+	
+	private void setCellValue(Cell cell, int value) {
+		if (cell.isEditable()) {
+			if (mGame != null) {
+				mGame.setCellValue(cell, value);
+			} else {
+				cell.setValue(value);
+			}
+		}
+	}
+	
+	private void setCellNote(Cell cell, CellNote note) {
+		if (cell.isEditable()) {
+			if (mGame != null) {
+				mGame.setCellNote(cell, note);
+			} else {
+				cell.setNote(note);
+			}
+		}
+	}
+	
 	
 	/**
 	 * Moves selected by vx cells right and vy cells down. vx and vy can be negative. Returns true,
@@ -596,20 +610,5 @@ public class SudokuBoardView extends View {
 //		
 //		return modeString;
 //	}
-
-	public void setAutoHideTouchedCellHint(boolean autoHideTouchedCellHint) {
-		mAutoHideTouchedCellHint = autoHideTouchedCellHint;
-	}
-
-	public boolean getAutoHideTouchedCellHint() {
-		return mAutoHideTouchedCellHint;
-	}
-	
-	public void hideTouchedCellHint() {
-		mTouchedCell = null;
-		postInvalidate();
-	}
-	
-
 
 }
