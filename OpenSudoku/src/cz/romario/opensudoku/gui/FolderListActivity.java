@@ -24,6 +24,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -47,6 +48,7 @@ import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.FolderColumns;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.FolderInfo;
+import cz.romario.opensudoku.gui.FolderDetailLoader.FolderDetailCallback;
 
 /**
  * List of puzzle's folder. This activity also serves as root activity of application.
@@ -68,10 +70,9 @@ public class FolderListActivity extends ListActivity {
 	
     private static final String TAG = "FolderListActivity";
     
-    //private Handler mGuiHandler;
-    //private TaskQueue mBackgroundTaskQueue;
     private Cursor mCursor;
     private SudokuDatabase mDatabase;
+    private FolderListViewBinder mFolderListBinder;
     
     // input parameters for dialogs
     private TextView mAddFolderNameInput;
@@ -99,56 +100,14 @@ public class FolderListActivity extends ListActivity {
 			}
 		});
 		
-		//mGuiHandler = new Handler();
-		//mBackgroundTaskQueue = new TaskQueue();
-
 		mDatabase = new SudokuDatabase(getApplicationContext());
 		mCursor = mDatabase.getFolderList();
 		startManagingCursor(mCursor);
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.folder_list_item,
 				mCursor, new String[] { FolderColumns.NAME, FolderColumns._ID},
 				new int[] { R.id.name, R.id.detail});
-
-		adapter.setViewBinder(new ViewBinder() {
-			@Override
-			public boolean setViewValue(View view, Cursor c, int columnIndex) {
-
-				switch (view.getId()) {
-				case R.id.name:
-					((TextView)view).setText(c.getString(columnIndex));
-					break;
-				case R.id.detail:
-					final long folderID = c.getLong(columnIndex);
-					final TextView detailView = (TextView)view;
-					//final Handler guiHandler = mGuiHandler;
-					// TODO: lazy load detail or improve detail loading performance
-					String detail = mDatabase.getFolderInfo(folderID).getDetail(getApplicationContext());
-					detailView.setText(detail);
-//					detailView.setTag(folderID);
-//					// folder detail will be loaded asynchronously
-//					mBackgroundTaskQueue.addTask(new Runnable() {
-//						@Override
-//						public void run() {
-//							final String detail = mSudokuDB.getFolderInfo(folderID).getDetail(FolderListActivity.this);
-//							
-//							guiHandler.post(new Runnable() {
-//								@Override
-//								public void run() {
-//									synchronized (detailView) {
-//										// check that view still contains same data
-//										if (detailView.getTag() != null && (Long)detailView.getTag() == folderID) {
-//											detailView.setText(detail);
-//										}
-//									}
-//								}
-//							});
-//						}
-//					});
-				}
-				
-				return true;
-			}
-		});
+		mFolderListBinder = new FolderListViewBinder(this);
+		adapter.setViewBinder(mFolderListBinder);
 		
         setListAdapter(adapter);
 	}
@@ -161,22 +120,10 @@ public class FolderListActivity extends ListActivity {
     }
     
     @Override
-    protected void onResume() {
-    	super.onResume();
-    	//mBackgroundTaskQueue.start();
-    }
-    
-    @Override
-    protected void onPause() {
-    	super.onPause();
-    	//mBackgroundTaskQueue.stop();
-    }
-    
-    
-    @Override
     protected void onDestroy() {
     	super.onDestroy();
     	mDatabase.close();
+    	mFolderListBinder.destroy();
     }
     
     @Override
@@ -389,4 +336,43 @@ public class FolderListActivity extends ListActivity {
 	private void updateList() {
 		mCursor.requery();
 	}
+	
+	private static class FolderListViewBinder implements ViewBinder {
+		private Context mContext;
+		private FolderDetailLoader mDetailLoader;
+		
+		
+		public FolderListViewBinder(Context context) {
+			mContext = context;
+			mDetailLoader = new FolderDetailLoader(context);
+		}
+		
+		@Override
+		public boolean setViewValue(View view, Cursor c, int columnIndex) {
+
+			switch (view.getId()) {
+			case R.id.name:
+				((TextView)view).setText(c.getString(columnIndex));
+				break;
+			case R.id.detail:
+				final long folderID = c.getLong(columnIndex);
+				final TextView detailView = (TextView)view;
+				detailView.setText(mContext.getString(R.string.loading));
+				mDetailLoader.loadDetailAsync(folderID, new FolderDetailCallback() {
+					@Override
+					public void onLoaded(FolderInfo folderInfo) {
+						detailView.setText(folderInfo.getDetail(mContext));
+					}
+				});
+			}
+			
+			return true;
+		}
+		
+		public void destroy() {
+			mDetailLoader.destroy();
+		}
+	}
+	
+	
 }

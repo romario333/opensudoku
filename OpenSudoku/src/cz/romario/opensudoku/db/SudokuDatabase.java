@@ -79,7 +79,7 @@ public class SudokuDatabase {
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
         return qb.query(db, null, null, null, null, null, "created ASC");
     }
-    
+
     /**
      * Returns the folder info.
      * 
@@ -87,6 +87,41 @@ public class SudokuDatabase {
      * @return
      */
     public FolderInfo getFolderInfo(long folderID) {
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        qb.setTables(FOLDER_TABLE_NAME);
+        qb.appendWhere(FolderColumns._ID + "=" + folderID);
+
+        Cursor c = null;
+        
+        try {
+            SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+            c = qb.query(db, null, null, null, null, null, null);
+        	
+        	if (c.moveToFirst()) {
+        		long id = c.getLong(c.getColumnIndex(FolderColumns._ID));
+        		String name = c.getString(c.getColumnIndex(FolderColumns.NAME));
+            	
+        		FolderInfo folderInfo = new FolderInfo();
+        		folderInfo.id = id;
+            	folderInfo.name = name;
+            	
+            	return folderInfo;
+        	} else {
+        		return null;
+        	}
+        } finally {
+        	if (c != null) c.close();
+        }
+    }
+    
+    /**
+     * Returns the full folder info - this includes count of games in particular states.
+     * 
+     * @param folderID Primary key of folder.
+     * @return
+     */
+    public FolderInfo getFolderInfoFull(long folderID) {
     	FolderInfo folder = null;
     	
     	SQLiteDatabase db = null;

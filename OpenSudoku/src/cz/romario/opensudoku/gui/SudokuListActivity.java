@@ -54,6 +54,7 @@ import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.gui.FolderDetailLoader.FolderDetailCallback;
 
 /**
  * List of puzzles in folder.
@@ -94,19 +95,12 @@ public class SudokuListActivity extends ListActivity {
 	private TextView mEditNoteInput;
 	private SudokuListFilter mListFilter;
 
-	// TODO: put this to list view binder
-	private GameTimeFormat mGameTimeFormatter = new GameTimeFormat();
-	// TODO: get rid of these, encapsulate it with getDateTimeForHumans (and possibly move to Utils)
-	private DateFormat mDateTimeFormatter = DateFormat.getDateTimeInstance(
-			DateFormat.SHORT, DateFormat.SHORT);
-	private DateFormat mTimeFormatter = DateFormat
-			.getTimeInstance(DateFormat.SHORT);
-
 	private TextView mFilterStatus;
 	
 	private SimpleCursorAdapter mAdapter;
 	private Cursor mCursor;
 	private SudokuDatabase mDatabase;
+	private FolderDetailLoader mFolderDetailLoader;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +113,7 @@ public class SudokuListActivity extends ListActivity {
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 		
 		mDatabase = new SudokuDatabase(getApplicationContext());
+		mFolderDetailLoader = new FolderDetailLoader(getApplicationContext());
 
 		Intent intent = getIntent();
 		if (intent.hasExtra(EXTRA_FOLDER_ID)) {
@@ -141,113 +136,9 @@ public class SudokuListActivity extends ListActivity {
 						SudokuColumns.CREATED, SudokuColumns.PUZZLE_NOTE },
 				new int[] { R.id.sudoku_board, R.id.state, R.id.time,
 						R.id.last_played, R.id.created, R.id.note });
-
-		// TODO: create non-anonymous ViewBinder class
-		mAdapter.setViewBinder(new ViewBinder() {
-			@Override
-			public boolean setViewValue(View view, Cursor c, int columnIndex) {
-
-				int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
-				
-				TextView label = null;
-				
-				switch (view.getId()) {
-				case R.id.sudoku_board:
-					String data = c.getString(columnIndex);
-					// TODO: still can be faster, I don't have to call initCollection and read notes
-					CellCollection cells = CellCollection.deserialize(data);
-					SudokuBoardView board = (SudokuBoardView) view;
-					board.setReadOnly(true);
-					board.setFocusable(false);
-					((SudokuBoardView) view).setCells(cells);
-					break;
-				case R.id.state:
-					label = ((TextView) view);
-					String stateString = null;
-					switch (state) {
-					case SudokuGame.GAME_STATE_COMPLETED:
-						stateString = getString(R.string.solved);
-						break;
-					case SudokuGame.GAME_STATE_PLAYING:
-						stateString = getString(R.string.playing);
-						break;
-					}
-					label.setVisibility(stateString == null ? View.GONE
-							: View.VISIBLE);
-					label.setText(stateString);
-					if (state == SudokuGame.GAME_STATE_COMPLETED) {
-						// TODO: read colors from android resources
-						label.setTextColor(Color.rgb(187, 187, 187));
-					} else {
-						label.setTextColor(Color.rgb(255, 255, 255));
-						//label.setTextColor(SudokuListActivity.this.getResources().getColor(R.));
-					}
-					break;
-				case R.id.time:
-					long time = c.getLong(columnIndex);
-					label = ((TextView) view);
-					String timeString = null;
-					if (time != 0) {
-						timeString = mGameTimeFormatter.format(time);
-					}
-					label.setVisibility(timeString == null ? View.GONE
-							: View.VISIBLE);
-					label.setText(timeString);
-					if (state == SudokuGame.GAME_STATE_COMPLETED) {
-						// TODO: read colors from android resources
-						label.setTextColor(Color.rgb(187, 187, 187));
-					} else {
-						label.setTextColor(Color.rgb(255, 255, 255));
-					}
-					break;
-				case R.id.last_played:
-					long lastPlayed = c.getLong(columnIndex);
-					label = ((TextView) view);
-					String lastPlayedString = null;
-					if (lastPlayed != 0) {
-						lastPlayedString = getString(R.string.last_played_at,
-								getDateAndTimeForHumans(lastPlayed));
-					}
-					label.setVisibility(lastPlayedString == null ? View.GONE
-							: View.VISIBLE);
-					label.setText(lastPlayedString);
-					break;
-				case R.id.created:
-					long created = c.getLong(columnIndex);
-					label = ((TextView) view);
-					String createdString = null;
-					if (created != 0) {
-						createdString = getString(R.string.created_at,
-								getDateAndTimeForHumans(created));
-					}
-					// TODO: when GONE, note is not correctly aligned below last_played
-					label.setVisibility(createdString == null ? View.INVISIBLE
-							: View.VISIBLE);
-					label.setText(createdString);
-					break;
-				case R.id.note:
-					String note = c.getString(columnIndex);
-					label = ((TextView) view);
-					if (note == null || note.trim() == "") {
-						((TextView) view).setVisibility(View.GONE);
-					} else {
-						((TextView) view).setText(note);
-					}
-					label
-							.setVisibility((note == null || note.trim() == "") ? View.GONE
-									: View.VISIBLE);
-					label.setText(note);
-					break;
-				}
-				
-				return true;
-			}
-		});
-
+		mAdapter.setViewBinder(new SudokuListViewBinder(this));
 		updateList();
-		
 		setListAdapter(mAdapter);
-		
 	}
 
 	@Override
@@ -255,6 +146,7 @@ public class SudokuListActivity extends ListActivity {
 		super.onDestroy();
 		
 		mDatabase.close();
+		mFolderDetailLoader.destroy();
 	}
 
 	@Override
@@ -547,34 +439,151 @@ public class SudokuListActivity extends ListActivity {
 	}
 	
 	private void updateTitle() {
-		Context context = getApplicationContext();
 		FolderInfo folder = mDatabase.getFolderInfo(mFolderID);
-		setTitle(folder.name + " - " + folder.getDetail(context));
-	}
-
-	private String getDateAndTimeForHumans(long datetime) {
-		Date date = new Date(datetime);
-
-		// TODO: temporary version, find clearer way and perhaps optimize
-		Date now = new Date(System.currentTimeMillis());
-		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
-		Date yesterday = new Date(System.currentTimeMillis()
-				- (1000 * 60 * 60 * 24));
-
-		if (date.after(today)) {
-			return getString(R.string.at_time, mTimeFormatter.format(date));
-		} else if (date.after(yesterday)) {
-			return getString(R.string.yesterday_at_time, mTimeFormatter.format(date));
-		} else {
-			return getString(R.string.on_date, mDateTimeFormatter.format(date));
-		}
-
+		setTitle(folder.name);
+		
+		mFolderDetailLoader.loadDetailAsync(mFolderID, new FolderDetailCallback() {
+			@Override
+			public void onLoaded(FolderInfo folderInfo) {
+				setTitle(folderInfo.name + " - " + folderInfo.getDetail(getApplicationContext()));
+			}
+		});
 	}
 
 	private void playSudoku(long sudokuID) {
 		Intent i = new Intent(SudokuListActivity.this, SudokuPlayActivity.class);
 		i.putExtra(SudokuPlayActivity.EXTRA_SUDOKU_ID, sudokuID);
 		startActivity(i);
+	}
+	
+	private static class SudokuListViewBinder implements ViewBinder {
+		private Context mContext;
+		private GameTimeFormat mGameTimeFormatter = new GameTimeFormat();
+		private DateFormat mDateTimeFormatter = DateFormat.getDateTimeInstance(
+				DateFormat.SHORT, DateFormat.SHORT);
+		private DateFormat mTimeFormatter = DateFormat
+				.getTimeInstance(DateFormat.SHORT);
+		
+		public SudokuListViewBinder(Context context) {
+			mContext = context;
+		}
+		
+		@Override
+		public boolean setViewValue(View view, Cursor c, int columnIndex) {
+
+			int state = c.getInt(c.getColumnIndex(SudokuColumns.STATE));
+			
+			TextView label = null;
+			
+			switch (view.getId()) {
+			case R.id.sudoku_board:
+				String data = c.getString(columnIndex);
+				// TODO: still can be faster, I don't have to call initCollection and read notes
+				CellCollection cells = CellCollection.deserialize(data);
+				SudokuBoardView board = (SudokuBoardView) view;
+				board.setReadOnly(true);
+				board.setFocusable(false);
+				((SudokuBoardView) view).setCells(cells);
+				break;
+			case R.id.state:
+				label = ((TextView) view);
+				String stateString = null;
+				switch (state) {
+				case SudokuGame.GAME_STATE_COMPLETED:
+					stateString = mContext.getString(R.string.solved);
+					break;
+				case SudokuGame.GAME_STATE_PLAYING:
+					stateString = mContext.getString(R.string.playing);
+					break;
+				}
+				label.setVisibility(stateString == null ? View.GONE
+						: View.VISIBLE);
+				label.setText(stateString);
+				if (state == SudokuGame.GAME_STATE_COMPLETED) {
+					// TODO: read colors from android resources
+					label.setTextColor(Color.rgb(187, 187, 187));
+				} else {
+					label.setTextColor(Color.rgb(255, 255, 255));
+					//label.setTextColor(SudokuListActivity.this.getResources().getColor(R.));
+				}
+				break;
+			case R.id.time:
+				long time = c.getLong(columnIndex);
+				label = ((TextView) view);
+				String timeString = null;
+				if (time != 0) {
+					timeString = mGameTimeFormatter.format(time);
+				}
+				label.setVisibility(timeString == null ? View.GONE
+						: View.VISIBLE);
+				label.setText(timeString);
+				if (state == SudokuGame.GAME_STATE_COMPLETED) {
+					// TODO: read colors from android resources
+					label.setTextColor(Color.rgb(187, 187, 187));
+				} else {
+					label.setTextColor(Color.rgb(255, 255, 255));
+				}
+				break;
+			case R.id.last_played:
+				long lastPlayed = c.getLong(columnIndex);
+				label = ((TextView) view);
+				String lastPlayedString = null;
+				if (lastPlayed != 0) {
+					lastPlayedString = mContext.getString(R.string.last_played_at,
+							getDateAndTimeForHumans(lastPlayed));
+				}
+				label.setVisibility(lastPlayedString == null ? View.GONE
+						: View.VISIBLE);
+				label.setText(lastPlayedString);
+				break;
+			case R.id.created:
+				long created = c.getLong(columnIndex);
+				label = ((TextView) view);
+				String createdString = null;
+				if (created != 0) {
+					createdString = mContext.getString(R.string.created_at,
+							getDateAndTimeForHumans(created));
+				}
+				// TODO: when GONE, note is not correctly aligned below last_played
+				label.setVisibility(createdString == null ? View.INVISIBLE
+						: View.VISIBLE);
+				label.setText(createdString);
+				break;
+			case R.id.note:
+				String note = c.getString(columnIndex);
+				label = ((TextView) view);
+				if (note == null || note.trim() == "") {
+					((TextView) view).setVisibility(View.GONE);
+				} else {
+					((TextView) view).setText(note);
+				}
+				label
+						.setVisibility((note == null || note.trim() == "") ? View.GONE
+								: View.VISIBLE);
+				label.setText(note);
+				break;
+			}
+			
+			return true;
+		}
+		
+		private String getDateAndTimeForHumans(long datetime) {
+			Date date = new Date(datetime);
+
+			Date now = new Date(System.currentTimeMillis());
+			Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
+			Date yesterday = new Date(System.currentTimeMillis()
+					- (1000 * 60 * 60 * 24));
+
+			if (date.after(today)) {
+				return mContext.getString(R.string.at_time, mTimeFormatter.format(date));
+			} else if (date.after(yesterday)) {
+				return mContext.getString(R.string.yesterday_at_time, mTimeFormatter.format(date));
+			} else {
+				return mContext.getString(R.string.on_date, mDateTimeFormatter.format(date));
+			}
+
+		}
 	}
 
 }
