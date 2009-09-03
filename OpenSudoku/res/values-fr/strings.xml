@@ -67,7 +67,7 @@
 	
 	<string name="undo">Annuler</string>
 	<string name="clear_all_notes">Effacer toutes les notes</string>
-	<string name="fill_in_notes">Remplissez les notes</string>
+	<string name="fill_in_notes">Remplir les notes</string>
 	<string name="restart">Redémarrer</string>
 	<string name="congrats">Félicitiations, vous avez résolu le puzzle en %s.</string>
 

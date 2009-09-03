@@ -8,7 +8,7 @@
     <string name="version">Verze: %s</string>
 	<string name="homepage">Domovská stránka: http://opensudoku.eu</string>
 	<string name="email">Email: opensudoku@romanmasek.cz</string>
-	<string name="work_in_progress">Please note that this is still work in progress.</string>
+	<string name="work_in_progress">Toto není finální verze.</string>
 	<string name="send_me_bugs">Pokud narazíte na chybu nebo máte nějaký návrh, nestyďte se mi poslat mail nebo použijte issue tracker na stránkách projektu.</string>
 	
 	<string name="close">Zavřít</string>
@@ -29,7 +29,7 @@
 	<string name="delete_folder">Smazat složku</string>
 	<string name="rename_folder_title">Přejmenovat %s</string>
 	<string name="delete_folder_title">Smazat %s</string>
-	<string name="delete_folder_confirm">Jste si jisti, že chcete smazat tuto složku?</string>
+	<string name="delete_folder_confirm">Opravdu chcete smazat tuto složku?</string>
 	
 	<string name="no_puzzles">Žádné sudoku</string>
 	<string name="one_puzzle">1 sudoku</string>
@@ -51,8 +51,8 @@
 	<string name="filter">Filtr</string>
 	<string name="filter_by_gamestate">Filtruj podle stavu hry</string>
 	<string name="folders">Složky</string>
-	<string name="delete_puzzle_confirm">Jste si jisti, že chcete smazat vybrané sudoku?</string>
-	<string name="reset_puzzle_confirm">Jste si jisti, že chcete vybrané sudoku vrátit do stavu před hrou?</string>
+	<string name="delete_puzzle_confirm">Opravdu chcete smazat vybrané sudoku?</string>
+	<string name="reset_puzzle_confirm">Opravdu chcete vybrané sudoku vrátit do stavu před hrou?</string>
 	<string name="play_puzzle">Hrát sudoku</string>
 	<string name="reset_puzzle">Reset sudoku</string>
 	<string name="edit_puzzle">Upravit sudoku</string>
@@ -64,23 +64,23 @@
 	<string name="fill_in_notes">Vyplnit poznámky</string>
 	<string name="restart">Restartovat</string>
 	<string name="congrats">Gratuluji, vyřešil jste sudoku za %s.</string>
-	<string name="restart_confirm">Jste si jisti, že chcete restartovat vybrané sudoku?</string>
+	<string name="restart_confirm">Opravdu chcete restartovat vybrané sudoku?</string>
 	<string name="well_done">Dobrá práce!</string>
-	<string name="clear_all_notes_confirm">Jste si jisti, že chcete smazat všechny poznámky?</string>
+	<string name="clear_all_notes_confirm">Opravdu chcete smazat všechny poznámky?</string>
 	<string name="settings">Nastavení</string>
 	<string name="game_settings">Nastavení hry</string>
 	
 	<string name="game_helpers">Pomocníci</string>
-	<string name="highlight_wrong_values">Zvýrazni chybné hodnoty</string>
+	<string name="highlight_wrong_values">Chybné hodnoty</string>
 	<string name="highlight_wrong_values_summary">Zvýrazní hodnoty, které porušují pravidla sudoku.</string>
 	<string name="input_methods">Vstupní módy</string>
 	<string name="popup">Popup</string>
 	<string name="popup_summary">Zadáte číslo a poznámku v popup okně.</string>
 	<string name="single_number">Single number</string>
-	<string name="single_number_summary">Vyberete číslo a pak už jen ťuknete na pole, do kterého chcete hodnotu vyplnit.</string>
+	<string name="single_number_summary">Vyberete číslo a pak už jen vyplňujete pole ťukáním.</string>
 	<string name="numpad">Numpad</string>
-	<string name="numpad_summary">Zobrazí se standardní numerická klávesnice.</string>
-	<string name="numpad_move_right">Posun doprava při stisku</string>
+	<string name="numpad_summary">Standardní numerická klávesnice.</string>
+	<string name="numpad_move_right">Posun doprava</string>
 	<string name="numpad_move_right_summary">Posune buňku doprava po stisku klávesy.</string>
 	
 	<string name="numpad_abbr">Num\nPad</string>
@@ -94,14 +94,14 @@
 	
 	<string name="first_run_hint">Ve hře je několik vstupních módů, které můžete použít k vyplňování. Aby jste se rychleji seznámili s těmito módy, bude po první aktivaci módu zobrazena krátká nápověda vysvětlující jeho funkčnost. Tuto nápovědu je možné vypnout v nastavení hry.\n</string>
 	<string name="im_popup_hint">Nyní jste ve vstupním módu <i>Popup</i>. K úpravě hodnoty pole se tohoto pole dotkněte prstem.\n\nVšimněte si tlačítka ve spodním pravém rohu - pomocí tohoto tlačítka se můžete přepnout do dalšího vstupního módu.\n</string>
-	<string name="im_single_number_hint">Nyní jste ve vstupním módu <i>Single number</i>. Nejprve ve spodní části vyberte nějaké číslo. Pak se už jen prstem dotýkejte polí, do kterého chcete vybranou hodnotu vyplnit.\n\nStiskněte tlačítko s tužkou k přepnutí se do módu, kdy budou vkládány poznámky.\n</string>
-	<string name="im_numpad_hint">Nyní jste ve vstupním módu <i>Numpad</i>. Tlačítka se chovají jako tlačítka na standardní numerické klávesnici.\n\nStiskněte tlačítko s tužkou k přepnutí se do módu, kdy budou vkládány poznámky.\n</string>
-	<string name="im_disable_modes_hint">Pokud nechcete, nemusíte používat všechny vstupní módy. Jakýkoliv ze vstupních módu může býz zakázán v nastavení aplikace.\n\nK ovládání hry také můžete používat klávesnici nebo trackball. Pokud chcete zadat poznámku na klávesnici, stiskněte číslo spolu s klávesou alt nebo shift.\n</string>
-	<string name="help_text"><b>Klávesnice</b>\n\nDostaňte se pomocí trackballu s ukazatelem na pole, které chcete upravit a stiskněte číslo na klávesnici k vyplnění do pole. Pokud chcete zadávat poznámku, stiskněte číslo zároveň s klávesou alt nebo shift.\n\n<b>Vstupní módy</b>\n\nPomocí tlačítka v pravém spodním rohu se můžete přepínat mezi několika vstupními módy. Vstupní mód můžete v nastavení hry zakázat, takový mód pak bude kompletně skryt.\n\n<b>Vstupní mód Popup</b>\n\nPo ťuknutí na pole je zobrazeno popup okno sloužící k výběru čísla, které má být do pole vyplněno, nebo k úpravě poznámky v poli.\n\n<b>Vstupní mód Single Number</b>\n\nNejprve vyberete číslo ve spodní části obrazovky. Pak už jen ťukáte na pole, v kterých chcete mít číslo vyplněné\n\nK přepnutí mezi úpravou hodnoty a poznámky pole můžete použít tlačítko s tužkou.\n\n<b>Vstupní mód Numpad</b>\n\nTlačítka se chovají jako klávesy na numerické klávesnici.\n\nK přepnutí mezi úpravou hodnoty a poznámky pole můžete použít tlačítko s tužkou.\n</string>
+	<string name="im_single_number_hint">Nyní jste ve vstupním módu <i>Single number</i>. Nejprve ve spodní části vyberte nějaké číslo. Pak se už jen prstem dotýkejte polí, do kterých chcete vybranou hodnotu vyplnit.\n\nStiskněte tlačítko s tužkou k přepnutí do módu, kdy budou vkládány poznámky.\n</string>
+	<string name="im_numpad_hint">Nyní jste ve vstupním módu <i>Numpad</i>. Tlačítka se chovají jako tlačítka na standardní numerické klávesnici.\n\nStiskněte tlačítko s tužkou k přepnutí do módu, kdy budou vkládány poznámky.\n</string>
+	<string name="im_disable_modes_hint">Pokud nechcete, nemusíte používat všechny vstupní módy. Jakýkoliv ze vstupních módu může být zakázán v nastavení aplikace.\n\nK ovládání hry také můžete používat klávesnici nebo trackball. Pokud chcete zadat poznámku na klávesnici, stiskněte číslo spolu s klávesou alt nebo shift.\n</string>
+	<string name="help_text"><b>Klávesnice</b>\n\nDostaňte se pomocí trackballu s ukazatelem na pole, které chcete upravit a stiskněte číslo na klávesnici k vyplnění tohoto pole. Pokud chcete zadávat poznámku, stiskněte číslo zároveň s klávesou alt nebo shift.\n\n<b>Vstupní módy</b>\n\nPomocí tlačítka v pravém spodním rohu se můžete přepínat mezi několika vstupními módy. Vstupní mód můžete v nastavení hry zakázat, takový mód pak bude kompletně skryt.\n\n<b>Vstupní mód Popup</b>\n\nPo ťuknutí na pole je zobrazeno popup okno sloužící k výběru čísla, které má být do pole vyplněno, nebo k úpravě poznámky v poli.\n\n<b>Vstupní mód Single Number</b>\n\nNejprve vyberete číslo ve spodní části obrazovky. Pak už jen ťukáte na pole, v kterých chcete mít číslo vyplněné\n\nK přepnutí mezi úpravou hodnoty a poznámky pole můžete použít tlačítko s tužkou.\n\n<b>Vstupní mód Numpad</b>\n\nTlačítka se chovají jako klávesy na numerické klávesnici.\n\nK přepnutí mezi úpravou hodnoty a poznámky pole můžete použít tlačítko s tužkou.\n</string>
 	
 
 	<string name="game">Hra</string>
-	<string name="show_hints">Nápověda při prvním spuštění</string>
+	<string name="show_hints">Nápověda ve hře</string>
 	<string name="show_hints_summary">Zobrazuje nápovědu pro rychlé seznámení s ovladáním aplikace.</string>
 	<string name="show_time">Zobrazovat čas</string>
 	<string name="show_time_summary">Ukazuje odehraný čas.</string>
@@ -110,7 +110,7 @@
 	<string name="puzzle_updated">Sudoku bylu upraveno.</string>
 	
 	<string name="importing">Importuji složku se sudoku...</string>
-	<string name="puzzles_saved">Sudoka byla uložena do složky \'%s\'.</string>
+	<string name="puzzles_saved">Sudoku byla uložena do složky \'%s\'.</string>
 	<string name="no_puzzles_found">Žádné sudoku nenalezeno.</string>
 	<string name="unknown_import_error">V průběhu importu došlo k neznáme chybě, import byl zrušen.</string>
 	<string name="invalid_format">Neplatný formát, import byl zrušen.</string>

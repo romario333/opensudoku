@@ -115,7 +115,7 @@
 	<string name="puzzle_inserted">新谜团已保存.</string>
 	<string name="puzzle_updated">谜团已升级.</string>
 	
-	<string name="credits">致谢:\nRoman Mašek (创建者)\nMartin Sobola (UI 设计)</string>
+	<string name="credits">致谢:\nRoman Mašek\nVít Hnilica\nMartin Sobola</string>
 
 	<!-- Strings added in 0.7.0 -->
 	<string name="loading">Loading...</string>
