@@ -355,7 +355,7 @@ public class SudokuDatabase {
     }
     
     private static Pattern mSudokuPattern = Pattern.compile("^\\d{81}$");
-    private static SQLiteStatement mInsertSudokuStatement;
+    private SQLiteStatement mInsertSudokuStatement;
     public long insertSudokuImport(long folderID, String sudoku) throws SudokuInvalidFormatException {
 		if (sudoku == null || !mSudokuPattern.matcher(sudoku).matches()) {
 			throw new SudokuInvalidFormatException(sudoku);
