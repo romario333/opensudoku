@@ -35,6 +35,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.gui.inputmethod.IMControlPanelStatePersister.StateBundle;
 
 /**
  * This class represents following type of number input workflow: Number buttons are displayed
@@ -76,9 +77,8 @@ public class IMSingleNumber extends InputMethod {
 		return mContext.getString(R.string.single_number_abbr);
 	}
 	
-
 	@Override
-	protected View createControlPanel() {
+	protected View createControlPanelView() {
 		LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View controlPanel = inflater.inflate(R.layout.im_single_number, null);
 		
@@ -184,20 +184,17 @@ public class IMSingleNumber extends InputMethod {
 	}
 	
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		
-		outState.putInt(getInputMethodName() + ".sel_number", mSelectedNumber);
-		outState.putInt(getInputMethodName() + ".edit_mode", mEditMode);
+	protected void onSaveState(StateBundle outState) {
+		outState.putInt("selectedNumber", mSelectedNumber);
+		outState.putInt("editMode", mEditMode);
 	}
 	
 	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		
-		mSelectedNumber = savedInstanceState.getInt(getInputMethodName() + ".sel_number");
-		mEditMode = savedInstanceState.getInt(getInputMethodName() + ".edit_mode");
-		if (isControlPanelCreated()) {
+	protected void onRestoreState(StateBundle savedState) {
+		mSelectedNumber = savedState.getInt("selectedNumber", 1);
+		// TODO: tuzka se neudrzi zapla, proc?
+		mEditMode = savedState.getInt("editMode", MODE_EDIT_VALUE);
+		if (isInputMethodViewCreated()) {
 			update();
 		}
 	}

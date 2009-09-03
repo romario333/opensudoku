@@ -36,6 +36,7 @@ import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.SudokuGame.OnPuzzleSolvedListener;
 import cz.romario.opensudoku.gui.inputmethod.IMControlPanel;
+import cz.romario.opensudoku.gui.inputmethod.IMControlPanelStatePersister;
 import cz.romario.opensudoku.gui.inputmethod.IMNumpad;
 import cz.romario.opensudoku.gui.inputmethod.IMPopup;
 import cz.romario.opensudoku.gui.inputmethod.IMSingleNumber;
@@ -113,9 +114,9 @@ public class SudokuPlayActivity extends Activity{
 		mHintsQueue.showOneTimeHint(R.string.welcome, R.string.first_run_hint);		
 		
         mInputMethods = (IMControlPanel)findViewById(R.id.input_methods);
-        mInputMethods.setBoard(mSudokuBoard);
-        mInputMethods.setGame(mSudokuGame);
-        mInputMethods.setHintsQueue(mHintsQueue);
+		mInputMethods.initialize(mSudokuBoard, mSudokuGame,
+				new IMControlPanelStatePersister(this), mHintsQueue);
+        
         mIMPopup = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_POPUP);
         mIMSingleNumber = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_SINGLE_NUMBER);
         mIMNumpad = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_NUMPAD);
@@ -138,11 +139,10 @@ public class SudokuPlayActivity extends Activity{
 			}
 		}
         
-        mIMPopup.enabled = gameSettings.getBoolean("im_popup", true);
-        mIMSingleNumber.enabled = gameSettings.getBoolean("im_single_number", true);
-        mIMNumpad.enabled = gameSettings.getBoolean("im_numpad", true);
+        mIMPopup.setEnabled(gameSettings.getBoolean("im_popup", true));
+        mIMSingleNumber.setEnabled(gameSettings.getBoolean("im_single_number", true));
+        mIMNumpad.setEnabled(gameSettings.getBoolean("im_numpad", true));
         mIMNumpad.moveCellSelectionOnPress = gameSettings.getBoolean("im_numpad_move_right", false);
-        mInputMethods.activateFirstInputMethod();
 
 		updateTitle();
 	}

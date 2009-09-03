@@ -90,7 +90,7 @@ public class IMPopup extends InputMethod {
 	}
 	
 	@Override
-	protected View createControlPanel() {
+	protected View createControlPanelView() {
 		LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		return inflater.inflate(R.layout.im_popup, null);
 	}

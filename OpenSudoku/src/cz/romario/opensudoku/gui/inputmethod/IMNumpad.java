@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.gui.inputmethod.IMControlPanelStatePersister.StateBundle;
 
 public class IMNumpad extends InputMethod {
 
@@ -48,7 +49,7 @@ public class IMNumpad extends InputMethod {
 	private Map<Integer,Button> mNumberButtons;
 	
 	@Override
-	protected View createControlPanel() {
+	protected View createControlPanelView() {
 		LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View controlPanel = inflater.inflate(R.layout.im_numpad, null);
 		
@@ -154,18 +155,14 @@ public class IMNumpad extends InputMethod {
 	}
 	
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		
-		outState.putInt(getInputMethodName() + ".edit_mode", mEditMode);
+	protected void onSaveState(StateBundle outState) {
+		outState.putInt("editMode", mEditMode);
 	}
 	
 	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		
-		mEditMode = savedInstanceState.getInt(getInputMethodName() + ".edit_mode");
-		if (isControlPanelCreated()) {
+	protected void onRestoreState(StateBundle savedState) {
+		mEditMode = savedState.getInt("editMode", MODE_EDIT_VALUE);
+		if (isInputMethodViewCreated()) {
 			update();
 		}
 	}

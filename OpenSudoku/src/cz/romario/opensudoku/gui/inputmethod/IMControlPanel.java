@@ -22,7 +22,9 @@ package cz.romario.opensudoku.gui.inputmethod;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.Cell;
@@ -32,9 +34,12 @@ import cz.romario.opensudoku.gui.SudokuBoardView;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellSelectedListener;
 import cz.romario.opensudoku.gui.SudokuBoardView.OnCellTappedListener;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
@@ -55,6 +60,7 @@ public class IMControlPanel extends LinearLayout {
 	private SudokuBoardView mBoard;
 	private SudokuGame mGame;
 	private HintsQueue mHintsQueue;
+	private IMControlPanelStatePersister mStatePersister;
 	
 	private List<InputMethod> mInputMethods = new ArrayList<InputMethod>();
 	private int mActiveMethodIndex = -1;
@@ -69,54 +75,36 @@ public class IMControlPanel extends LinearLayout {
 		mContext = context;
 	}
 	
-	public SudokuBoardView getBoard() {
-		return mBoard;
-	}
-	
-	/**
-	 * Sets sudoku board for this control panel.
-	 * 
-	 * @param board
-	 */
-	public void setBoard(SudokuBoardView board) {
+	public void initialize(SudokuBoardView board, SudokuGame game, IMControlPanelStatePersister statePersister, HintsQueue hintsQueue) {
 		mBoard = board;
 		mBoard.setOnCellTappedListener(mOnCellTapListener);
 		mBoard.setOnCellSelectedListener(mOnCellSelected);
-	}
-	
-	public SudokuGame getGame() {
-		return mGame;
-	}
-	
-	/**
-	 * Sets game for this control panel.
-	 * 
-	 * @param game
-	 */
-	public void setGame(SudokuGame game) {
+
 		mGame = game;
-	}
-	
-	public HintsQueue getHintsQueue() {
-		return mHintsQueue;
-	}
-	
-	public void setHintsQueue(HintsQueue hintsQueue) {
+		mStatePersister = statePersister;
 		mHintsQueue = hintsQueue;
+		
+		createInputMethods();
+		
+		if (mStatePersister != null) {
+			statePersister.restoreState(this);
+		}
 	}
+	
+	
 	
 	// TODO: 
-	/**
-	 * Activates first enabled input method. If such method does not exists, nothing
-	 * happens.
-	 */
-	public void activateFirstInputMethod() {
-		ensureInputMethods();
-		if (mActiveMethodIndex == -1 || !mInputMethods.get(mActiveMethodIndex).enabled) {
-			activateInputMethod(0);
-		}
-		
-	}
+//	/**
+//	 * Activates first enabled input method. If such method does not exists, nothing
+//	 * happens.
+//	 */
+//	public void activateFirstInputMethod() {
+//		ensureInputMethods();
+//		if (mActiveMethodIndex == -1 || !mInputMethods.get(mActiveMethodIndex).enabled) {
+//			activateInputMethod(0);
+//		}
+//		
+//	}
 	
 	/**
 	 * Activates given input method (see INPUT_METHOD_* constants). If the given method is
@@ -142,7 +130,7 @@ public class IMControlPanel extends LinearLayout {
 		
 		if (id != -1) {
 			while (!idFound && numOfCycles <= mInputMethods.size()) {
-				if (mInputMethods.get(id).enabled) {
+				if (mInputMethods.get(id).isEnabled()) {
 					ensureControlPanel(id);
 					idFound = true;
 					break;
@@ -162,8 +150,8 @@ public class IMControlPanel extends LinearLayout {
 		
 		for (int i = 0; i < mInputMethods.size(); i++) {
 			InputMethod im = mInputMethods.get(i);
-			if (im.isControlPanelCreated()) {
-				im.getControlPanel().setVisibility(i == id ? View.VISIBLE : View.GONE);
+			if (im.isInputMethodViewCreated()) {
+				im.getInputMethodView().setVisibility(i == id ? View.VISIBLE : View.GONE);
 			}
 		}
 		
@@ -223,6 +211,7 @@ public class IMControlPanel extends LinearLayout {
 		}
 	}
 	
+	// TODO: Is this really necessary? 
 	/**
 	 * This should be called when activity is paused (so Input Methods can do some cleanup,
 	 * for example properly dismiss dialogs because of WindowLeaked exception).
@@ -237,21 +226,22 @@ public class IMControlPanel extends LinearLayout {
 	 * Ensures that all input method objects are created.
 	 */
 	private void ensureInputMethods() {
-		synchronized (mInputMethods) {
-			if (mInputMethods.size() == 0) {
-				addInputMethod(INPUT_METHOD_POPUP, new IMPopup());
-				addInputMethod(INPUT_METHOD_SINGLE_NUMBER, new IMSingleNumber());
-				addInputMethod(INPUT_METHOD_NUMPAD, new IMNumpad());
-			}
+		if (mInputMethods.size() == 0) {
+			throw new IllegalStateException("Input methods are not created yet. Call initialize() first.");
+		}
+		
+	}
+	
+	private void createInputMethods() {
+		if (mInputMethods.size() == 0) {
+			addInputMethod(INPUT_METHOD_POPUP, new IMPopup());
+			addInputMethod(INPUT_METHOD_SINGLE_NUMBER, new IMSingleNumber());
+			addInputMethod(INPUT_METHOD_NUMPAD, new IMNumpad());
 		}
 	}
 	
 	private void addInputMethod(int methodIndex, InputMethod im) {
-		if (mContext == null ) throw new IllegalStateException("Context is not set.");
-		if (mGame == null ) throw new IllegalStateException("Game is not set. Call setGame() first.");
-		if (mBoard == null ) throw new IllegalStateException("Board is not set. Call setBoard() first.");
-		
-		im.initialize(mContext, mGame, mBoard, mHintsQueue);
+		im.initialize(mContext, this, mGame, mBoard, mHintsQueue);
 		mInputMethods.add(methodIndex, im);
 	}
 
@@ -262,8 +252,8 @@ public class IMControlPanel extends LinearLayout {
 	 */
 	private void ensureControlPanel(int methodID) {
 		InputMethod im = mInputMethods.get(methodID);
-		if (!im.isControlPanelCreated()) {
-			View controlPanel = im.getControlPanel();
+		if (!im.isInputMethodViewCreated()) {
+			View controlPanel = im.getInputMethodView();
 			Button switchModeButton = (Button)controlPanel.findViewById(R.id.switch_input_mode);
 			switchModeButton.setOnClickListener(mSwitchModeListener);
 			this.addView(controlPanel, LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
@@ -297,70 +287,72 @@ public class IMControlPanel extends LinearLayout {
 	
 	@Override
 	protected Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-        return new SavedState(superState, mActiveMethodIndex, mInputMethods);
+		mStatePersister.saveState(this);
+
+		return super.onSaveInstanceState();
 	}
+	
 	
 	@Override
 	protected void onRestoreInstanceState(Parcelable state) {
-        SavedState ss = (SavedState) state;
-        super.onRestoreInstanceState(ss.getSuperState());
-        activateInputMethod(ss.getActiveMethodIndex());
-        ss.restoreInputMethodsState(mInputMethods);
+		mStatePersister.restoreState(this);
+		
+		super.onRestoreInstanceState(state);
 	}
 	
-    /**
-     * Used to save / restore state of control panel.
-     */
-    private static class SavedState extends BaseSavedState {
-    	private final int mActiveMethodIndex;
-        private final Bundle mInputMethodsState;
-    	
-    	private SavedState(Parcelable superState, int activeMethodIndex, List<InputMethod> inputMethods) {
-            super(superState);
-            mActiveMethodIndex = activeMethodIndex;
-            
-            mInputMethodsState = new Bundle();
-            for (InputMethod im : inputMethods) {
-            	im.onSaveInstanceState(mInputMethodsState);
-            }
-        }
-        
-        private SavedState(Parcel in) {
-            super(in);
-            mActiveMethodIndex = in.readInt();
-            mInputMethodsState = in.readBundle();
-        }
-
-        public int getActiveMethodIndex() {
-            return mActiveMethodIndex;
-        }
-        
-        public void restoreInputMethodsState(List<InputMethod> inputMethods) {
-        	for (InputMethod im : inputMethods) {
-        		im.onRestoreInstanceState(mInputMethodsState);
-        	}
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeInt(mActiveMethodIndex);
-            dest.writeBundle(mInputMethodsState);
-        }
-
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = new Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
-    	
-    }
+//    /**
+//     * Used to save / restore state of control panel.
+//     */
+//    private static class SavedState extends BaseSavedState {
+//    	private final int mActiveMethodIndex;
+//        private final Bundle mInputMethodsState;
+//    	
+//    	private SavedState(Parcelable superState, int activeMethodIndex, List<InputMethod> inputMethods) {
+//            super(superState);
+//            mActiveMethodIndex = activeMethodIndex;
+//            
+//            mInputMethodsState = new Bundle();
+//            for (InputMethod im : inputMethods) {
+//            	im.onSaveInstanceState(mInputMethodsState);
+//            }
+//        }
+//        
+//        private SavedState(Parcel in) {
+//            super(in);
+//            mActiveMethodIndex = in.readInt();
+//            mInputMethodsState = in.readBundle();
+//        }
+//
+//        public int getActiveMethodIndex() {
+//            return mActiveMethodIndex;
+//        }
+//        
+//        public void restoreInputMethodsState(List<InputMethod> inputMethods) {
+//        	for (InputMethod im : inputMethods) {
+//        		im.onRestoreInstanceState(mInputMethodsState);
+//        	}
+//        }
+//
+//        @Override
+//        public void writeToParcel(Parcel dest, int flags) {
+//            super.writeToParcel(dest, flags);
+//            dest.writeInt(mActiveMethodIndex);
+//            dest.writeBundle(mInputMethodsState);
+//        }
+//
+//        public static final Parcelable.Creator<SavedState> CREATOR
+//                = new Creator<SavedState>() {
+//            public SavedState createFromParcel(Parcel in) {
+//                return new SavedState(in);
+//            }
+//
+//            public SavedState[] newArray(int size) {
+//                return new SavedState[size];
+//            }
+//        };
+//    	
+//    }
+    
     
 
 }

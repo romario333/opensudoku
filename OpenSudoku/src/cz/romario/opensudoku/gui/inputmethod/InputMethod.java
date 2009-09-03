@@ -20,6 +20,8 @@
 
 package cz.romario.opensudoku.gui.inputmethod;
 
+import java.util.Map;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
@@ -31,6 +33,7 @@ import cz.romario.opensudoku.game.Cell;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.HintsQueue;
 import cz.romario.opensudoku.gui.SudokuBoardView;
+import cz.romario.opensudoku.gui.inputmethod.IMControlPanelStatePersister.StateBundle;
 
 /**
  * Base class for several input methods used to edit sudoku contents. 
@@ -40,45 +43,46 @@ import cz.romario.opensudoku.gui.SudokuBoardView;
  */
 public abstract class InputMethod {
 	
-	public boolean enabled = true;
-	
 	protected Context mContext;
+	protected IMControlPanel mControlPanel;
 	protected SudokuGame mGame;
 	protected SudokuBoardView mBoard;
 	protected HintsQueue mHintsQueue;
 	
 	private String mInputMethodName;
-	protected View mControlPanel;
-	 
+	protected View mInputMethodView;
+
+	private boolean mEnabled = true;
 
 	public InputMethod() {
 		
 	}
 	
-	protected void initialize(Context context, SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
+	protected void initialize(Context context, IMControlPanel controlPanel, SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
 		mContext = context;
+		mControlPanel = controlPanel;
 		mGame = game;
 		mBoard = board;
 		mHintsQueue = hintsQueue;
 		mInputMethodName = this.getClass().getSimpleName();
 	}
 	
-	public boolean isControlPanelCreated() {
-		return mControlPanel != null;
+	public boolean isInputMethodViewCreated() {
+		return mInputMethodView != null;
 	}
 	
-	public View getControlPanel() {
-		if (mControlPanel == null) {
-			mControlPanel = createControlPanel();
-			View switchModeView = mControlPanel.findViewById(R.id.switch_input_mode);
+	public View getInputMethodView() {
+		if (mInputMethodView == null) {
+			mInputMethodView = createControlPanelView();
+			View switchModeView = mInputMethodView.findViewById(R.id.switch_input_mode);
 			Button switchModeButton = (Button) switchModeView;
 			switchModeButton.setText(getAbbrName());
 			// TODO: color from resources
 			switchModeButton.getBackground().setColorFilter(new LightingColorFilter(Color.CYAN, 0));
-			onControlPanelCreated(mControlPanel);
+			onControlPanelCreated(mInputMethodView);
 		}
 		
-		return mControlPanel;
+		return mInputMethodView;
 	}
 	
 	/**
@@ -112,8 +116,20 @@ public abstract class InputMethod {
 	 * @return
 	 */
 	public abstract String getAbbrName();
+
+	public void setEnabled(boolean enabled) {
+		mEnabled = enabled;
+		
+		if (!enabled) {
+			mControlPanel.activateNextInputMethod();
+		}
+	}
+
+	public boolean isEnabled() {
+		return mEnabled;
+	}
 	
-	protected abstract View createControlPanel();
+	protected abstract View createControlPanelView();
 	
 	protected void onControlPanelCreated(View controlPanel) {
 		
@@ -146,11 +162,9 @@ public abstract class InputMethod {
 		
 	}
 	
-	protected void onSaveInstanceState(Bundle outState) {
-		
+	protected void onSaveState(StateBundle outState) {
 	}
 	
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		
+	protected void onRestoreState(StateBundle savedState) {
 	}
 }

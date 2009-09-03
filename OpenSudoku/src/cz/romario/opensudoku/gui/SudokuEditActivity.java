@@ -119,15 +119,14 @@ public class SudokuEditActivity extends Activity {
         mBoard.setGame(mGame);
         
         mInputMethods = (IMControlPanel)findViewById(R.id.input_methods);
-        mInputMethods.setGame(mGame);
-        mInputMethods.setBoard(mBoard);
+        mInputMethods.initialize(mBoard, mGame, null, null);
         
         // only numpad input method will be enabled
         for (InputMethod im : mInputMethods.getInputMethods()) {
-        	im.enabled = false;
+        	im.setEnabled(false);
         }
-        mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_NUMPAD).enabled = true;
-        mInputMethods.activateFirstInputMethod();
+        mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_NUMPAD).setEnabled(true);
+        mInputMethods.activateInputMethod(IMControlPanel.INPUT_METHOD_NUMPAD);
 	}
 	
 	@Override
