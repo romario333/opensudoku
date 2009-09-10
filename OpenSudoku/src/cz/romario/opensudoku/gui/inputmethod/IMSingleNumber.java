@@ -35,6 +35,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.game.CellCollection;
+import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.game.CellCollection.OnChangeListener;
+import cz.romario.opensudoku.gui.HintsQueue;
+import cz.romario.opensudoku.gui.SudokuBoardView;
 import cz.romario.opensudoku.gui.inputmethod.IMControlPanelStatePersister.StateBundle;
 
 /**
@@ -49,17 +54,36 @@ public class IMSingleNumber extends InputMethod {
 	private static final int MODE_EDIT_VALUE = 0;
 	private static final int MODE_EDIT_NOTE = 1;
 	
+	// TODO: default value should be false and should be in config
+	private boolean mDisable9TimesUsed = true;
+	
+	private int mSelectedNumber = 1;
+	private int mEditMode = MODE_EDIT_VALUE;
+	
 	private Handler mGuiHandler;
 	private Map<Integer,Button> mNumberButtons;
 	private ImageButton mSwitchNumNoteButton;
-
-	private int mSelectedNumber = 1;
-	private int mEditMode = MODE_EDIT_VALUE;
 	
 	public IMSingleNumber() {
 		super();
 		
 		mGuiHandler = new Handler();
+	}
+	
+	public boolean getDisable9TimeUsed() {
+		return mDisable9TimesUsed;
+	}
+	
+	public void setDisable9TimesUsed(boolean disable9TimesUsed) {
+		mDisable9TimesUsed = disable9TimesUsed;
+	}
+	
+	@Override
+	protected void initialize(Context context, IMControlPanel controlPanel,
+			SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
+		super.initialize(context, controlPanel, game, board, hintsQueue);
+		
+		game.getCells().addOnChangeListener(mOnCellsChangeListener);
 	}
 	
 	@Override
@@ -123,6 +147,14 @@ public class IMSingleNumber extends InputMethod {
 			update();
 		}
 	};
+
+	private OnChangeListener mOnCellsChangeListener = new OnChangeListener() {
+		
+		@Override
+		public void onChange() {
+			update();
+		}
+	};
 	
 	private void update() {
 		switch (mEditMode) {
@@ -132,6 +164,32 @@ public class IMSingleNumber extends InputMethod {
 		case MODE_EDIT_VALUE:
 			mSwitchNumNoteButton.setImageResource(R.drawable.pencil_disabled);
 			break;
+		}
+
+		if (mDisable9TimesUsed) {
+			Map<Integer, Integer> valuesUseCount = new HashMap<Integer, Integer>();
+			for (int value = 1; value <= CellCollection.SUDOKU_SIZE; value++) {
+				valuesUseCount.put(value, 0);
+			}
+
+			CellCollection cells = mGame.getCells();
+			for (int r = 0; r < CellCollection.SUDOKU_SIZE; r++) {
+				for (int c = 0; c < CellCollection.SUDOKU_SIZE; c++) {
+					int value = cells.getCell(r, c).getValue();
+					if (value != 0) {
+						valuesUseCount.put(value, valuesUseCount.get(value) + 1);
+					}
+				}
+			}
+			
+			for (Integer value : valuesUseCount.keySet()) {
+				mNumberButtons.get(value).setEnabled(
+						valuesUseCount.get(value) < CellCollection.SUDOKU_SIZE);
+			}
+			// disabled number should not be selected
+			if (mSelectedNumber != -1 && !mNumberButtons.get(mSelectedNumber).isEnabled()) {
+				mSelectedNumber = -1;
+			}
 		}
 		
 		// TODO: sometimes I change background too early and button stays in pressed state
@@ -151,7 +209,6 @@ public class IMSingleNumber extends InputMethod {
 				}
 			}
 		}, 100);
-		
 	}
 
 	@Override
@@ -192,7 +249,6 @@ public class IMSingleNumber extends InputMethod {
 	@Override
 	protected void onRestoreState(StateBundle savedState) {
 		mSelectedNumber = savedState.getInt("selectedNumber", 1);
-		// TODO: tuzka se neudrzi zapla, proc?
 		mEditMode = savedState.getInt("editMode", MODE_EDIT_VALUE);
 		if (isInputMethodViewCreated()) {
 			update();

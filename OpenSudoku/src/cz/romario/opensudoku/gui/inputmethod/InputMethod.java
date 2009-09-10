@@ -43,6 +43,7 @@ import cz.romario.opensudoku.gui.inputmethod.IMControlPanelStatePersister.StateB
  */
 public abstract class InputMethod {
 	
+	// TODO: I should not have mPrefix for fields used in subclasses, create proper getters
 	protected Context mContext;
 	protected IMControlPanel mControlPanel;
 	protected SudokuGame mGame;

@@ -46,6 +46,8 @@ public class CellCollection  implements Parcelable {
 	private CellGroup[] mSectors;
 	private CellGroup[] mRows;
 	private CellGroup[] mColumns;
+	
+	private boolean mOnChangeEnabled = true;
 
 	private final List<OnChangeListener> mChangeListeners = new ArrayList<OnChangeListener>();
 	
@@ -116,6 +118,7 @@ public class CellCollection  implements Parcelable {
 	}
 	
 	public void markAllCellsAsValid() {
+		mOnChangeEnabled = false;
 		for (int r=0; r<SUDOKU_SIZE; r++)
 		{
 			for (int c=0; c<SUDOKU_SIZE; c++)
@@ -123,6 +126,8 @@ public class CellCollection  implements Parcelable {
 				mCells[r][c].setValid(true);
 			}
 		}
+		mOnChangeEnabled = true;
+		onChange();
 	}
 	
 	/**
@@ -133,11 +138,13 @@ public class CellCollection  implements Parcelable {
 	 * @return True if validation is successful. 
 	 */
 	public boolean validate() {
+		
 		boolean valid = true;
 		
 		// first set all cells as valid
 		markAllCellsAsValid();
-		
+
+		mOnChangeEnabled = false;
 		// run validation in groups
 		for (CellGroup row : mRows) {
 			if (!row.validate()) {
@@ -154,6 +161,9 @@ public class CellCollection  implements Parcelable {
 				valid = false;
 			}
 		}
+		
+		mOnChangeEnabled = true;
+		onChange();
 
 		return valid;
 	}
@@ -395,13 +405,37 @@ public class CellCollection  implements Parcelable {
 		}
 	}
 	
+	/**
+	 * Returns whether change notification is enabled.
+	 * 
+	 * If true, change notifications are distributed to the listeners
+	 * registered by {@link #addOnChangeListener(OnChangeListener)}.
+	 * 
+	 * @return
+	 */
+//	public boolean isOnChangeEnabled() {
+//		return mOnChangeEnabled;
+//	}
+//	
+//	/**
+//	 * Enables or disables change notifications, that are distributed to the listeners
+//	 * registered by {@link #addOnChangeListener(OnChangeListener)}.
+//	 * 
+//	 * @param onChangeEnabled
+//	 */
+//	public void setOnChangeEnabled(boolean onChangeEnabled) {
+//		mOnChangeEnabled = onChangeEnabled;
+//	}
+	
 	/** 
 	 * Notify all registered listeners that something has changed.
 	 */
 	protected void onChange() {
-		synchronized (mChangeListeners) {
-			for (OnChangeListener l : mChangeListeners) {
-				l.onChange();
+		if (mOnChangeEnabled) {
+			synchronized (mChangeListeners) {
+				for (OnChangeListener l : mChangeListeners) {
+					l.onChange();
+				}
 			}
 		}
 	}
