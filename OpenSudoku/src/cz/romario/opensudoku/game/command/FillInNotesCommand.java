@@ -47,7 +47,7 @@ public class FillInNotesCommand implements Command {
 		}
 	}
 	
-	private class NoteEntry {
+	private static class NoteEntry {
 		public int rowIndex;
 		public int colIndex;
 		public CellNote note;

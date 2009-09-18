@@ -52,30 +52,26 @@ public class FolderDetailLoader {
 	}
 	
 	public void loadDetailAsync(long folderID, FolderDetailCallback loadedCallback) {
-		synchronized (mLoaderService) {
-			final long folderIDFinal = folderID;
-			final FolderDetailCallback loadedCallbackFinal = loadedCallback;
-			mLoaderService.execute(new Runnable() {
-				@Override
-				public void run() {
-					final FolderInfo folderInfo = mDatabase.getFolderInfoFull(folderIDFinal);
-					
-					mGuiHandler.post(new Runnable() {
-						@Override
-						public void run() {
-							loadedCallbackFinal.onLoaded(folderInfo);
-						}
-					});
-				}
-			});
-		}
+		final long folderIDFinal = folderID;
+		final FolderDetailCallback loadedCallbackFinal = loadedCallback;
+		mLoaderService.execute(new Runnable() {
+			@Override
+			public void run() {
+				final FolderInfo folderInfo = mDatabase.getFolderInfoFull(folderIDFinal);
+				
+				mGuiHandler.post(new Runnable() {
+					@Override
+					public void run() {
+						loadedCallbackFinal.onLoaded(folderInfo);
+					}
+				});
+			}
+		});
 	}
 	
 	public void destroy() {
-		synchronized (mLoaderService) {
-			mLoaderService.shutdownNow();
-			mDatabase.close();
-		}
+		mLoaderService.shutdownNow();
+		mDatabase.close();
 	}
 	
 	public interface FolderDetailCallback {
