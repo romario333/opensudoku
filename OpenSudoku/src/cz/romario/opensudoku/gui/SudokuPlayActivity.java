@@ -57,7 +57,7 @@ public class SudokuPlayActivity extends Activity{
 	private static final int DIALOG_RESTART = 1;
 	private static final int DIALOG_WELL_DONE = 2;
 	private static final int DIALOG_CLEAR_NOTES = 3;
-
+	
 	private long mSudokuGameID;
 	private SudokuGame mSudokuGame;
 
@@ -65,7 +65,8 @@ public class SudokuPlayActivity extends Activity{
 	private SudokuDatabase mDatabase;
 	private SudokuBoardView mSudokuBoard;
 	
-	private IMControlPanel mInputMethods;
+	private IMControlPanel mIMControlPanel;
+	private IMControlPanelStatePersister mIMControlPanelStatePersister;
 	private IMPopup mIMPopup;
 	private IMSingleNumber mIMSingleNumber;
 	private IMNumpad mIMNumpad;
@@ -75,7 +76,7 @@ public class SudokuPlayActivity extends Activity{
 	private GameTimeFormat mGameTimeFormatter = new GameTimeFormat();
 	
 	private HintsQueue mHintsQueue;
-	
+
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,13 +114,14 @@ public class SudokuPlayActivity extends Activity{
 		
 		mHintsQueue.showOneTimeHint(R.string.welcome, R.string.first_run_hint);		
 		
-        mInputMethods = (IMControlPanel)findViewById(R.id.input_methods);
-		mInputMethods.initialize(mSudokuBoard, mSudokuGame,
-				new IMControlPanelStatePersister(this), mHintsQueue);
+        mIMControlPanel = (IMControlPanel)findViewById(R.id.input_methods);
+		mIMControlPanel.initialize(mSudokuBoard, mSudokuGame, mHintsQueue);
+		
+		mIMControlPanelStatePersister = new IMControlPanelStatePersister(this);
         
-        mIMPopup = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_POPUP);
-        mIMSingleNumber = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_SINGLE_NUMBER);
-        mIMNumpad = mInputMethods.getInputMethod(IMControlPanel.INPUT_METHOD_NUMPAD);
+        mIMPopup = mIMControlPanel.getInputMethod(IMControlPanel.INPUT_METHOD_POPUP);
+        mIMSingleNumber = mIMControlPanel.getInputMethod(IMControlPanel.INPUT_METHOD_SINGLE_NUMBER);
+        mIMNumpad = mIMControlPanel.getInputMethod(IMControlPanel.INPUT_METHOD_NUMPAD);
     }
 	
 	@Override
@@ -146,6 +148,8 @@ public class SudokuPlayActivity extends Activity{
         mIMPopup.setDisableCompletedValues(gameSettings.getBoolean("disable_completed_values", true));
         mIMSingleNumber.setDisableCompletedValues(gameSettings.getBoolean("disable_completed_values", true));
         mIMNumpad.setDisableCompletedValues(gameSettings.getBoolean("disable_completed_values", true));
+        
+        mIMControlPanelStatePersister.restoreState(mIMControlPanel);
 
 		updateTitle();
 	}
@@ -162,7 +166,8 @@ public class SudokuPlayActivity extends Activity{
 		mDatabase.updateSudoku(mSudokuGame);
 		
 		mGameTimer.stop();
-		mInputMethods.pause();
+		mIMControlPanel.pause();
+		mIMControlPanelStatePersister.saveState(mIMControlPanel);
     }
     
     @Override

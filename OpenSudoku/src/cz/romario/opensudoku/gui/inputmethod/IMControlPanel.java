@@ -53,7 +53,6 @@ public class IMControlPanel extends LinearLayout {
 	private SudokuBoardView mBoard;
 	private SudokuGame mGame;
 	private HintsQueue mHintsQueue;
-	private IMControlPanelStatePersister mStatePersister;
 	
 	private List<InputMethod> mInputMethods = new ArrayList<InputMethod>();
 	private int mActiveMethodIndex = -1;
@@ -68,20 +67,15 @@ public class IMControlPanel extends LinearLayout {
 		mContext = context;
 	}
 	
-	public void initialize(SudokuBoardView board, SudokuGame game, IMControlPanelStatePersister statePersister, HintsQueue hintsQueue) {
+	public void initialize(SudokuBoardView board, SudokuGame game, HintsQueue hintsQueue) {
 		mBoard = board;
 		mBoard.setOnCellTappedListener(mOnCellTapListener);
 		mBoard.setOnCellSelectedListener(mOnCellSelected);
 
 		mGame = game;
-		mStatePersister = statePersister;
 		mHintsQueue = hintsQueue;
 		
 		createInputMethods();
-		
-		if (mStatePersister != null) {
-			statePersister.restoreState(this);
-		}
 	}
 	
 	
@@ -277,21 +271,6 @@ public class IMControlPanel extends LinearLayout {
 			activateNextInputMethod();
 		}
 	};
-	
-	@Override
-	protected Parcelable onSaveInstanceState() {
-		mStatePersister.saveState(this);
-
-		return super.onSaveInstanceState();
-	}
-	
-	
-	@Override
-	protected void onRestoreInstanceState(Parcelable state) {
-		mStatePersister.restoreState(this);
-		
-		super.onRestoreInstanceState(state);
-	}
 	
 //    /**
 //     * Used to save / restore state of control panel.
