@@ -129,7 +129,7 @@ public class HintsQueue {
 		Message hint = new Message();
 		hint.titleResID = titleResID;
 		hint.messageResID = messageResID;
-		hint.args = args;
+		//hint.args = args;
 		addHint(hint);
 	}
 	
@@ -165,7 +165,7 @@ public class HintsQueue {
 	private static class Message {
 		int titleResID;
 		int messageResID;
-		Object[] args;
+		//Object[] args;
 	}
 
 }

@@ -260,7 +260,7 @@ public class Cell implements Parcelable {
 	 */	
 	public void serialize(StringBuilder data) {
         data.append(mValue).append("|");
-        if (mNote == null || mNote.equals("")) {
+        if (mNote == null || mNote.isEmpty()) {
         	data.append("-").append("|");
         } else {
         	mNote.serialize(data);

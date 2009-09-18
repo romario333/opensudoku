@@ -20,12 +20,9 @@
 
 package cz.romario.opensudoku.gui.inputmethod;
 
-import java.util.Map;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import cz.romario.opensudoku.R;

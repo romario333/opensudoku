@@ -316,7 +316,7 @@ public class SudokuBoardView extends View {
 						}
 						canvas.drawText(Integer.toString(value),
 								cellLeft + mNumberLeft, 
-								Math.round(cellTop) + mNumberTop - numberAscent, 
+								cellTop + mNumberTop - numberAscent, 
 								mNumberPaint);
 					} else {
 						if (!cell.getNote().isEmpty()) {

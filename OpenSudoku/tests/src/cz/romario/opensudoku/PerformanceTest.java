@@ -69,7 +69,7 @@ public class PerformanceTest extends TestCase implements PerformanceTestCase {
 	
 	
 	
-	private Intermediates mIntermediates;
+	//private Intermediates mIntermediates;
 	
 	@Override
 	public boolean isPerformanceOnly() {
@@ -78,7 +78,7 @@ public class PerformanceTest extends TestCase implements PerformanceTestCase {
 
 	@Override
 	public int startPerformance(Intermediates intermediates) {
-		mIntermediates = intermediates;
+		//mIntermediates = intermediates;
 		
 		return 0;
 	}

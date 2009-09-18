@@ -381,13 +381,19 @@ public class ImportSudokuActivity extends Activity {
 							URL url = new URL(xpp.getText());
 							InputStreamReader isr = new InputStreamReader(url
 									.openStream());
-							BufferedReader br = new BufferedReader(isr);
-							String s;
-							while ((s = br.readLine()) != null) {
-								Matcher m = SUDOKU_PATT.matcher(s);
-								if (m.find()) {
-									importGame(m.group(1));
-								}
+							BufferedReader br = null;
+							try {
+								br = new BufferedReader(isr);
+								
+								String s;
+								while ((s = br.readLine()) != null) {
+									Matcher m = SUDOKU_PATT.matcher(s);
+									if (m.find()) {
+										importGame(m.group(1));
+									}
+							}
+							} finally {
+								if (br != null) br.close();
 							}
 						}
 
@@ -417,12 +423,17 @@ public class ImportSudokuActivity extends Activity {
 			try {
 				URL url = new URL(uri.toString());
 				InputStreamReader isr = new InputStreamReader(url.openStream());
-				BufferedReader br = new BufferedReader(isr);
-				String s;
-				while ((s = br.readLine()) != null) {
-					if (!s.equals("")) {
-						importGame(s);
+				BufferedReader br = null;
+				try {
+					br = new BufferedReader(isr);
+					String s;
+					while ((s = br.readLine()) != null) {
+						if (!s.equals("")) {
+							importGame(s);
+						}
 					}
+				} finally {
+					if (br != null) br.close();
 				}
 
 				return true;

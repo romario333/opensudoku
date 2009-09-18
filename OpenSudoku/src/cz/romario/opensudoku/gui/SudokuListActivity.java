@@ -558,7 +558,7 @@ public class SudokuListActivity extends ListActivity {
 					((TextView) view).setText(note);
 				}
 				label
-						.setVisibility((note == null || note.trim() == "") ? View.GONE
+						.setVisibility((note == null || note.trim().equals("")) ? View.GONE
 								: View.VISIBLE);
 				label.setText(note);
 				break;

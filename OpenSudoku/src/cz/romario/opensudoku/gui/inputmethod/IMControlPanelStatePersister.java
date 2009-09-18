@@ -1,8 +1,5 @@
 package cz.romario.opensudoku.gui.inputmethod;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
