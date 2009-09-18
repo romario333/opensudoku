@@ -119,5 +119,7 @@
 	
 	<!-- Strings added in 0.7.0 -->
 	<string name="loading">Loading...</string>
+	<string name="disable_completed_values">Disable completed numbers</string>
+	<string name="disable_completed_values_summary">Disables numbers which has been entered 9 times.</string>
 	
 </resources>

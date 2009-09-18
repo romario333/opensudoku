@@ -21,7 +21,9 @@
 package cz.romario.opensudoku.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import android.os.Parcel;
@@ -204,6 +206,31 @@ public class CellCollection  implements Parcelable {
 				cell.setEditable(cell.getValue() == 0);
 			}
 		}
+	}
+	
+	
+	/**
+	 * Returns how many times each value is used in <code>CellCollection</code>.
+	 * Returns map with entry for each value.
+	 * 
+	 * @return
+	 */
+	public Map<Integer, Integer> getValuesUseCount() {
+		Map<Integer, Integer> valuesUseCount = new HashMap<Integer, Integer>();
+		for (int value = 1; value <= CellCollection.SUDOKU_SIZE; value++) {
+			valuesUseCount.put(value, 0);
+		}
+
+		for (int r = 0; r < CellCollection.SUDOKU_SIZE; r++) {
+			for (int c = 0; c < CellCollection.SUDOKU_SIZE; c++) {
+				int value = getCell(r, c).getValue();
+				if (value != 0) {
+					valuesUseCount.put(value, valuesUseCount.get(value) + 1);
+				}
+			}
+		}
+		
+		return valuesUseCount; 
 	}
 	
 	/**

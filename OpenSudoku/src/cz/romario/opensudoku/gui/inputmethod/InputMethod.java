@@ -50,6 +50,7 @@ public abstract class InputMethod {
 	private String mInputMethodName;
 	protected View mInputMethodView;
 
+	protected boolean mActive = false;
 	private boolean mEnabled = true;
 
 	public InputMethod() {
@@ -127,6 +128,16 @@ public abstract class InputMethod {
 		return mEnabled;
 	}
 	
+	public void activate() {
+		mActive = true;
+		onActivated();
+	}
+	
+	public void deactivate() {
+		mActive = false;
+		onDeactivated();
+	}
+	
 	protected abstract View createControlPanelView();
 	
 	protected void onControlPanelCreated(View controlPanel) {
@@ -134,11 +145,9 @@ public abstract class InputMethod {
 	}
 	
 	protected void onActivated() {
-		
 	}
 	
 	protected void onDeactivated() {
-		
 	}
 	
 	/**

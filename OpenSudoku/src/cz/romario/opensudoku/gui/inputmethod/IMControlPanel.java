@@ -114,7 +114,7 @@ public class IMControlPanel extends LinearLayout {
 		ensureInputMethods();
 		
 		if (mActiveMethodIndex != -1) {
-			mInputMethods.get(mActiveMethodIndex).onDeactivated();
+			mInputMethods.get(mActiveMethodIndex).deactivate();
 		}
 		
 		boolean idFound = false;
@@ -151,7 +151,7 @@ public class IMControlPanel extends LinearLayout {
 		mActiveMethodIndex = id;
 		if (mActiveMethodIndex != -1) {
 			InputMethod activeMethod = mInputMethods.get(mActiveMethodIndex);
-			activeMethod.onActivated();
+			activeMethod.activate();
 			
 			if (mHintsQueue != null) {
 				mHintsQueue.showOneTimeHint(activeMethod.getNameResID(), activeMethod.getHelpResID());
@@ -198,7 +198,7 @@ public class IMControlPanel extends LinearLayout {
 		
 		if (mActiveMethodIndex != -1) {
 			InputMethod activeMethod = mInputMethods.get(mActiveMethodIndex);
-			activeMethod.onActivated();
+			activeMethod.activate();
 			
 			mHintsQueue.showHint(activeMethod.getNameResID(), activeMethod.getHelpResID());
 		}

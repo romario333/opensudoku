@@ -29,6 +29,8 @@ import java.util.Set;
 import cz.romario.opensudoku.R;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.LightingColorFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -88,13 +90,17 @@ public class IMPopupDialog extends Dialog {
 		mOnNoteEditListener = l;
 	}
 	
+	// TODO: vsude jinde pouzivam misto number value
 	public void updateNumber(Integer number) {
-		for (Button b : mNumberButtons.values()) {
-			b.setEnabled(true);
-		}
-		
-		if (number != 0) {
-			mNumberButtons.get(number).setEnabled(false);
+		for (Map.Entry<Integer, Button> entry : mNumberButtons.entrySet()) {
+			Button b = entry.getValue();
+			if (entry.getKey().equals(number)) {
+				b.setTextAppearance(mContext, android.R.style.TextAppearance_Large_Inverse);
+				b.getBackground().setColorFilter(new LightingColorFilter(Color.rgb(240, 179, 42), 0));
+			} else {
+				b.setTextAppearance(mContext, android.R.style.TextAppearance_Widget_Button);
+				b.getBackground().setColorFilter(null);
+			}
 		}
 	}
 	
@@ -114,6 +120,20 @@ public class IMPopupDialog extends Dialog {
 		for (Integer number : mNoteNumberButtons.keySet()) {
 			mNoteNumberButtons.get(number).setChecked(mNoteSelectedNumbers.contains(number));
 		}
+	}
+	
+	public void enableAllNumbers() {
+		for (Button b : mNumberButtons.values()) {
+			b.setEnabled(true);
+		}
+		for (Button b : mNoteNumberButtons.values()) {
+			b.setEnabled(true);
+		}
+	}
+	
+	public void setNumberEnabled(int number, boolean enabled) {
+		mNumberButtons.get(number).setEnabled(enabled);
+		mNoteNumberButtons.get(number).setEnabled(enabled);
 	}
 	
 	

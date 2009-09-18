@@ -20,19 +20,39 @@
 
 package cz.romario.opensudoku.gui.inputmethod;
 
+import java.util.Map;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.CellNote;
 import cz.romario.opensudoku.gui.inputmethod.IMPopupDialog.OnNoteEditListener;
 import cz.romario.opensudoku.gui.inputmethod.IMPopupDialog.OnNumberEditListener;
 
 public class IMPopup extends InputMethod {
 
+	private boolean mDisableCompletedValues = true;
+	
 	private IMPopupDialog mEditCellDialog;
 	private Cell mSelectedCell;
+	
+	public boolean getDisableCompletedValues() {
+		return mDisableCompletedValues;
+	}
+	
+	/**
+	 * If set to true, buttons for numbers, which occur in {@link CellCollection}
+	 * more than {@link CellCollection#SUDOKU_SIZE}-times, will be disabled.
+	 * 
+	 * @param disableCompletedValues
+	 */
+	public void setDisableCompletedValues(boolean disableCompletedValues) {
+		mDisableCompletedValues = disableCompletedValues;
+	}
+	
 	
 	private void ensureEditCellDialog() {
 		if (mEditCellDialog == null) {
@@ -60,6 +80,14 @@ public class IMPopup extends InputMethod {
 			ensureEditCellDialog();
 			mEditCellDialog.updateNumber(cell.getValue());
 			mEditCellDialog.updateNote(cell.getNote().getNotedNumbers());
+			mEditCellDialog.enableAllNumbers();
+			if (mDisableCompletedValues) {
+				Map<Integer, Integer> valuesUseCount = mGame.getCells().getValuesUseCount();
+				for (Map.Entry<Integer, Integer> entry : valuesUseCount.entrySet()) {
+					mEditCellDialog.setNumberEnabled(entry.getKey(), 
+							entry.getValue() < CellCollection.SUDOKU_SIZE);
+				}
+			}
 			mEditCellDialog.show();
 		} else {
 			mBoard.hideTouchedCellHint();

@@ -8,6 +8,11 @@
                 android:title="@string/highlight_wrong_values"
                 android:summary="@string/highlight_wrong_values_summary"
                 android:defaultValue="true" />
+        <CheckBoxPreference
+                android:key="disable_completed_values"
+                android:title="@string/disable_completed_values"
+                android:summary="@string/disable_completed_values_summary"
+                android:defaultValue="true" />
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/input_methods">

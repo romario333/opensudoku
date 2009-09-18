@@ -142,7 +142,10 @@ public class SudokuPlayActivity extends Activity{
         mIMPopup.setEnabled(gameSettings.getBoolean("im_popup", true));
         mIMSingleNumber.setEnabled(gameSettings.getBoolean("im_single_number", true));
         mIMNumpad.setEnabled(gameSettings.getBoolean("im_numpad", true));
-        mIMNumpad.moveCellSelectionOnPress = gameSettings.getBoolean("im_numpad_move_right", false);
+        mIMNumpad.setMoveCellSelectionOnPress(gameSettings.getBoolean("im_numpad_move_right", false));
+        mIMPopup.setDisableCompletedValues(gameSettings.getBoolean("disable_completed_values", true));
+        mIMSingleNumber.setDisableCompletedValues(gameSettings.getBoolean("disable_completed_values", true));
+        mIMNumpad.setDisableCompletedValues(gameSettings.getBoolean("disable_completed_values", true));
 
 		updateTitle();
 	}

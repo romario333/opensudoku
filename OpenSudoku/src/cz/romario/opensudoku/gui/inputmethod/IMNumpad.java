@@ -31,11 +31,17 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.game.CellCollection;
+import cz.romario.opensudoku.game.SudokuGame;
+import cz.romario.opensudoku.game.CellCollection.OnChangeListener;
+import cz.romario.opensudoku.gui.HintsQueue;
+import cz.romario.opensudoku.gui.SudokuBoardView;
 import cz.romario.opensudoku.gui.inputmethod.IMControlPanelStatePersister.StateBundle;
 
 public class IMNumpad extends InputMethod {
 
-	public boolean moveCellSelectionOnPress = true;
+	private boolean moveCellSelectionOnPress = true;
+	private boolean mDisableCompletedValues = true;
 	
 	private static final int MODE_EDIT_VALUE = 0;
 	private static final int MODE_EDIT_NOTE = 1;
@@ -46,6 +52,36 @@ public class IMNumpad extends InputMethod {
 	private int mEditMode = MODE_EDIT_VALUE;
 	
 	private Map<Integer,Button> mNumberButtons;
+
+	public boolean isMoveCellSelectionOnPress() {
+		return moveCellSelectionOnPress;
+	}
+	
+	public void setMoveCellSelectionOnPress(boolean moveCellSelectionOnPress) {
+		this.moveCellSelectionOnPress = moveCellSelectionOnPress;
+	}
+	
+	public boolean getDisableCompletedValues() {
+		return mDisableCompletedValues;
+	}
+	
+	/**
+	 * If set to true, buttons for numbers, which occur in {@link CellCollection}
+	 * more than {@link CellCollection#SUDOKU_SIZE}-times, will be disabled.
+	 * 
+	 * @param disableCompletedValues
+	 */
+	public void setDisableCompletedValues(boolean disableCompletedValues) {
+		mDisableCompletedValues = disableCompletedValues;
+	}
+	
+	@Override
+	protected void initialize(Context context, IMControlPanel controlPanel,
+			SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
+		super.initialize(context, controlPanel, game, board, hintsQueue);
+		
+		game.getCells().addOnChangeListener(mOnCellsChangeListener);
+	}
 	
 	@Override
 	protected View createControlPanelView() {
@@ -131,7 +167,7 @@ public class IMNumpad extends InputMethod {
 				case MODE_EDIT_VALUE:
 					if (selNumber >= 0 && selNumber <= 9) {
 						mGame.setCellValue(selCell, selNumber);
-						if (moveCellSelectionOnPress) {
+						if (isMoveCellSelectionOnPress()) {
 							mBoard.moveCellSelectionRight();
 						}
 					}
@@ -142,6 +178,17 @@ public class IMNumpad extends InputMethod {
 		
 	};
 	
+	private OnChangeListener mOnCellsChangeListener = new OnChangeListener() {
+		
+		@Override
+		public void onChange() {
+			if (mActive) {
+				update();
+			}
+		}
+	};
+	
+	
 	private void update() {
 		switch (mEditMode) {
 		case MODE_EDIT_NOTE:
@@ -150,6 +197,19 @@ public class IMNumpad extends InputMethod {
 		case MODE_EDIT_VALUE:
 			mSwitchNumNoteButton.setImageResource(R.drawable.pencil_disabled);
 			break;
+		}
+		
+		// enable all buttons (reset to the initial state)
+		for (Button button : mNumberButtons.values()) {
+			button.setEnabled(true);
+		}
+
+		if (mDisableCompletedValues) {
+			Map<Integer, Integer> valuesUseCount = mGame.getCells().getValuesUseCount();
+			for (Map.Entry<Integer, Integer> entry : valuesUseCount.entrySet()) {
+				boolean valueEnabled = entry.getValue() < CellCollection.SUDOKU_SIZE;
+				mNumberButtons.get(entry.getKey()).setEnabled(valueEnabled);
+			}
 		}
 	}
 	

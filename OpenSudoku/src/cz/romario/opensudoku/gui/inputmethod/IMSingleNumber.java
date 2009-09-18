@@ -53,8 +53,7 @@ public class IMSingleNumber extends InputMethod {
 	private static final int MODE_EDIT_VALUE = 0;
 	private static final int MODE_EDIT_NOTE = 1;
 	
-	// TODO: default value should be false and should be in config
-	private boolean mDisable9TimesUsed = true;
+	private boolean mDisableCompletedValues = true;
 	
 	private int mSelectedNumber = 1;
 	private int mEditMode = MODE_EDIT_VALUE;
@@ -69,12 +68,18 @@ public class IMSingleNumber extends InputMethod {
 		mGuiHandler = new Handler();
 	}
 	
-	public boolean getDisable9TimeUsed() {
-		return mDisable9TimesUsed;
+	public boolean getDisableCompletedValues() {
+		return mDisableCompletedValues;
 	}
 	
-	public void setDisable9TimesUsed(boolean disable9TimesUsed) {
-		mDisable9TimesUsed = disable9TimesUsed;
+	/**
+	 * If set to true, buttons for numbers, which occur in {@link CellCollection}
+	 * more than {@link CellCollection#SUDOKU_SIZE}-times, will be disabled.
+	 * 
+	 * @param disableCompletedValues
+	 */
+	public void setDisableCompletedValues(boolean disableCompletedValues) {
+		mDisableCompletedValues = disableCompletedValues;
 	}
 	
 	@Override
@@ -151,7 +156,9 @@ public class IMSingleNumber extends InputMethod {
 		
 		@Override
 		public void onChange() {
-			update();
+			if (mActive) {
+				update();
+			}
 		}
 	};
 	
@@ -164,30 +171,17 @@ public class IMSingleNumber extends InputMethod {
 			mSwitchNumNoteButton.setImageResource(R.drawable.pencil_disabled);
 			break;
 		}
+		
+		// enable all buttons (reset to the initial state)
+		for (Button button : mNumberButtons.values()) {
+			button.setEnabled(true);
+		}
 
-		if (mDisable9TimesUsed) {
-			Map<Integer, Integer> valuesUseCount = new HashMap<Integer, Integer>();
-			for (int value = 1; value <= CellCollection.SUDOKU_SIZE; value++) {
-				valuesUseCount.put(value, 0);
-			}
-
-			CellCollection cells = mGame.getCells();
-			for (int r = 0; r < CellCollection.SUDOKU_SIZE; r++) {
-				for (int c = 0; c < CellCollection.SUDOKU_SIZE; c++) {
-					int value = cells.getCell(r, c).getValue();
-					if (value != 0) {
-						valuesUseCount.put(value, valuesUseCount.get(value) + 1);
-					}
-				}
-			}
-			
-			for (Integer value : valuesUseCount.keySet()) {
-				mNumberButtons.get(value).setEnabled(
-						valuesUseCount.get(value) < CellCollection.SUDOKU_SIZE);
-			}
-			// disabled number should not be selected
-			if (mSelectedNumber != -1 && !mNumberButtons.get(mSelectedNumber).isEnabled()) {
-				mSelectedNumber = -1;
+		if (mDisableCompletedValues) {
+			Map<Integer, Integer> valuesUseCount = mGame.getCells().getValuesUseCount();
+			for (Map.Entry<Integer, Integer> entry : valuesUseCount.entrySet()) {
+				boolean valueEnabled = entry.getValue() < CellCollection.SUDOKU_SIZE;
+				mNumberButtons.get(entry.getKey()).setEnabled(valueEnabled);
 			}
 		}
 		
