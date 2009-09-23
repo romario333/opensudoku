@@ -29,8 +29,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuGame;
@@ -64,6 +69,7 @@ public class SudokuPlayActivity extends Activity{
 	
 	private SudokuDatabase mDatabase;
 	private SudokuBoardView mSudokuBoard;
+	private TextView mTimeLabel;
 	
 	private IMControlPanel mIMControlPanel;
 	private IMControlPanelStatePersister mIMControlPanelStatePersister;
@@ -74,15 +80,29 @@ public class SudokuPlayActivity extends Activity{
 	private boolean mShowTime = true;
 	private GameTimer mGameTimer;
 	private GameTimeFormat mGameTimeFormatter = new GameTimeFormat();
+	private boolean mIsSmallScreen;
 	
 	private HintsQueue mHintsQueue;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+		// go fullscreen for devices with QVGA screen (only way I found
+		// how to fit UI on the screen)
+		Display display = getWindowManager().getDefaultDisplay();
+		if ((display.getWidth() == 240 || display.getWidth() == 320)
+				&& (display.getHeight() == 240 || display.getHeight() == 320)) {
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
+			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+					WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			mIsSmallScreen = true;
+		}
         
 		setContentView(R.layout.sudoku_play);
+		
 		mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
+		mTimeLabel = (TextView)findViewById(R.id.time_label);
 		
 		mDatabase = new SudokuDatabase(getApplicationContext());
 		mHintsQueue = new HintsQueue(this);
@@ -140,6 +160,7 @@ public class SudokuPlayActivity extends Activity{
 				mGameTimer.start();
 			}
 		}
+        mTimeLabel.setVisibility(mIsSmallScreen && mShowTime ? View.VISIBLE : View.GONE);
         
         mIMPopup.setEnabled(gameSettings.getBoolean("im_popup", true));
         mIMSingleNumber.setEnabled(gameSettings.getBoolean("im_single_number", true));
@@ -151,7 +172,7 @@ public class SudokuPlayActivity extends Activity{
         
         mIMControlPanelStatePersister.restoreState(mIMControlPanel);
 
-		updateTitle();
+		updateTime();
 	}
 	
     @Override
@@ -320,12 +341,14 @@ public class SudokuPlayActivity extends Activity{
 	/**
      * Update the time of game-play.
      */
-	void updateTitle() {
+	void updateTime() {
 		if (mShowTime) {
 			setTitle(mGameTimeFormatter.format(mSudokuGame.getTime()));
+			mTimeLabel.setText(mGameTimeFormatter.format(mSudokuGame.getTime()));
 		} else {
 			setTitle(R.string.app_name);
 		}
+		
 	}
 	
 	// This class implements the game clock.  All it does is update the
@@ -338,7 +361,7 @@ public class SudokuPlayActivity extends Activity{
 		
     	@Override
 		protected boolean step(int count, long time) {
-    		updateTitle();
+    		updateTime();
             
             // Run until explicitly stopped.
             return false;

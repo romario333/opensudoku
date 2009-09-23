@@ -32,8 +32,11 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 /**
@@ -73,6 +76,16 @@ public class SudokuEditActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		// go fullscreen for devices with QVGA screen (only way I found
+		// how to fit UI on the screen)
+		Display display = getWindowManager().getDefaultDisplay();
+		if ((display.getWidth() == 240 || display.getWidth() == 320)
+				&& (display.getHeight() == 240 || display.getHeight() == 320)) {
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
+			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+					WindowManager.LayoutParams.FLAG_FULLSCREEN); 		
+		}
+		
 		setContentView(R.layout.sudoku_edit);
 		mBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
 		
