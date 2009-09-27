@@ -53,16 +53,6 @@
                   android:label="@string/game_settings">
         </activity>
     </application>
-    <!--
-    This declares that this app uses the instrumentation test runner targeting
-    the package of com.example.android.apis.  To run the tests use the command:
-    "adb shell am instrument -w com.example.android.apis.tests/android.test.InstrumentationTestRunner"
-    -->
-    <!-- TODO: Do tests significantly increase package size? -->
-    <instrumentation android:name="android.test.InstrumentationTestRunner"
-                     android:targetPackage="cz.romario.opensudoku"
-                     android:label="OpenSudoku tests"/>
-    
     <uses-permission android:name="android.permission.INTERNET" />
     
 </manifest> 
