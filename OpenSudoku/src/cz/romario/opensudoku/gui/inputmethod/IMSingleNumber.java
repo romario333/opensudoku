@@ -35,6 +35,7 @@ import android.widget.ImageButton;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.Cell;
 import cz.romario.opensudoku.game.CellCollection;
+import cz.romario.opensudoku.game.CellNote;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.CellCollection.OnChangeListener;
 import cz.romario.opensudoku.gui.HintsQueue;
@@ -216,7 +217,7 @@ public class IMSingleNumber extends InputMethod {
 		switch (mEditMode) {
 		case MODE_EDIT_NOTE:
 			if (selNumber == 0) {
-				mGame.setCellNote(cell, null);
+				mGame.setCellNote(cell, CellNote.EMPTY);
 			} else if (selNumber > 0 && selNumber <= 9) {
 				mGame.setCellNote(cell, cell.getNote().toggleNumber(selNumber));
 			}

@@ -35,6 +35,8 @@ public class CellNote {
 	// TODO: int would be better
 	private final Set<Integer> mNotedNumbers;
 	
+	public static final CellNote EMPTY = new CellNote();
+	
 	public CellNote() {
 		mNotedNumbers = Collections.unmodifiableSet(new HashSet<Integer>());
 	}
@@ -85,6 +87,7 @@ public class CellNote {
 
 		return new CellNote(notedNumbers);
 	}
+	
 
 	/**
 	 * Appends string representation of this object to the given <code>StringBuilder</code>.

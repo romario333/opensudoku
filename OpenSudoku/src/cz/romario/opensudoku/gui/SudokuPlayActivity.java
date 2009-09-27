@@ -219,8 +219,8 @@ public class SudokuPlayActivity extends Activity{
         .setShortcut('3', 'a')
         .setIcon(android.R.drawable.ic_menu_delete);
 
-        menu.add(0, MENU_ITEM_FILL_IN_NOTES, 0, R.string.fill_in_notes)
-        .setIcon(android.R.drawable.ic_menu_edit);
+//        menu.add(0, MENU_ITEM_FILL_IN_NOTES, 0, R.string.fill_in_notes)
+//        .setIcon(android.R.drawable.ic_menu_edit);
         
         menu.add(0, MENU_ITEM_RESTART, 1, R.string.restart)
         .setShortcut('7', 'r')

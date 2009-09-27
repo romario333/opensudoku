@@ -437,7 +437,7 @@ public class SudokuBoardView extends View {
 					// TODO: I'm not really sure that this is thread-safe
 					if (mSelectedCell != null) {
 						if (event.isShiftPressed() || event.isAltPressed()) {
-							setCellNote(mSelectedCell, null);
+							setCellNote(mSelectedCell, CellNote.EMPTY);
 						} else {
 							setCellValue(mSelectedCell, 0);
 							moveCellSelectionRight();

@@ -32,6 +32,7 @@ import android.widget.ImageButton;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.Cell;
 import cz.romario.opensudoku.game.CellCollection;
+import cz.romario.opensudoku.game.CellNote;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.game.CellCollection.OnChangeListener;
 import cz.romario.opensudoku.gui.HintsQueue;
@@ -159,7 +160,7 @@ public class IMNumpad extends InputMethod {
 				switch (mEditMode) {
 				case MODE_EDIT_NOTE:
 					if (selNumber == 0) {
-						mGame.setCellNote(selCell, null);
+						mGame.setCellNote(selCell, CellNote.EMPTY);
 					} else if (selNumber > 0 && selNumber <= 9) {
 						mGame.setCellNote(selCell, selCell.getNote().toggleNumber(selNumber));
 					}
