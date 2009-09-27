@@ -28,7 +28,7 @@ public class CellTest extends TestCase {
 		cell.setEditable(false);
 		assertEquals("5|-|0|", cell.serialize());
 		
-		cell.getNote().toggleNumber(4);
+		cell.setNote(cell.getNote().toggleNumber(4));
 		assertEquals("5|4,|0|", cell.serialize());
 	}
 	

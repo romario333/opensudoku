@@ -12,7 +12,7 @@ public class CellCollectionTest extends TestCase {
 			for (int c=0; c<CellCollection.SUDOKU_SIZE; c++) {
 				Cell cell = x.getCell(r, c);
 				assertEquals(0, cell.getValue());
-				assertEquals(false, cell.isEditable());
+				assertEquals(true, cell.isEditable());
 				assertEquals(true, cell.isValid());
 			}
 		}
