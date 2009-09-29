@@ -247,7 +247,11 @@ public class SeekBarPreference extends DialogPreference {
 
     @Override
     protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-        setValue(restoreValue ? getPersistedInt(mValue) : (Integer) defaultValue);
+    	int defValue = mMin;
+    	if (defaultValue != null) {
+    		defValue = Integer.parseInt(defaultValue.toString());
+    	}
+        setValue(restoreValue ? getPersistedInt(mValue) : defValue);
     }
 
     @Override
