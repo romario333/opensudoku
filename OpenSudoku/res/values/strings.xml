@@ -122,4 +122,9 @@
 	<string name="disable_completed_values">Disable completed numbers</string>
 	<string name="disable_completed_values_summary">Disables numbers which has been entered 9 times.</string>
 	
+	<!-- Strings added/changed in 0.7.1 -->
+	<string name="more_settings">More settings</string>
+	<string name="screen_border_size">Screen border size</string>
+	<string name="screen_border_size_summary">Some displays do not react to touches on screen edges. This could help in such case.</string>
+	
 </resources>

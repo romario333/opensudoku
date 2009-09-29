@@ -33,6 +33,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -68,6 +69,8 @@ public class SudokuPlayActivity extends Activity{
 
 	
 	private SudokuDatabase mDatabase;
+	
+	private ViewGroup mRootLayout;
 	private SudokuBoardView mSudokuBoard;
 	private TextView mTimeLabel;
 	
@@ -101,6 +104,7 @@ public class SudokuPlayActivity extends Activity{
         
 		setContentView(R.layout.sudoku_play);
 		
+		mRootLayout = (ViewGroup)findViewById(R.id.root_layout);
 		mSudokuBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
 		mTimeLabel = (TextView)findViewById(R.id.time_label);
 		
@@ -150,7 +154,11 @@ public class SudokuPlayActivity extends Activity{
 		
         // read game settings
 		SharedPreferences gameSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        mSudokuBoard.setHighlightWrongVals(gameSettings.getBoolean("highlight_wrong_values", true));
+        
+		int screenPadding = gameSettings.getInt("screen_border_size", 0);
+		mRootLayout.setPadding(screenPadding, screenPadding, screenPadding, screenPadding);
+		
+		mSudokuBoard.setHighlightWrongVals(gameSettings.getBoolean("highlight_wrong_values", true));
 
         mShowTime = gameSettings.getBoolean("show_time", true);
         if (mSudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {

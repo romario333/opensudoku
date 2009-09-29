@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-        xmlns:android="http://schemas.android.com/apk/res/android">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:os="http://schemas.android.com/apk/res/cz.romario.opensudoku">
     <PreferenceCategory
             android:title="@string/game_helpers">
         <CheckBoxPreference
@@ -31,13 +32,18 @@
                 android:title="@string/numpad"
                 android:summary="@string/numpad_summary"
                 android:defaultValue="true" />
-        <CheckBoxPreference
-                android:key="im_numpad_move_right"
-                android:dependency="im_numpad"
-                android:layout="?android:attr/preferenceLayoutChild"
-                android:title="@string/numpad_move_right"
-                android:summary="@string/numpad_move_right_summary"
-                android:defaultValue="false" />
+        <PreferenceScreen
+                android:key="screen_input_methods_advanced"
+                android:title="@string/more_settings">
+		    <PreferenceCategory
+		            android:title="@string/numpad">
+		        <CheckBoxPreference
+		                android:key="im_numpad_move_right"
+		                android:title="@string/numpad_move_right"
+		                android:summary="@string/numpad_move_right_summary"
+		                android:defaultValue="false" />
+		    </PreferenceCategory>
+        </PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/game">
@@ -51,5 +57,18 @@
                 android:title="@string/show_hints"
                 android:summary="@string/show_hints_summary"
                 android:defaultValue="true" />
+        <PreferenceScreen
+                android:key="screen_game_advanced"
+                android:title="@string/more_settings">
+                <cz.romario.opensudoku.gui.SeekBarPreference                 
+                	android:key="screen_border_size"
+                	android:title="@string/screen_border_size"
+                	android:summary="@string/screen_border_size_summary"
+                	android:dialogTitle="@string/screen_border_size"
+                	android:defaultValue="0"
+                	os:max="30"
+                	os:min="0"
+                	os:valueFormat="%s pixels" />
+        </PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>
