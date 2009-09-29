@@ -54,6 +54,7 @@ public class SudokuBoardView extends View {
 	private Cell mSelectedCell;
 	private boolean mReadonly = false;
 	private boolean mHighlightWrongVals = true;
+	private boolean mHighlightTouchedCell = true;
 	private boolean mAutoHideTouchedCellHint = true;
 	
 	private SudokuGame mGame;
@@ -129,6 +130,14 @@ public class SudokuBoardView extends View {
 
 	public boolean getHighlightWrongVals() {
 		return mHighlightWrongVals;
+	}
+	
+	public void setHighlightTouchedCell(boolean highlightTouchedCell) {
+		mHighlightTouchedCell = highlightTouchedCell;
+	}
+	
+	public boolean getHighlightTouchedCell() {
+		return mHighlightTouchedCell;
 	}
 
 	public void setAutoHideTouchedCellHint(boolean autoHideTouchedCellHint) {
@@ -348,7 +357,7 @@ public class SudokuBoardView extends View {
 			
 			// visually highlight cell under the finger (to cope with touch screen
 			// imprecision)
-			if (mTouchedCell != null) {
+			if (mHighlightTouchedCell && mTouchedCell != null) {
 				cellLeft = Math.round(mTouchedCell.getColumnIndex() * mCellWidth) + paddingLeft;
 				cellTop = Math.round(mTouchedCell.getRowIndex() * mCellHeight) + paddingTop;
 				canvas.drawRect(
@@ -398,6 +407,7 @@ public class SudokuBoardView extends View {
 				break;
 			case MotionEvent.ACTION_UP:
 				mSelectedCell = getCellAtPoint(x, y);
+				invalidate(); // selected cell has changed, update board as soon as you can
 				
 				if (mSelectedCell != null) {
 					onCellTapped(mSelectedCell);

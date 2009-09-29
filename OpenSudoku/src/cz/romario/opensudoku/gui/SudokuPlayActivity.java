@@ -159,6 +159,7 @@ public class SudokuPlayActivity extends Activity{
 		mRootLayout.setPadding(screenPadding, screenPadding, screenPadding, screenPadding);
 		
 		mSudokuBoard.setHighlightWrongVals(gameSettings.getBoolean("highlight_wrong_values", true));
+		mSudokuBoard.setHighlightTouchedCell(gameSettings.getBoolean("highlight_touched_cell", true));
 
         mShowTime = gameSettings.getBoolean("show_time", true);
         if (mSudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
