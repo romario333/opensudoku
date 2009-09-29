@@ -224,10 +224,20 @@ public class IMSingleNumber extends InputMethod {
 			break;
 		case MODE_EDIT_VALUE:
 			if (selNumber >= 0 && selNumber <= 9) {
-				if (selNumber == cell.getValue()) {
-					selNumber = 0;
+				if (!mNumberButtons.get(selNumber).isEnabled()) {
+					// Number requested has been disabled but it is still selected. This means that
+					// this number can be no longer entered, however any of the existing fields
+					// with this number can be deleted by repeated touch
+					if (selNumber == cell.getValue()) {
+						mGame.setCellValue(cell, 0);
+					}
+				} else {
+					// Normal flow, just set the value (or clear it if it is repeated touch)
+					if (selNumber == cell.getValue()) {
+						selNumber = 0;
+					}
+					mGame.setCellValue(cell, selNumber);
 				}
-				mGame.setCellValue(cell, selNumber);
 			}
 			break;
 		}
