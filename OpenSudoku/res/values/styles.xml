@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--  TODO: In general, your styles should always inherit (directly or indirectly) from a standard Android style resource -->
-    <style name="edit_cell_number_button">
+    <style name="im_popup_number_button" parent="@android:style/Widget.Button">
         <item name="android:layout_width">95sp</item>
         <item name="android:layout_height">70sp</item>
     </style>
-    <style name="edit_cell_close_button">
+    <style name="im_popup_note_number_button" parent="@android:style/Widget.Button.Toggle">
+        <item name="android:layout_width">95sp</item>
+        <item name="android:layout_height">70sp</item>
+    </style>
+    <style name="im_popup_close_button" parent="@android:style/Widget.Button">
         <item name="android:layout_width">140sp</item>
         <item name="android:layout_height">60sp</item>
         <item name="android:layout_marginTop">10sp</item>
     </style>
-    <style name="edit_cell_clear_button">
+    <style name="im_popup_clear_button" parent="@android:style/Widget.Button">
         <item name="android:layout_width">95sp</item>
         <item name="android:layout_height">60sp</item>
         <item name="android:layout_marginTop">10sp</item>
