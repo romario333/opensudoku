@@ -18,12 +18,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.widget.ProgressBar;
 
-public class ImportOpenSudokuTask extends AbstractImportTask {
+public class OpenSudokuImportTask extends AbstractImportTask {
 
 	// TODO: coze? tohle bych mel provadet v AbstractImportTask
 	private static final Pattern SUDOKU_PATT = Pattern.compile(".*\\D([\\d]{81})\\D.*");
 	
-	public ImportOpenSudokuTask(Context context, ProgressBar progressBar) {
+	public OpenSudokuImportTask(Context context, ProgressBar progressBar) {
 		super(context, progressBar);
 	}
 	
