@@ -29,7 +29,7 @@ import android.view.Window;
 import android.widget.ProgressBar;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.gui.importing.AbstractImportTask;
-import cz.romario.opensudoku.gui.importing.ImportOpenSudokuTask;
+import cz.romario.opensudoku.gui.importing.OpenSudokuImportTask;
 import cz.romario.opensudoku.gui.importing.ImportOptions;
 import cz.romario.opensudoku.gui.importing.SdmImportTask;
 import cz.romario.opensudoku.gui.importing.StringImportTask;
@@ -80,7 +80,7 @@ public class ImportSudokuActivity extends Activity {
 			if (intent.getType() == "application/x-opensudoku"
 					|| dataUri.toString().endsWith(".opensudoku")) {
 				
-				importTask = new ImportOpenSudokuTask(this, progressBar);
+				importTask = new OpenSudokuImportTask(this, progressBar);
 				importOptions.setUri(dataUri);
 			
 			} else if (dataUri.toString().endsWith(".sdm")) {
