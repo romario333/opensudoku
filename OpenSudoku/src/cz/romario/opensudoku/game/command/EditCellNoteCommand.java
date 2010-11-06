@@ -20,29 +20,58 @@
 
 package cz.romario.opensudoku.game.command;
 
+import android.os.Bundle;
 import cz.romario.opensudoku.game.Cell;
 import cz.romario.opensudoku.game.CellNote;
 
-public class EditCellNoteCommand implements Command {
+public class EditCellNoteCommand extends AbstractCellCommand {
 
-	private Cell mCell;
+	private int mCellRow;
+	private int mCellColumn;
 	private CellNote mNote;
 	private CellNote mOldNote;
 	
 	public EditCellNoteCommand(Cell cell, CellNote note) {
-		mCell = cell;
+		mCellRow = cell.getRowIndex();
+		mCellColumn = cell.getColumnIndex();
 		mNote = note;
 	}
 	
+	EditCellNoteCommand() {
+		
+	}
+	
 	@Override
-	public void execute() {
-		mOldNote = mCell.getNote();
-		mCell.setNote(mNote);
+	void saveState(Bundle outState) {
+		super.saveState(outState);
+		
+		outState.putInt("cellRow", mCellRow);
+		outState.putInt("cellColumn", mCellColumn);
+		outState.putString("note", mNote.serialize());
+		outState.putString("oldNote", mOldNote.serialize());
 	}
 
 	@Override
-	public void undo() {
-		mCell.setNote(mOldNote);
+	void restoreState(Bundle inState) {
+		super.restoreState(inState);
+		
+		mCellRow = inState.getInt("cellRow");
+		mCellColumn = inState.getInt("cellColumn");
+		mNote = CellNote.deserialize(inState.getString("note"));
+		mOldNote = CellNote.deserialize(inState.getString("oldNote"));
+	}
+	
+	@Override
+	void execute() {
+		Cell cell = getCells().getCell(mCellRow, mCellColumn);
+		mOldNote = cell.getNote();
+		cell.setNote(mNote);
+	}
+
+	@Override
+	void undo() {
+		Cell cell = getCells().getCell(mCellRow, mCellColumn);
+		cell.setNote(mOldNote);
 	}
 
 }

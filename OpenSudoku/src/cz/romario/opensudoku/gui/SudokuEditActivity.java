@@ -20,24 +20,25 @@
 
 package cz.romario.opensudoku.gui;
 
-import java.util.Date;
-
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.inputmethod.IMControlPanel;
 import cz.romario.opensudoku.gui.inputmethod.InputMethod;
-import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Display;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Toast;
+import cz.romario.opensudoku.utils.AndroidUtils;
 
 /**
  * Activity for editing content of puzzle.
@@ -69,8 +70,12 @@ public class SudokuEditActivity extends Activity {
     
     private SudokuDatabase mDatabase;
     private SudokuGame mGame;
+    private ViewGroup mRootLayout;
     private SudokuBoardView mBoard;
     private IMControlPanel mInputMethods;
+    private Handler mGuiHandler;
+    
+    private boolean mFullScreen;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,13 +88,20 @@ public class SudokuEditActivity extends Activity {
 				&& (display.getHeight() == 240 || display.getHeight() == 320)) {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-					WindowManager.LayoutParams.FLAG_FULLSCREEN); 		
+					WindowManager.LayoutParams.FLAG_FULLSCREEN); 	
+			mFullScreen = true;
 		}
 		
+		// theme must be set before setContentView
+		AndroidUtils.setThemeFromPreferences(this);
+		
 		setContentView(R.layout.sudoku_edit);
+		mRootLayout = (ViewGroup)findViewById(R.id.root_layout);
 		mBoard = (SudokuBoardView)findViewById(R.id.sudoku_board);
 		
         mDatabase = new SudokuDatabase(getApplicationContext());
+        
+        mGuiHandler = new Handler();
 		
 		Intent intent = getIntent();
         String action = intent.getAction();
@@ -119,7 +131,8 @@ public class SudokuEditActivity extends Activity {
         }
         
         if (savedInstanceState != null) {
-        	mGame = (SudokuGame)savedInstanceState.getParcelable("game");
+        	mGame = new SudokuGame();
+        	mGame.restoreState(savedInstanceState);
         } else {
         	if (mSudokuID != 0) {
         		// existing sudoku, read it from database
@@ -143,10 +156,31 @@ public class SudokuEditActivity extends Activity {
 	}
 	
 	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		
+		if (hasFocus) {
+			// FIXME: When activity is resumed, title isn't sometimes hidden properly (there is black 
+			// empty space at the top of the screen). This is desperate workaround.
+			if (mFullScreen) {
+				mGuiHandler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+				        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+						mRootLayout.requestLayout();
+					}
+				}, 1000);
+			}
+			
+		}
+	}
+	
+	
+	@Override
 	protected void onPause() {
 		super.onPause();
 		
-		if (isFinishing() && mState != STATE_CANCEL) {
+		if (isFinishing() && mState != STATE_CANCEL && !mGame.getCells().isEmpty()) {
 			savePuzzle();
 		}
 	}
@@ -161,7 +195,7 @@ public class SudokuEditActivity extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		
-		outState.putParcelable("game", mGame);
+		mGame.saveState(outState);
 	}
 	
 	@Override
@@ -211,7 +245,7 @@ public class SudokuEditActivity extends Activity {
 			Toast.makeText(getApplicationContext(), R.string.puzzle_updated, Toast.LENGTH_SHORT).show();
 			break;
 		case STATE_INSERT:
-			mGame.setCreated(new Date());
+			mGame.setCreated(System.currentTimeMillis());
 			mDatabase.insertSudoku(mFolderID, mGame);
 			Toast.makeText(getApplicationContext(), R.string.puzzle_inserted, Toast.LENGTH_SHORT).show();
 			break;

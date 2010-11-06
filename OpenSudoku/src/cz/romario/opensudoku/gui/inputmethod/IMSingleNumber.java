@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.LightingColorFilter;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -54,7 +53,8 @@ public class IMSingleNumber extends InputMethod {
 	private static final int MODE_EDIT_VALUE = 0;
 	private static final int MODE_EDIT_NOTE = 1;
 	
-	private boolean mDisableCompletedValues = true;
+	private boolean mHighlightCompletedValues = true;
+	private boolean mShowNumberTotals = false;
 	
 	private int mSelectedNumber = 1;
 	private int mEditMode = MODE_EDIT_VALUE;
@@ -69,18 +69,26 @@ public class IMSingleNumber extends InputMethod {
 		mGuiHandler = new Handler();
 	}
 	
-	public boolean getDisableCompletedValues() {
-		return mDisableCompletedValues;
+	public boolean getHighlightCompletedValues() {
+		return mHighlightCompletedValues;
 	}
 	
 	/**
 	 * If set to true, buttons for numbers, which occur in {@link CellCollection}
-	 * more than {@link CellCollection#SUDOKU_SIZE}-times, will be disabled.
+	 * more than {@link CellCollection#SUDOKU_SIZE}-times, will be highlighted.
 	 * 
-	 * @param disableCompletedValues
+	 * @param highlightCompletedValues
 	 */
-	public void setDisableCompletedValues(boolean disableCompletedValues) {
-		mDisableCompletedValues = disableCompletedValues;
+	public void setHighlightCompletedValues(boolean highlightCompletedValues) {
+		mHighlightCompletedValues = highlightCompletedValues;
+	}
+	
+	public boolean getShowNumberTotals() {
+		return mShowNumberTotals;
+	}
+	
+	public void setShowNumberTotals(boolean showNumberTotals) {
+		mShowNumberTotals = showNumberTotals;
 	}
 	
 	@Override
@@ -173,34 +181,52 @@ public class IMSingleNumber extends InputMethod {
 			break;
 		}
 		
-		// enable all buttons (reset to the initial state)
-		for (Button button : mNumberButtons.values()) {
-			button.setEnabled(true);
-		}
-
-		if (mDisableCompletedValues) {
-			Map<Integer, Integer> valuesUseCount = mGame.getCells().getValuesUseCount();
-			for (Map.Entry<Integer, Integer> entry : valuesUseCount.entrySet()) {
-				boolean valueEnabled = entry.getValue() < CellCollection.SUDOKU_SIZE;
-				mNumberButtons.get(entry.getKey()).setEnabled(valueEnabled);
-			}
-		}
-		
 		// TODO: sometimes I change background too early and button stays in pressed state
 		// this is just ugly workaround
 		mGuiHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
 				for (Button b : mNumberButtons.values()) {
+					b.setBackgroundResource(R.drawable.btn_default_bg);
 					if (b.getTag().equals(mSelectedNumber)) {
 						b.setTextAppearance(mContext, android.R.style.TextAppearance_Large_Inverse);
-						// TODO: add color to resources
-						b.getBackground().setColorFilter(new LightingColorFilter(Color.rgb(240, 179, 42), 0));
+						LightingColorFilter selBkgColorFilter = new LightingColorFilter(
+								mContext.getResources().getColor(R.color.im_number_button_selected_background), 0);
+						b.getBackground().setColorFilter(selBkgColorFilter);
 					} else {
 						b.setTextAppearance(mContext, android.R.style.TextAppearance_Widget_Button);
 						b.getBackground().setColorFilter(null);
 					}
 				}
+				
+				Map<Integer, Integer> valuesUseCount = null;		
+				if (mHighlightCompletedValues || mShowNumberTotals)
+					valuesUseCount = mGame.getCells().getValuesUseCount();
+				
+				if (mHighlightCompletedValues) {
+					int completedTextColor = mContext.getResources().getColor(R.color.im_number_button_completed_text);
+					for (Map.Entry<Integer, Integer> entry : valuesUseCount.entrySet()) {
+						boolean highlightValue = entry.getValue() >= CellCollection.SUDOKU_SIZE;
+						if (highlightValue) {
+							Button b = mNumberButtons.get(entry.getKey());
+							if (b.getTag().equals(mSelectedNumber)) {
+								b.setTextColor(completedTextColor);
+							} else {
+								b.setBackgroundResource(R.drawable.btn_completed_bg);
+							}
+						}
+					}				
+				}
+
+				if (mShowNumberTotals) {
+					for (Map.Entry<Integer, Integer> entry : valuesUseCount.entrySet()) {
+						Button b = mNumberButtons.get(entry.getKey());
+						if (!b.getTag().equals(mSelectedNumber))
+							b.setText(entry.getKey() + " (" + entry.getValue() + ")");
+						else
+							b.setText("" + entry.getKey());
+					}
+				}				
 			}
 		}, 100);
 	}

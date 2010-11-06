@@ -42,7 +42,8 @@ import cz.romario.opensudoku.gui.inputmethod.IMControlPanelStatePersister.StateB
 public class IMNumpad extends InputMethod {
 
 	private boolean moveCellSelectionOnPress = true;
-	private boolean mDisableCompletedValues = true;
+	private boolean mHighlightCompletedValues = true;
+	private boolean mShowNumberTotals = false;
 	
 	private static final int MODE_EDIT_VALUE = 0;
 	private static final int MODE_EDIT_NOTE = 1;
@@ -62,18 +63,26 @@ public class IMNumpad extends InputMethod {
 		this.moveCellSelectionOnPress = moveCellSelectionOnPress;
 	}
 	
-	public boolean getDisableCompletedValues() {
-		return mDisableCompletedValues;
+	public boolean getHighlightCompletedValues() {
+		return mHighlightCompletedValues;
 	}
 	
 	/**
 	 * If set to true, buttons for numbers, which occur in {@link CellCollection}
-	 * more than {@link CellCollection#SUDOKU_SIZE}-times, will be disabled.
+	 * more than {@link CellCollection#SUDOKU_SIZE}-times, will be highlighted.
 	 * 
-	 * @param disableCompletedValues
+	 * @param highlightCompletedValues
 	 */
-	public void setDisableCompletedValues(boolean disableCompletedValues) {
-		mDisableCompletedValues = disableCompletedValues;
+	public void setHighlightCompletedValues(boolean highlightCompletedValues) {
+		mHighlightCompletedValues = highlightCompletedValues;
+	}
+
+	public boolean getShowNumberTotals() {
+		return mShowNumberTotals;
+	}
+	
+	public void setShowNumberTotals(boolean showNumberTotals) {
+		mShowNumberTotals = showNumberTotals;
 	}
 	
 	@Override
@@ -200,18 +209,28 @@ public class IMNumpad extends InputMethod {
 			break;
 		}
 		
-		// enable all buttons (reset to the initial state)
-		for (Button button : mNumberButtons.values()) {
-			button.setEnabled(true);
-		}
-
-		if (mDisableCompletedValues) {
-			Map<Integer, Integer> valuesUseCount = mGame.getCells().getValuesUseCount();
+		Map<Integer, Integer> valuesUseCount = null;		
+		if (mHighlightCompletedValues || mShowNumberTotals)
+			valuesUseCount = mGame.getCells().getValuesUseCount();
+		
+		if (mHighlightCompletedValues) {
 			for (Map.Entry<Integer, Integer> entry : valuesUseCount.entrySet()) {
-				boolean valueEnabled = entry.getValue() < CellCollection.SUDOKU_SIZE;
-				mNumberButtons.get(entry.getKey()).setEnabled(valueEnabled);
+				boolean highlightValue = entry.getValue() >= CellCollection.SUDOKU_SIZE;
+				Button b = mNumberButtons.get(entry.getKey());
+				if (highlightValue) {
+					b.setBackgroundResource(R.drawable.btn_completed_bg);
+				} else {
+					b.setBackgroundResource(R.drawable.btn_default_bg);
+				}
 			}
 		}
+		
+		if (mShowNumberTotals) {
+			for (Map.Entry<Integer, Integer> entry : valuesUseCount.entrySet()) {
+				Button b = mNumberButtons.get(entry.getKey());
+				b.setText(entry.getKey() + " (" + entry.getValue() + ")");
+			}
+		}		
 	}
 	
 	@Override

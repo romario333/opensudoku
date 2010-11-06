@@ -23,26 +23,64 @@ package cz.romario.opensudoku.game.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.os.Bundle;
+
 import cz.romario.opensudoku.game.Cell;
 import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.CellNote;
 
-public class ClearAllNotesCommand implements Command {
+public class ClearAllNotesCommand extends AbstractCellCommand {
 
-	private CellCollection mCells; 
 	private List<NoteEntry> mOldNotes = new ArrayList<NoteEntry>();
 	
 	
-	public ClearAllNotesCommand(CellCollection cells) {
-		mCells = cells;
+	public ClearAllNotesCommand() {
 	}
-	
+
+
+    @Override
+    void saveState(Bundle outState) {
+    	super.saveState(outState);
+    	
+        int[] rows = new int[mOldNotes.size()];
+        int[] cols = new int[mOldNotes.size()];
+        String[] notes = new String[mOldNotes.size()];
+        
+        int i = 0;
+        for (NoteEntry ne : mOldNotes) {
+                rows[i] = ne.rowIndex;
+                cols[i] = ne.colIndex;
+                notes[i] = ne.note.serialize();
+                i++;
+        }
+        
+        outState.putIntArray("rows", rows);
+        outState.putIntArray("cols", cols);
+        outState.putStringArray("notes", notes);
+    }	
+
+    @Override
+    void restoreState(Bundle inState) {
+    	super.restoreState(inState);
+    	
+        int[] rows = inState.getIntArray("rows");
+        int[] cols = inState.getIntArray("cols");
+        String[] notes = inState.getStringArray("notes");
+        
+        for (int i = 0; i < rows.length; i++) {
+                mOldNotes.add(new NoteEntry(rows[i], cols[i], CellNote
+                                .deserialize(notes[i])));
+        }
+    }
+
 	@Override
-	public void execute() {
+	void execute() {
+		CellCollection cells = getCells();
+		
 		mOldNotes.clear();
 		for (int r = 0; r < CellCollection.SUDOKU_SIZE; r++) {
 			for (int c = 0; c < CellCollection.SUDOKU_SIZE; c++) {
-				Cell cell = mCells.getCell(r, c);
+				Cell cell = cells.getCell(r, c);
 				CellNote note = cell.getNote();
 				if (!note.isEmpty()) {
 					mOldNotes.add(new NoteEntry(r, c, note));
@@ -53,9 +91,11 @@ public class ClearAllNotesCommand implements Command {
 	}
 
 	@Override
-	public void undo() {
+	void undo() {
+		CellCollection cells = getCells();
+		
 		for (NoteEntry ne : mOldNotes) {
-			mCells.getCell(ne.rowIndex, ne.colIndex).setNote(ne.note);
+			cells.getCell(ne.rowIndex, ne.colIndex).setNote(ne.note);
 		}
 		
 	}

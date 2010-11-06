@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
@@ -78,20 +77,17 @@ public class IMControlPanel extends LinearLayout {
 		createInputMethods();
 	}
 	
-	
-	
-	// TODO: 
-//	/**
-//	 * Activates first enabled input method. If such method does not exists, nothing
-//	 * happens.
-//	 */
-//	public void activateFirstInputMethod() {
-//		ensureInputMethods();
-//		if (mActiveMethodIndex == -1 || !mInputMethods.get(mActiveMethodIndex).enabled) {
-//			activateInputMethod(0);
-//		}
-//		
-//	}
+	/**
+	 * Activates first enabled input method. If such method does not exists, nothing
+	 * happens.
+	 */
+	public void activateFirstInputMethod() {
+		ensureInputMethods();
+		if (mActiveMethodIndex == -1 || !mInputMethods.get(mActiveMethodIndex).isEnabled()) {
+			activateInputMethod(0);
+		}
+		
+	}
 	
 	/**
 	 * Activates given input method (see INPUT_METHOD_* constants). If the given method is
@@ -148,7 +144,7 @@ public class IMControlPanel extends LinearLayout {
 			activeMethod.activate();
 			
 			if (mHintsQueue != null) {
-				mHintsQueue.showOneTimeHint(activeMethod.getNameResID(), activeMethod.getHelpResID());
+				mHintsQueue.showOneTimeHint(activeMethod.getInputMethodName(), activeMethod.getNameResID(), activeMethod.getHelpResID());
 			}
 		}
 	}
@@ -159,7 +155,7 @@ public class IMControlPanel extends LinearLayout {
 		int id = mActiveMethodIndex + 1;
 		if (id >= mInputMethods.size()) {
 			if (mHintsQueue != null) {
-				mHintsQueue.showOneTimeHint(R.string.that_is_all, R.string.im_disable_modes_hint);
+				mHintsQueue.showOneTimeHint("thatIsAll", R.string.that_is_all, R.string.im_disable_modes_hint);
 			}
 			id = 0;
 		}

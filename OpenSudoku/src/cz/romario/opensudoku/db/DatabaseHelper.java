@@ -24,6 +24,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.game.SudokuGame;
 
 /**
@@ -35,8 +36,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	public static final int DATABASE_VERSION = 8;
 	
+	private Context mContext;
+	
     DatabaseHelper(Context context) {
         super(context, SudokuDatabase.DATABASE_NAME, null, DATABASE_VERSION);
+        this.mContext = context;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + FolderColumns.NAME + " TEXT"
                 + ");");
         
-        insertFolder(db,1,"Easy");
+        insertFolder(db,1,mContext.getString(R.string.difficulty_easy));
         insertSudoku(db,1,1,"Easy1","052006000160900004049803620400000800083201590001000002097305240200009056000100970");
         insertSudoku(db,1,2,"Easy2","052400100100002030000813025400007010683000597070500002890365000010700006006004970");
         insertSudoku(db,1,3,"Easy3","302000089068052734009000000400007000083201590000500002000000200214780350530000908");
@@ -89,7 +93,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         insertSudoku(db,1,28,"Easy28","085100400000950007073684001010070080067203940090040070700465310600098000008001650");
         insertSudoku(db,1,29,"Easy29","085100460146000807070004001300009080067000940090800003700400010601000724038001650");
         insertSudoku(db,1,30,"Easy30","085130462006000007270680090000009200060213040002800000020065018600000700438021650");
-        insertFolder(db,2,"Medium");
+        insertFolder(db,2,mContext.getString(R.string.difficulty_medium));
         insertSudoku(db,2,31,"Medium1","916004072800620050500008930060000200000207000005000090097800003080076009450100687");
         insertSudoku(db,2,32,"Medium2","000900082063001409908000000000670300046050290007023000000000701704300620630007000");
         insertSudoku(db,2,33,"Medium3","035670000400829500080003060020005807800206005301700020040900070002487006000052490");
@@ -120,7 +124,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         insertSudoku(db,2,58,"Medium28","080000030400368000350409700000003650003000900078100000004201076000856009060000020");
         insertSudoku(db,2,59,"Medium29","000500748589000001700086900302010580000000000067050204004760002200000867876005000");
         insertSudoku(db,2,60,"Medium30","021009008000004031740100025000007086058000170160800000910008052230900000800300410");
-        insertFolder(db,3,"Hard");
+        insertFolder(db,3,mContext.getString(R.string.difficulty_hard));
         insertSudoku(db,3,61,"Hard1","600300100071620000805001000500870901009000600407069008000200807000086410008003002");
         insertSudoku(db,3,62,"Hard2","906013008058000090030000010060800920003409100049006030090000080010000670400960301");
         insertSudoku(db,3,63,"Hard3","300060250000500103005210486000380500030000040002045000413052700807004000056070004");
@@ -160,6 +164,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	db.execSQL("INSERT INTO " + SudokuDatabase.FOLDER_TABLE_NAME + " VALUES ("+ folderID + ", " + now + ", '" + folderName + "');");
     }
     
+    // TODO: sudokuName is not used
     private void insertSudoku(SQLiteDatabase db, long folderID, long sudokuID, String sudokuName, String data) {
     	String sql = "INSERT INTO " + SudokuDatabase.SUDOKU_TABLE_NAME + " VALUES ("+sudokuID+", "+ folderID + ", 0, " + SudokuGame.GAME_STATE_NOT_STARTED + ", 0, null, '"+ data + "', null);";
     	db.execSQL(sql);

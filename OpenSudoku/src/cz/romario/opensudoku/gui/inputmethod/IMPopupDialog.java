@@ -26,10 +26,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import cz.romario.opensudoku.R;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.LightingColorFilter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +41,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout.LayoutParams;
+import cz.romario.opensudoku.R;
 
 public class IMPopupDialog extends Dialog {
 
@@ -54,6 +53,9 @@ public class IMPopupDialog extends Dialog {
 	private Map<Integer,Button> mNumberButtons = new HashMap<Integer, Button>();
 	// buttons from "Edit note" tab
 	private Map<Integer,ToggleButton> mNoteNumberButtons = new HashMap<Integer, ToggleButton>();
+	
+	// selected number on "Select number" tab (0 if nothing is selected).
+	private int mSelectedNumber;
 	// selected numbers on "Edit note" tab
 	private Set<Integer> mNoteSelectedNumbers = new HashSet<Integer>();
 	
@@ -74,7 +76,9 @@ public class IMPopupDialog extends Dialog {
 		setContentView(mTabHost);
 	}
 	
-	/**
+	/**					LightingColorFilter bkgColorFilter = new LightingColorFilter(
+							mContext.getResources().getColor(R.color.im_number_button_completed_background), 0);
+
 	 * Registers a callback to be invoked when number is selected.
 	 * @param l
 	 */
@@ -90,13 +94,32 @@ public class IMPopupDialog extends Dialog {
 		mOnNoteEditListener = l;
 	}
 	
+	public void resetButtons() {
+		for (Button b : mNumberButtons.values()) {
+			b.setBackgroundResource(R.drawable.btn_default_bg);
+		}
+
+		for (Button b : mNoteNumberButtons.values()) {
+			b.setBackgroundResource(R.drawable.btn_toggle_bg);
+		}
+		
+		for (Map.Entry<Integer, ToggleButton> entry: mNoteNumberButtons.entrySet()) {
+			entry.getValue().setText("" + entry.getKey());
+		}
+	}
+	
 	// TODO: vsude jinde pouzivam misto number value
 	public void updateNumber(Integer number) {
+		mSelectedNumber = number;
+		
+		LightingColorFilter selBkgColorFilter = new LightingColorFilter(
+				mContext.getResources().getColor(R.color.im_number_button_selected_background), 0);
+
 		for (Map.Entry<Integer, Button> entry : mNumberButtons.entrySet()) {
 			Button b = entry.getValue();
-			if (entry.getKey().equals(number)) {
+			if (entry.getKey().equals(mSelectedNumber)) {
 				b.setTextAppearance(mContext, android.R.style.TextAppearance_Large_Inverse);
-				b.getBackground().setColorFilter(new LightingColorFilter(Color.rgb(240, 179, 42), 0));
+				b.getBackground().setColorFilter(selBkgColorFilter);
 			} else {
 				b.setTextAppearance(mContext, android.R.style.TextAppearance_Widget_Button);
 				b.getBackground().setColorFilter(null);
@@ -122,20 +145,35 @@ public class IMPopupDialog extends Dialog {
 		}
 	}
 	
-	public void enableAllNumbers() {
-		for (Button b : mNumberButtons.values()) {
-			b.setEnabled(true);
+//	public void enableAllNumbers() {
+//		for (Button b : mNumberButtons.values()) {
+//			b.setEnabled(true);
+//		}
+//		for (Button b : mNoteNumberButtons.values()) {
+//			b.setEnabled(true);
+//		}
+//	}
+	
+//	public void setNumberEnabled(int number, boolean enabled) {
+//		mNumberButtons.get(number).setEnabled(enabled);
+//		mNoteNumberButtons.get(number).setEnabled(enabled);
+//	}
+
+	public void highlightNumber(int number) {
+		int completedTextColor = mContext.getResources().getColor(R.color.im_number_button_completed_text);
+		
+		if (number == mSelectedNumber) {
+			mNumberButtons.get(number).setTextColor(completedTextColor);
+		} else {
+			mNumberButtons.get(number).setBackgroundResource(R.drawable.btn_completed_bg);
 		}
-		for (Button b : mNoteNumberButtons.values()) {
-			b.setEnabled(true);
-		}
+
+		mNoteNumberButtons.get(number).setBackgroundResource(R.drawable.btn_toggle_completed_bg);
 	}
 	
-	public void setNumberEnabled(int number, boolean enabled) {
-		mNumberButtons.get(number).setEnabled(enabled);
-		mNoteNumberButtons.get(number).setEnabled(enabled);
+	public void setValueCount(int number, int count) {
+		mNumberButtons.get(number).setText(number + " (" + count + ")");
 	}
-	
 	
 	/**
 	 * Creates view with two tabs, first for number in cell selection, second for

@@ -34,7 +34,6 @@ public class GameSettingsActivity extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.game_settings);
 		
 		findPreference("show_hints").setOnPreferenceChangeListener(mShowHintsChanged);
-
 	}
 
 	private OnPreferenceChangeListener mShowHintsChanged = new OnPreferenceChangeListener() {

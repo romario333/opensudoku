@@ -1,8 +1,5 @@
 package cz.romario.opensudoku.gui.importing;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -10,25 +7,47 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuDatabase;
+import cz.romario.opensudoku.db.SudokuImportParams;
 import cz.romario.opensudoku.db.SudokuInvalidFormatException;
 import cz.romario.opensudoku.game.FolderInfo;
+import cz.romario.opensudoku.gui.ImportSudokuActivity;
 import cz.romario.opensudoku.utils.Const;
 
+/**
+ * To add support for new import source, do following:
+ * 
+ * 1) Subclass this class. Any input parameters specific for your import should be put
+ * in constructor of your class.
+ * 2) In {@link #processImport()} method process your data source (parse file or maybe download
+ * data from some other source) and save puzzles by calling
+ * {@link #importFolder(String, boolean)} and {@link #importGame(String)} methods. Note
+ * that <code>importFolder</code> must be called first, otherwise <code>importGame</code>
+ * doesn't know where to put puzzles.
+ * 3) Add code to {@link ImportSudokuActivity} which creates instance of your new class and
+ * passes it input parameters.
+ * 
+ * TODO: add cancel support
+ * 
+ * @author romario
+ *
+ */
 public abstract class AbstractImportTask extends
-		AsyncTask<ImportOptions, Integer, Boolean> {
+		AsyncTask<Void, Integer, Boolean> {
 	static final int NUM_OF_PROGRESS_UPDATES = 20;
 
-	private Context mContext;
+	protected Context mContext;
 	private ProgressBar mProgressBar;
 	
 	private OnImportFinishedListener mOnImportFinishedListener;
 	
-	private ImportOptions mOptions;
-	private FolderInfo mFolderInfo;
-	private List<String> mGames = new ArrayList<String>();
+	private SudokuDatabase mDatabase;
+	private FolderInfo mFolder; // currently processed folder
+	private int mFolderCount; // count of processed folders
+	private int mGameCount; //count of processed puzzles
 	private String mImportError;
-
-	public AbstractImportTask(Context context, ProgressBar progressBar) {
+	private boolean mImportSuccessful;
+	
+	public void initialize(Context context, ProgressBar progressBar) {
 		mContext = context;
 		mProgressBar = progressBar;
 	}
@@ -38,18 +57,10 @@ public abstract class AbstractImportTask extends
 	}
 	
 	@Override
-	protected Boolean doInBackground(ImportOptions... params) {
-
-		if (params == null) {
-			throw new IllegalArgumentException("Import options expected.");
-		}
-
-		if (params.length != 1) {
-			throw new IllegalArgumentException("Only one param expected.");
-		}
+	protected Boolean doInBackground(Void... params) {
 
 		try {
-			return processImport(params[0]);
+			return processImportInternal();
 		} catch (Exception e) {
 			Log.e(Const.TAG, "Exception occurred during import.", e);
 			setError(mContext.getString(R.string.unknown_import_error));
@@ -69,81 +80,61 @@ public abstract class AbstractImportTask extends
 	@Override
 	protected void onPostExecute(Boolean result) {
 		if (result) {
-
-			Toast
-					.makeText(
-							mContext,
-							mContext.getString(R.string.puzzles_saved,
-									mFolderInfo.name), Toast.LENGTH_LONG)
-					.show();
+			
+			if (mFolderCount == 1) {
+				Toast.makeText(mContext, mContext.getString(R.string.puzzles_saved, mFolder.name), 
+						Toast.LENGTH_LONG).show();
+			} else if (mFolderCount > 1) {
+				Toast.makeText(mContext, mContext.getString(R.string.folders_created, mFolderCount), 
+						Toast.LENGTH_LONG).show();
+			}
 
 		} else {
 			Toast.makeText(mContext, mImportError, Toast.LENGTH_LONG).show();
 		}
 
 		if (mOnImportFinishedListener != null) {
-			mOnImportFinishedListener.onImportFinished(result, mFolderInfo.id);
+			long folderId = -1;
+			if (mFolderCount == 1) {
+				folderId = mFolder.id;
+			}
+			mOnImportFinishedListener.onImportFinished(result, folderId);
 		}
 	}
 
-	private Boolean processImport(ImportOptions options) {
-		mOptions = new ImportOptions(options);
+	private Boolean processImportInternal() {
+		mImportSuccessful = true;
+		
+		long start = System.currentTimeMillis();
 
-		// let subclass handle the import
-		processImport();
+		mDatabase = new SudokuDatabase(mContext);
+		try {
+			mDatabase.beginTransaction();
+			
+			// let subclass handle the import
+			processImport();
+			
+			mDatabase.setTransactionSuccessful();
+		} catch ( SudokuInvalidFormatException e) {
+			setError(mContext.getString(R.string.invalid_format));
+		} finally {
+			mDatabase.endTransaction();
+			mDatabase.close();
+			mDatabase = null;
+		}
+		
 
-		if (mGames.size() == 0) {
+		if (mFolderCount == 0 && mGameCount == 0) {
 			setError(mContext.getString(R.string.no_puzzles_found));
 			return false;
-		}
-
-		publishProgress(0, mGames.size());
-
-		SudokuDatabase sudokuDB = new SudokuDatabase(mContext);
-
-		// TODO: quick & dirty version
-		long start = System.currentTimeMillis();
-		int updateStatusEveryNItems = 1;
-		if (mGames.size() > NUM_OF_PROGRESS_UPDATES) {
-			updateStatusEveryNItems = mGames.size() / NUM_OF_PROGRESS_UPDATES;
-		}
-		try {
-			sudokuDB.beginTransaction();
-
-			if (mOptions.isAppendToFolder()) {
-				mFolderInfo = sudokuDB.findFolder(mOptions.getFolderName());
-			}
-
-			if (mFolderInfo == null) {
-				mFolderInfo = new FolderInfo();
-				mFolderInfo.name = mOptions.getFolderName();
-				mFolderInfo.id = sudokuDB.insertFolder(mFolderInfo.name);
-			}
-
-			for (int i = 0; i < mGames.size(); i++) {
-				try {
-					sudokuDB.insertSudokuImport(mFolderInfo.id, mGames.get(i));
-				} catch (SudokuInvalidFormatException e) {
-					setError(mContext.getString(R.string.invalid_format));
-					return false;
-				}
-
-				if (i % updateStatusEveryNItems == 0) {
-					publishProgress(i);
-				}
-			}
-			sudokuDB.setTransactionSuccessful();
-		} finally {
-			sudokuDB.endTransaction();
-			sudokuDB.close();
 		}
 
 		long end = System.currentTimeMillis();
 
 		Log.i(Const.TAG, String.format("Imported in %f seconds.",
 				(end - start) / 1000f));
-
-		return true;
+		
+		return mImportSuccessful;
 	}
 
 	/**
@@ -151,24 +142,86 @@ public abstract class AbstractImportTask extends
 	 * 
 	 * @return
 	 */
-	protected abstract Boolean processImport();
+	protected abstract void processImport() throws SudokuInvalidFormatException;
+
 
 	/**
-	 * Gets import options. Note that subclasses can and will modify contents of
-	 * options object.
+	 * Creates new folder and starts appending puzzles to this folder.
 	 * 
-	 * @return
+	 * @param name
 	 */
-	protected ImportOptions getOptions() {
-		return mOptions;
+	protected void importFolder(String name) {
+		importFolder(name, System.currentTimeMillis());
 	}
+	
 
-	protected void importGame(String game) {
-		mGames.add(game);
+	/**
+	 * Creates new folder and starts appending puzzles to this folder.
+	 * 
+	 * @param name
+	 * @param created
+	 */
+	protected void importFolder(String name, long created) {
+		if (mDatabase == null) {
+			throw new IllegalStateException("Database is not opened.");
+		}
+		
+		mFolderCount++;
+		
+		mFolder = mDatabase.insertFolder(name, created);
+	}
+	
+	/**
+	 * Starts appending puzzles to the folder with given <code>name</code>. If such folder does
+	 * not exist, this method creates new one.
+	 * 
+	 * @param name
+	 */
+	protected void appendToFolder(String name) {
+		if (mDatabase == null) {
+			throw new IllegalStateException("Database is not opened.");
+		}
+
+		mFolderCount++;
+		
+		mFolder = null;
+		mFolder = mDatabase.findFolder(name);
+		if (mFolder == null) {
+			mFolder = mDatabase.insertFolder(name, System.currentTimeMillis());
+		}
+	}
+	
+	private SudokuImportParams mImportParams = new SudokuImportParams();
+	/**
+	 * Imports game. Game will be stored in folder, which was set by  
+	 * {@link #importFolder(String, boolean)} or {@link #appendToFolder(String)}.
+	 * 
+	 * @param game
+	 * @throws SudokuInvalidFormatException
+	 */
+	protected void importGame(String data) throws SudokuInvalidFormatException {
+		mImportParams.clear();
+		mImportParams.data = data;
+		importGame(mImportParams);
+	}
+	
+	/**
+	 * Imports game with all its fields.
+	 * 
+	 * @param game Fields to import (state of game, created, etc.)
+	 * @param data Data to import.
+	 */
+	protected void importGame(SudokuImportParams pars) throws SudokuInvalidFormatException  {
+		if (mDatabase == null) {
+			throw new IllegalStateException("Database is not opened.");
+		}
+
+		mDatabase.importSudoku(mFolder.id, pars);
 	}
 
 	protected void setError(String error) {
 		mImportError = error;
+		mImportSuccessful = false;
 	}
 	
 	public interface OnImportFinishedListener

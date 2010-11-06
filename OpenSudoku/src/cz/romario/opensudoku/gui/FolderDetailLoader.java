@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.FolderInfo;
 
@@ -40,6 +41,9 @@ import cz.romario.opensudoku.game.FolderInfo;
  *
  */
 public class FolderDetailLoader {
+	
+	private static final String TAG = "FolderDetailLoader";
+	
 	private Context mContext;
 	private SudokuDatabase mDatabase;
 	private Handler mGuiHandler;
@@ -57,6 +61,7 @@ public class FolderDetailLoader {
 		mLoaderService.execute(new Runnable() {
 			@Override
 			public void run() {
+				try {
 				final FolderInfo folderInfo = mDatabase.getFolderInfoFull(folderIDFinal);
 				
 				mGuiHandler.post(new Runnable() {
@@ -65,6 +70,10 @@ public class FolderDetailLoader {
 						loadedCallbackFinal.onLoaded(folderInfo);
 					}
 				});
+				} catch (Exception e) {
+					// this is some unimportant background stuff, do not fail
+					Log.e(TAG, "Error occured while loading full folder info.", e);
+				}
 			}
 		});
 	}

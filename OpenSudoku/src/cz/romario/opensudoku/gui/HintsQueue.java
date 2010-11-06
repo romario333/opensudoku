@@ -110,7 +110,6 @@ public class HintsQueue {
 	private void showHintDialog(Message hint) {
 		synchronized (mHintDialog) {
 			mHintDialog.setTitle(mContext.getString(hint.titleResID));
-			// TODO: hint.args !!
 			mHintDialog.setMessage(mContext.getText(hint.messageResID));
 			mHintDialog.show();
 		}
@@ -133,9 +132,18 @@ public class HintsQueue {
 		addHint(hint);
 	}
 	
-	public void showOneTimeHint(int titleResID, int messageResID, Object... args) {
+	public void showOneTimeHint(String key, int titleResID, int messageResID, Object... args) {
 		if (mOneTimeHintsEnabled) {
-			String hintKey = "hint_" + messageResID;
+
+			// FIXME: remove in future versions
+			// Before 1.0.0, hintKey was created from messageResID. This ID has in 1.0.0 changed.
+			// From 1.0.0, hintKey is based on key, to be backward compatible, check for old
+			// hint keys.
+			if (legacyHintsWereDisplayed()) {
+				return;
+			}
+			
+			String hintKey = "hint_" + key;
 			if (!mPrefs.getBoolean(hintKey, false)) {
 				showHint(titleResID, messageResID, args);
 				Editor editor = mPrefs.edit();
@@ -144,6 +152,14 @@ public class HintsQueue {
 			}
 		}
 		
+	}
+	
+	public boolean legacyHintsWereDisplayed() {
+		return mPrefs.getBoolean("hint_2131099727", false) && 
+			   mPrefs.getBoolean("hint_2131099730", false) && 
+			   mPrefs.getBoolean("hint_2131099726", false) &&
+			   mPrefs.getBoolean("hint_2131099729", false) &&
+			   mPrefs.getBoolean("hint_2131099728", false);
 	}
 	
 	public void resetOneTimeHints() {

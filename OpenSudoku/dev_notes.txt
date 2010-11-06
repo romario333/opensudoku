@@ -1,17 +1,2 @@
-/*
- * TODO: revize kodu
- * - pristupnost prvku
- * 		- class pokud to jde by mela byt package-private
- * 		- jinak obecne private - package-private - protected - public
- * - nepouzivat gettery a settery tam kde je to zbytecne (see 71)
- * - mozna bych mohl mit vic immutable trid? (see 77)
- */
-
-// TODO: revize kodu:
-//  
-//- class pokud to jde by mela byt package-private
-//  - private - package-private - protected - public
-
-// TODO:
-- prehodit na 1.5
-- zmenit verzi u dev verze
+TODO in 1.2.0:
+- change android:targetSdkVersion to 8 and retest

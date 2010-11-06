@@ -27,7 +27,7 @@ public class SudokuInvalidFormatException extends Exception {
 	private final String mData;
 
 	public SudokuInvalidFormatException(String data) {
-		super("Invalid format of sudoku, ^\\d{81}$ exptected.");
+		super("Invalid format of sudoku.");
 		mData = data;
 	}
 	

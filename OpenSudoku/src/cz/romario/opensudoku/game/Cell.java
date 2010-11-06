@@ -22,19 +22,14 @@ package cz.romario.opensudoku.game;
 
 import java.util.StringTokenizer;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 /**
  * Sudoku cell. Every cell has value, some notes attached to it and some basic
  * state (whether it is editable and valid).
  * 
- * Implements <code>Parcelable</code>, however references to sector, row and column are not serialized.
- * 
  * @author romario
  *
  */
-public class Cell implements Parcelable {
+public class Cell {
 	// if cell is included in collection, here are some additional information 
 	// about collection and cell's position in it
 	private CellCollection mCellCollection;
@@ -273,39 +268,6 @@ public class Cell implements Parcelable {
 		StringBuilder sb = new StringBuilder();
 		serialize(sb);
 		return sb.toString();
-	}
-	
-	// TODO: remove parcelable
-	
-	// constructor for Parcelable
-	private Cell(Parcel in) {
-		mValue = in.readInt();
-		setNote(CellNote.deserialize(in.readString()));
-		mEditable = (Boolean)in.readValue(null);
-		mValid = (Boolean)in.readValue(null);
-	}
-
-	public static final Parcelable.Creator<Cell> CREATOR = new Parcelable.Creator<Cell>() {
-		public Cell createFromParcel(Parcel in) {
-		    return new Cell(in);
-		}
-		
-		public Cell[] newArray(int size) {
-		    return new Cell[size];
-		}
-	};
-	
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeInt(mValue);
-		dest.writeString(mNote.serialize());
-		dest.writeValue(mEditable);
-		dest.writeValue(mValid);
 	}
 	
 	/**

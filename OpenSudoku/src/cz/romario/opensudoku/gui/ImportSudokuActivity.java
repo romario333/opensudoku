@@ -22,115 +22,25 @@ package cz.romario.opensudoku.gui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Window;
-import android.widget.ProgressBar;
-import cz.romario.opensudoku.R;
-import cz.romario.opensudoku.gui.importing.AbstractImportTask;
-import cz.romario.opensudoku.gui.importing.OpenSudokuImportTask;
-import cz.romario.opensudoku.gui.importing.ImportOptions;
-import cz.romario.opensudoku.gui.importing.SdmImportTask;
-import cz.romario.opensudoku.gui.importing.StringImportTask;
-import cz.romario.opensudoku.gui.importing.AbstractImportTask.OnImportFinishedListener;
 
 /**
- * This activity is responsible for importing puzzles from various sources
- * (web, file, .opensudoku, .sdm, extras).
+ *
+ *	This activity is here to keep backward compatibility, use {@link SudokuImportActivity} instead.
  * 
  * @author romario
  *
  */
 public class ImportSudokuActivity extends Activity {
-
-	/**
-	 * Name of folder to which games should be imported.
-	 */
-	public static final String EXTRA_FOLDER_NAME = "FOLDER_NAME";
-	/**
-	 * Indicates whether games should be appended to the existing folder if such
-	 * folder exists.
-	 */
-	public static final String EXTRA_APPEND_TO_FOLDER = "APPEND_TO_FOLDER";
-	/**
-	 * Games (puzzles) to import. String should be in this format:
-	 * 120001232...0041\n 456000213...1100\n
-	 */
-	public static final String EXTRA_GAMES = "GAMES";
-	
-	private static final String TAG = "ImportSudokuActivity";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		requestWindowFeature(Window.FEATURE_LEFT_ICON);
-		setContentView(R.layout.import_sudoku);
-		getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
-				R.drawable.opensudoku);
-
-		ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress);
-
-		AbstractImportTask importTask;
-		ImportOptions importOptions = new ImportOptions();
-		Intent intent = getIntent();
-		Uri dataUri = intent.getData();
-		if (dataUri != null) {
-			if (intent.getType() == "application/x-opensudoku"
-					|| dataUri.toString().endsWith(".opensudoku")) {
-				
-				importTask = new OpenSudokuImportTask(this, progressBar);
-				importOptions.setUri(dataUri);
-			
-			} else if (dataUri.toString().endsWith(".sdm")) {
-
-				importTask = new SdmImportTask(this, progressBar);
-				importOptions.setUri(dataUri);
-			
-			} else {
-				
-				Log.e(
-					TAG,
-					String.format(
-						"Unknown type of data provided (mime-type=%s; uri=%s), exiting.",
-						intent.getType(), dataUri));
-				finish();
-				return;
-			
-			}
-		} else if (intent.getStringExtra(EXTRA_FOLDER_NAME) != null) {
-			
-			String folderName = intent.getStringExtra(EXTRA_FOLDER_NAME);
-			String games = intent.getStringExtra(EXTRA_GAMES);
-			boolean appendToFolder = intent.getBooleanExtra(
-					EXTRA_APPEND_TO_FOLDER, false);
-			importTask = new StringImportTask(this, progressBar, games);
-			importOptions.setFolderName(folderName);
-			importOptions.setAppendToFolder(appendToFolder);
-
-		} else {
-			Log.e(TAG, "No data provided, exiting.");
-			finish();
-			return;
-		}
-
-		importTask.setOnImportFinishedListener(mOnImportFinishedListener);
-		importTask.execute(importOptions);
-	}
-	
-	private OnImportFinishedListener mOnImportFinishedListener = new OnImportFinishedListener() {
 		
-		@Override
-		public void onImportFinished(boolean importSuccessful, long folderId) {
-			if (importSuccessful) { 
-				Intent i = new Intent(ImportSudokuActivity.this,
-						 SudokuListActivity.class);
-						 i.putExtra(SudokuListActivity.EXTRA_FOLDER_ID, folderId);
-						 startActivity(i);
-			}
-			// call finish, so this activity won't be part of history
-			finish();
-		}
-	};
+		Intent intent = new Intent(getIntent());
+		intent.setClass(this, SudokuImportActivity.class);
+		startActivity(intent);
+		finish();
+	}
+
 }

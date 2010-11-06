@@ -10,10 +10,20 @@
                 android:summary="@string/highlight_wrong_values_summary"
                 android:defaultValue="true" />
         <CheckBoxPreference
-                android:key="disable_completed_values"
-                android:title="@string/disable_completed_values"
-                android:summary="@string/disable_completed_values_summary"
+                android:key="highlight_completed_values"
+                android:title="@string/highlight_completed_values"
+                android:summary="@string/highlight_completed_values_summary"
                 android:defaultValue="true" />
+        <CheckBoxPreference
+                android:key="show_number_totals"
+                android:title="@string/show_number_totals"
+                android:summary="@string/show_number_totals_summary"
+                android:defaultValue="false" />
+        <CheckBoxPreference
+                android:key="fill_in_notes_enabled"
+                android:title="@string/fill_in_notes"
+                android:summary="@string/fill_in_notes_summary"
+                android:defaultValue="false" />
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/input_methods">
@@ -57,6 +67,14 @@
                 android:title="@string/show_hints"
                 android:summary="@string/show_hints_summary"
                 android:defaultValue="true" />
+        <ListPreference
+                android:key="theme"
+                android:title="@string/theme"
+                android:summary="@string/theme_summary"
+                android:entries="@array/theme_names"
+                android:entryValues="@array/theme_codes"
+                android:dialogTitle="@string/select_theme"
+                android:defaultValue="default" />
         <PreferenceScreen
                 android:key="screen_game_advanced"
                 android:title="@string/more_settings">

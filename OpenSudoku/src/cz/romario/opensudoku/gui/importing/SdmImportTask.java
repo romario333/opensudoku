@@ -6,23 +6,29 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import android.content.Context;
 import android.net.Uri;
-import android.widget.ProgressBar;
+import cz.romario.opensudoku.db.SudokuInvalidFormatException;
 
+/**
+ * Handles import of .sdm files (see http://sudocue.net/download.php).
+ * 
+ * @author romario
+ *
+ */
 public class SdmImportTask extends AbstractImportTask {
 
-	public SdmImportTask(Context context, ProgressBar progressBar) {
-		super(context, progressBar);
+	private Uri mUri;
+	
+	public SdmImportTask(Uri uri) {
+		mUri = uri;
 	}
 	
 	@Override
-	protected Boolean processImport() {
-		Uri uri = getOptions().getUri();
-		getOptions().setFolderName(uri.getLastPathSegment());
+	protected void processImport() throws SudokuInvalidFormatException {
+		importFolder(mUri.getLastPathSegment());
 
 		try {
-			URL url = new URL(uri.toString());
+			URL url = new URL(mUri.toString());
 			InputStreamReader isr = new InputStreamReader(url.openStream());
 			BufferedReader br = null;
 			try {
@@ -36,8 +42,6 @@ public class SdmImportTask extends AbstractImportTask {
 			} finally {
 				if (br != null) br.close();
 			}
-
-			return true;
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {

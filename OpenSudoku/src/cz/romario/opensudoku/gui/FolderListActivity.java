@@ -49,6 +49,7 @@ import cz.romario.opensudoku.db.FolderColumns;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.gui.FolderDetailLoader.FolderDetailCallback;
+import cz.romario.opensudoku.utils.AndroidUtils;
 
 /**
  * List of puzzle's folder. This activity also serves as root activity of application.
@@ -62,6 +63,9 @@ public class FolderListActivity extends ListActivity {
     public static final int MENU_ITEM_RENAME = Menu.FIRST + 1;
     public static final int MENU_ITEM_DELETE = Menu.FIRST + 2;
     public static final int MENU_ITEM_ABOUT = Menu.FIRST + 3;
+    public static final int MENU_ITEM_EXPORT = Menu.FIRST + 4;
+    public static final int MENU_ITEM_EXPORT_ALL = Menu.FIRST + 5;
+    public static final int MENU_ITEM_IMPORT = Menu.FIRST + 6;
 	
 	private static final int DIALOG_ABOUT = 0;
     private static final int DIALOG_ADD_FOLDER = 1;
@@ -110,6 +114,10 @@ public class FolderListActivity extends ListActivity {
 		adapter.setViewBinder(mFolderListBinder);
 		
         setListAdapter(adapter);
+        
+        // show changelog on first run
+        Changelog changelog = new Changelog(this);
+        changelog.showOnFirstRun();
 	}
     
     @Override
@@ -151,9 +159,16 @@ public class FolderListActivity extends ListActivity {
 		menu.add(0, MENU_ITEM_ADD, 0, R.string.add_folder)
                 .setShortcut('3', 'a')
                 .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(0, MENU_ITEM_ABOUT, 1, R.string.about)
+		menu.add(0, MENU_ITEM_IMPORT, 0, R.string.import_file)
+        .setShortcut('8', 'i')
+        .setIcon(android.R.drawable.ic_menu_upload);
+        menu.add(0, MENU_ITEM_EXPORT_ALL, 1, R.string.export_all_folders)
+        .setShortcut('7', 'e')
+        .setIcon(android.R.drawable.ic_menu_share);
+        menu.add(0, MENU_ITEM_ABOUT, 2, R.string.about)
         .setShortcut('1', 'h')
         .setIcon(android.R.drawable.ic_menu_info_details);
+        
 
         // Generate any additional actions that can be performed on the
         // overall list.  In a normal install, there are no additional
@@ -185,9 +200,9 @@ public class FolderListActivity extends ListActivity {
         }
         menu.setHeaderTitle(cursor.getString(cursor.getColumnIndex(FolderColumns.NAME)));
 
-        // Add a menu item to delete the note
-        menu.add(0, MENU_ITEM_RENAME, 0, R.string.rename_folder);
-        menu.add(0, MENU_ITEM_DELETE, 1, R.string.delete_folder);
+        menu.add(0, MENU_ITEM_EXPORT, 0, R.string.export_folder);
+        menu.add(0, MENU_ITEM_RENAME, 1, R.string.rename_folder);
+        menu.add(0, MENU_ITEM_DELETE, 2, R.string.delete_folder);
     }
 
     @Override
@@ -198,12 +213,7 @@ public class FolderListActivity extends ListActivity {
     	case DIALOG_ABOUT:
             final View aboutView = factory.inflate(R.layout.about, null);
             TextView versionLabel = (TextView)aboutView.findViewById(R.id.version_label);
-            String versionName = null;
-    		try {
-    			versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-    		} catch (NameNotFoundException e) {
-    			versionName = "unable to retreive version";
-    		}
+            String versionName = AndroidUtils.getAppVersionName(getApplicationContext());
             versionLabel.setText(getString(R.string.version, versionName));
             return new AlertDialog.Builder(this)
                 .setIcon(R.drawable.opensudoku)
@@ -220,7 +230,7 @@ public class FolderListActivity extends ListActivity {
                 .setView(addFolderView)
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                    	mDatabase.insertFolder(mAddFolderNameInput.getText().toString().trim());
+                    	mDatabase.insertFolder(mAddFolderNameInput.getText().toString().trim(), System.currentTimeMillis());
                     	updateList();
                     }
                 })
@@ -267,23 +277,22 @@ public class FolderListActivity extends ListActivity {
     protected void onPrepareDialog(int id, Dialog dialog) {
     	super.onPrepareDialog(id, dialog);
     	
-    	// TODO: when changing orientation, it seems that only onCreateDialog is called, 
-    	// delete folder then does not have proper title (it has %s instead)
-    	
     	switch (id) {
     	case DIALOG_ADD_FOLDER:
     		break;
     	case DIALOG_RENAME_FOLDER:
     	{
     		FolderInfo folder = mDatabase.getFolderInfo(mRenameFolderID);
-    		dialog.setTitle(getString(R.string.rename_folder_title, folder.name));
-    		mRenameFolderNameInput.setText(folder.name);
+    		String folderName = folder != null ? folder.name : "";
+    		dialog.setTitle(getString(R.string.rename_folder_title, folderName));
+    		mRenameFolderNameInput.setText(folderName);
     		break;
     	}
     	case DIALOG_DELETE_FOLDER:
     	{
     		FolderInfo folder = mDatabase.getFolderInfo(mDeleteFolderID);
-    		dialog.setTitle(getString(R.string.delete_folder_title, folder.name));
+    		String folderName = folder != null ? folder.name : "";
+    		dialog.setTitle(getString(R.string.delete_folder_title, folderName));
     		break;
     	}
     	}
@@ -301,6 +310,12 @@ public class FolderListActivity extends ListActivity {
         
 
         switch (item.getItemId()) {
+        case MENU_ITEM_EXPORT:
+        	Intent intent = new Intent();
+        	intent.setClass(this, SudokuExportActivity.class);
+        	intent.putExtra(SudokuExportActivity.EXTRA_FOLDER_ID, info.id);
+        	startActivity(intent);
+        	return true;
         case MENU_ITEM_RENAME:
         	mRenameFolderID = info.id;
         	showDialog(DIALOG_RENAME_FOLDER);
@@ -315,10 +330,23 @@ public class FolderListActivity extends ListActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
 		switch (item.getItemId()) {
         case MENU_ITEM_ADD:
         	showDialog(DIALOG_ADD_FOLDER);
             return true;
+        case MENU_ITEM_IMPORT:
+        	intent = new Intent();
+        	intent.setClass(this, FileListActivity.class);
+        	intent.putExtra(FileListActivity.EXTRA_FOLDER_NAME, "/sdcard");
+        	startActivity(intent);
+        	return true;
+        case MENU_ITEM_EXPORT_ALL:
+        	intent = new Intent();
+        	intent.setClass(this, SudokuExportActivity.class);
+        	intent.putExtra(SudokuExportActivity.EXTRA_FOLDER_ID, SudokuExportActivity.ALL_FOLDERS);
+        	startActivity(intent);
+        	return true;
         case MENU_ITEM_ABOUT:
         	showDialog(DIALOG_ABOUT);
         	return true;
@@ -361,7 +389,8 @@ public class FolderListActivity extends ListActivity {
 				mDetailLoader.loadDetailAsync(folderID, new FolderDetailCallback() {
 					@Override
 					public void onLoaded(FolderInfo folderInfo) {
-						detailView.setText(folderInfo.getDetail(mContext));
+						if (folderInfo != null)
+							detailView.setText(folderInfo.getDetail(mContext));
 					}
 				});
 			}

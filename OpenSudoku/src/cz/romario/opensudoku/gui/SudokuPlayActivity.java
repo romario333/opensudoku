@@ -28,6 +28,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.Display;
 import android.view.Menu;
@@ -46,6 +47,7 @@ import cz.romario.opensudoku.gui.inputmethod.IMControlPanelStatePersister;
 import cz.romario.opensudoku.gui.inputmethod.IMNumpad;
 import cz.romario.opensudoku.gui.inputmethod.IMPopup;
 import cz.romario.opensudoku.gui.inputmethod.IMSingleNumber;
+import cz.romario.opensudoku.utils.AndroidUtils;
 
 /*
  */
@@ -60,15 +62,25 @@ public class SudokuPlayActivity extends Activity{
 	public static final int MENU_ITEM_HELP = Menu.FIRST + 4; 
 	public static final int MENU_ITEM_SETTINGS = Menu.FIRST + 5;
 	
+	// MJA - "Set Undo Flag" Menu ID
+	public static final int MENU_ITEM_SET_CHECKPOINT = Menu.FIRST + 6;
+	
+	// MJA - "Go Last Undo Flag" Menu ID
+	public static final int MENU_ITEM_UNDO_TO_CHECKPOINT = Menu.FIRST + 7;
+
 	private static final int DIALOG_RESTART = 1;
 	private static final int DIALOG_WELL_DONE = 2;
 	private static final int DIALOG_CLEAR_NOTES = 3;
+	
+	private static final int REQUEST_SETTINGS = 1;
 	
 	private long mSudokuGameID;
 	private SudokuGame mSudokuGame;
 
 	
 	private SudokuDatabase mDatabase;
+	
+	private Handler mGuiHandler;
 	
 	private ViewGroup mRootLayout;
 	private SudokuBoardView mSudokuBoard;
@@ -83,7 +95,8 @@ public class SudokuPlayActivity extends Activity{
 	private boolean mShowTime = true;
 	private GameTimer mGameTimer;
 	private GameTimeFormat mGameTimeFormatter = new GameTimeFormat();
-	private boolean mIsSmallScreen;
+	private boolean mFullScreen;
+	private boolean mFillInNotesEnabled = false;
 	
 	private HintsQueue mHintsQueue;
 
@@ -99,8 +112,11 @@ public class SudokuPlayActivity extends Activity{
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 					WindowManager.LayoutParams.FLAG_FULLSCREEN);
-			mIsSmallScreen = true;
+			mFullScreen = true;
 		}
+		
+		// theme must be set before setContentView
+		AndroidUtils.setThemeFromPreferences(this);
         
 		setContentView(R.layout.sudoku_play);
 		
@@ -112,6 +128,8 @@ public class SudokuPlayActivity extends Activity{
 		mHintsQueue = new HintsQueue(this);
         mGameTimer = new GameTimer();
         
+        mGuiHandler = new Handler();
+        
         // create sudoku game instance
         if (savedInstanceState == null) {
         	// activity runs for the first time, read game from database
@@ -119,7 +137,8 @@ public class SudokuPlayActivity extends Activity{
         	mSudokuGame = mDatabase.getSudoku(mSudokuGameID);
         } else {
         	// activity has been running before, restore its state
-        	mSudokuGame = (SudokuGame)savedInstanceState.getParcelable("sudoku_game");
+        	mSudokuGame = new SudokuGame();
+        	mSudokuGame.restoreState(savedInstanceState);
         	mGameTimer.restoreState(savedInstanceState);
         }
         
@@ -136,7 +155,7 @@ public class SudokuPlayActivity extends Activity{
         mSudokuBoard.setGame(mSudokuGame);
 		mSudokuGame.setOnPuzzleSolvedListener(onSolvedListener);
 		
-		mHintsQueue.showOneTimeHint(R.string.welcome, R.string.first_run_hint);		
+		mHintsQueue.showOneTimeHint("welcome", R.string.welcome, R.string.first_run_hint);		
 		
         mIMControlPanel = (IMControlPanel)findViewById(R.id.input_methods);
 		mIMControlPanel.initialize(mSudokuBoard, mSudokuGame, mHintsQueue);
@@ -158,6 +177,8 @@ public class SudokuPlayActivity extends Activity{
 		int screenPadding = gameSettings.getInt("screen_border_size", 0);
 		mRootLayout.setPadding(screenPadding, screenPadding, screenPadding, screenPadding);
 		
+		mFillInNotesEnabled = gameSettings.getBoolean("fill_in_notes_enabled", false);
+		
 		mSudokuBoard.setHighlightWrongVals(gameSettings.getBoolean("highlight_wrong_values", true));
 		mSudokuBoard.setHighlightTouchedCell(gameSettings.getBoolean("highlight_touched_cell", true));
 
@@ -169,29 +190,49 @@ public class SudokuPlayActivity extends Activity{
 				mGameTimer.start();
 			}
 		}
-        mTimeLabel.setVisibility(mIsSmallScreen && mShowTime ? View.VISIBLE : View.GONE);
+        mTimeLabel.setVisibility(mFullScreen && mShowTime ? View.VISIBLE : View.GONE);
         
         mIMPopup.setEnabled(gameSettings.getBoolean("im_popup", true));
         mIMSingleNumber.setEnabled(gameSettings.getBoolean("im_single_number", true));
         mIMNumpad.setEnabled(gameSettings.getBoolean("im_numpad", true));
         mIMNumpad.setMoveCellSelectionOnPress(gameSettings.getBoolean("im_numpad_move_right", false));
-        mIMPopup.setDisableCompletedValues(gameSettings.getBoolean("disable_completed_values", true));
-        mIMSingleNumber.setDisableCompletedValues(gameSettings.getBoolean("disable_completed_values", true));
-        mIMNumpad.setDisableCompletedValues(gameSettings.getBoolean("disable_completed_values", true));
+        mIMPopup.setHighlightCompletedValues(gameSettings.getBoolean("highlight_completed_values", true));
+        mIMPopup.setShowNumberTotals(gameSettings.getBoolean("show_number_totals", false));
+        mIMSingleNumber.setHighlightCompletedValues(gameSettings.getBoolean("highlight_completed_values", true));
+        mIMSingleNumber.setShowNumberTotals(gameSettings.getBoolean("show_number_totals", false));
+        mIMNumpad.setHighlightCompletedValues(gameSettings.getBoolean("highlight_completed_values", true));
+        mIMNumpad.setShowNumberTotals(gameSettings.getBoolean("show_number_totals", false));
         
+        mIMControlPanel.activateFirstInputMethod(); // make sure that some input method is activated
         mIMControlPanelStatePersister.restoreState(mIMControlPanel);
 
 		updateTime();
+	}
+	
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		
+		if (hasFocus) {
+			// FIXME: When activity is resumed, title isn't sometimes hidden properly (there is black 
+			// empty space at the top of the screen). This is desperate workaround.
+			if (mFullScreen) {
+				mGuiHandler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+				        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+						mRootLayout.requestLayout();
+					}
+				}, 1000);
+			}
+			
+		}
 	}
 	
     @Override
     protected void onPause() {
     	super.onPause();
 		
-    	if (mSudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
-			mSudokuGame.pause();
-		}
-    	
     	// we will save game to the database as we might not be able to get back
 		mDatabase.updateSudoku(mSudokuGame);
 		
@@ -212,7 +253,12 @@ public class SudokuPlayActivity extends Activity{
     	super.onSaveInstanceState(outState);
 		
     	mGameTimer.stop();
-    	outState.putParcelable("sudoku_game", mSudokuGame);
+    	
+    	if (mSudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			mSudokuGame.pause();
+		}
+
+    	mSudokuGame.saveState(outState);
     	mGameTimer.saveState(outState);
     }
     
@@ -223,17 +269,19 @@ public class SudokuPlayActivity extends Activity{
         menu.add(0, MENU_ITEM_UNDO, 0, R.string.undo)
         .setShortcut('1', 'u')
         .setIcon(android.R.drawable.ic_menu_revert);
-		
-        menu.add(0, MENU_ITEM_CLEAR_ALL_NOTES, 0, R.string.clear_all_notes)
-        .setShortcut('3', 'a')
-        .setIcon(android.R.drawable.ic_menu_delete);
-
-//        menu.add(0, MENU_ITEM_FILL_IN_NOTES, 0, R.string.fill_in_notes)
-//        .setIcon(android.R.drawable.ic_menu_edit);
         
         menu.add(0, MENU_ITEM_RESTART, 1, R.string.restart)
         .setShortcut('7', 'r')
         .setIcon(android.R.drawable.ic_menu_rotate);
+
+        menu.add(0, MENU_ITEM_CLEAR_ALL_NOTES, 0, R.string.clear_all_notes)
+        .setShortcut('3', 'a')
+        .setIcon(android.R.drawable.ic_menu_delete);
+
+        if (mFillInNotesEnabled) {
+          menu.add(0, MENU_ITEM_FILL_IN_NOTES, 0, R.string.fill_in_notes)
+          .setIcon(android.R.drawable.ic_menu_edit);
+        }
 
         menu.add(0, MENU_ITEM_HELP, 1, R.string.help)
         .setShortcut('0', 'h')
@@ -242,6 +290,9 @@ public class SudokuPlayActivity extends Activity{
         menu.add(0, MENU_ITEM_SETTINGS, 1, R.string.settings)
         .setShortcut('9', 's')
         .setIcon(android.R.drawable.ic_menu_preferences);
+
+		menu.add(0, MENU_ITEM_SET_CHECKPOINT, 2, R.string.set_checkpoint);
+		menu.add(0, MENU_ITEM_UNDO_TO_CHECKPOINT, 2, R.string.undo_to_checkpoint);
 
         // Generate any additional actions that can be performed on the
         // overall list.  In a normal install, there are no additional
@@ -259,7 +310,20 @@ public class SudokuPlayActivity extends Activity{
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		
-		menu.findItem(MENU_ITEM_UNDO).setEnabled(mSudokuGame.hasSomethingToUndo());
+		if (mSudokuGame.getState() == SudokuGame.GAME_STATE_PLAYING) {
+			menu.findItem(MENU_ITEM_CLEAR_ALL_NOTES).setEnabled(true);
+			if (mFillInNotesEnabled) {
+				menu.findItem(MENU_ITEM_FILL_IN_NOTES).setEnabled(true);
+			}
+			menu.findItem(MENU_ITEM_UNDO).setEnabled(mSudokuGame.hasSomethingToUndo());
+		} else {
+			menu.findItem(MENU_ITEM_CLEAR_ALL_NOTES).setEnabled(false);
+			if (mFillInNotesEnabled) {
+				menu.findItem(MENU_ITEM_FILL_IN_NOTES).setEnabled(false);
+			}
+			menu.findItem(MENU_ITEM_UNDO).setEnabled(false);
+		}
+		
 		return true;
 	}
 	
@@ -281,13 +345,40 @@ public class SudokuPlayActivity extends Activity{
         case MENU_ITEM_SETTINGS:
         	Intent i = new Intent();
         	i.setClass(this, GameSettingsActivity.class);
-        	startActivity(i);
+        	startActivityForResult(i, REQUEST_SETTINGS);
         	return true;
         case MENU_ITEM_HELP:
         	mHintsQueue.showHint(R.string.help, R.string.help_text);
         	return true;
+        // MJA - Set Undo Flag
+        case MENU_ITEM_SET_CHECKPOINT:
+        	mSudokuGame.setUndoFlag();
+        	return true;
+        	
+        // MJA - Rollback to last undo flag
+        case MENU_ITEM_UNDO_TO_CHECKPOINT:
+        	mSudokuGame.rollbackToLastUndoFlag();
+        	return true;
+        	
         }
         return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+		case REQUEST_SETTINGS:
+			restartActivity();
+			break;
+		}
+	}
+	
+	/**
+	 * Restarts whole activity.
+	 */
+	private void restartActivity() {
+		startActivity(getIntent());
+		finish();
 	}
     
     @Override

@@ -24,6 +24,8 @@
 	<string name="edit_note">Edit note</string>
 	
 	<string name="add_folder">Add folder</string>
+	<string name="import_file">Import</string>
+	<string name="import_file_title">Import file %s</string>
 	<string name="about">About</string>
 	<string name="rename_folder">Rename folder</string>
 	<string name="delete_folder">Delete folder</string>
@@ -94,8 +96,8 @@
 	
 	<string name="first_run_hint">There are several input modes which you can use to fill in the puzzle. In order to help you get familiar with these modes there will be several hints displayed as you go through them.\n\nYou can disable these hints in game settings.\n</string>
 	<string name="im_popup_hint">You\'re now in the <i>Popup</i> input mode. Tap any cell with finger to edit its content.\n\nNotice the button in the lower right corner. You can use this button to switch to another input mode.\n</string>
-	<string name="im_single_number_hint">You\'re now in the <i>Single number</i> input mode. First select any number button by pressing it. Then just tap on cells in which you want to have selected number filled.\n\nPress <i>Pencil</i> button to toggle cell's note editing.\n</string>
-	<string name="im_numpad_hint">You\'re now in the <i>Numpad</i> input mode. Buttons act as a standard numeric keyboard.\n\nPress <i>Pencil</i> button to toggle cell's note editing.\n</string>
+	<string name="im_single_number_hint">You\'re now in the <i>Single number</i> input mode. First select any number button by pressing it. Then just tap on cells in which you want to have selected number filled.\n\nPress <i>Pencil</i> button to toggle cell\'s note editing.\n</string>
+	<string name="im_numpad_hint">You\'re now in the <i>Numpad</i> input mode. Buttons act as a standard numeric keyboard.\n\nPress <i>Pencil</i> button to toggle cell\'s note editing.\n</string>
 	<string name="im_disable_modes_hint">Please remember that you don\'t have to use all input modes. You can disable any of them in the game settings.\n\nYou can also use the keyboard and trackball to control the game. If you want to enter notes using keyboard, press number with alt or shift.\n</string>
 	<string name="help_text"><b>Keyboard controls</b>\n\nUse trackball to navigate to the desired cell and then press number on keyboard to fill in value. If you want to edit cell\'s note, press number with shift or alt.\n\n<b>Input modes</b>\n\nYou can switch between several input modes using button in the lower right corner of the screen. You can also disable any input mode in game settings - it will be completely hidden then.\n\n<b>Popup input mode</b>\n\nPopup dialog is shown when you tap the cell. You can edit cell\'s content using this dialog.\n\n<b>Single Number input mode</b>\n\nFirst select any number button by pressing it. Then just tap on cells in which you want to have selected number filled.\n\nUse <i>Pencil</i> button to toggle between cell\'s value and note editing.\n\n<b>Numpad input mode</b>\n\nButtons act as a standard numeric keyboard.\n\nUse <i>Pencil</i> button to toggle between cell\'s value and note editing.\n</string>
 	
@@ -109,18 +111,15 @@
 	<string name="puzzle_inserted">New puzzle has been saved.</string>
 	<string name="puzzle_updated">Puzzle has been updated.</string>
 	
-	<string name="importing">Importing folder with puzzles...</string>
 	<string name="puzzles_saved">Puzzles have been saved into \'%s\' folder.</string>
 	<string name="no_puzzles_found">No puzzles found.</string>
 	<string name="unknown_import_error">Unknown error occurred while importing puzzles, import was canceled.</string>
 	<string name="invalid_format">Invalid format, import was canceled.</string>
 	
-	<string name="credits">Credits:\nRoman Mašek\nVit Hnilica\nMartin Sobola</string>
+	<string name="credits">Credits:\nRoman Mašek\nVit Hnilica\nMartin Sobola\nMartin Helff</string>
 	
 	<!-- Strings added in 0.7.0 -->
 	<string name="loading">Loading...</string>
-	<string name="disable_completed_values">Disable completed numbers</string>
-	<string name="disable_completed_values_summary">Disables numbers which has been entered 9 times.</string>
 	
 	<!-- Strings added/changed in 0.7.1 -->
 	<string name="more_settings">More settings</string>
@@ -128,5 +127,42 @@
 	<string name="screen_border_size_summary">Some displays do not react to touches on screen edges. This could help in such case.</string>
 	<string name="highlight_touched_cell">Highlight cell on touch</string>
 	<string name="highlight_touched_cell_summary">Highlights row and column of touched cell.</string>
-	
+	<string name="export">Export</string>
+	<string name="export_folder">Export folder</string>
+	<string name="export_all_folders">Export all folders</string>
+	<string name="folders_created">%s folders have been imported.</string>
+	<string name="importing">Importing puzzles...</string>
+	<string name="exporting">Exporting puzzles...</string>
+	<string name="unknown_export_error">Unknown error occurred while exporting puzzles.</string>
+	<string name="highlight_completed_values">Highlight completed numbers</string>
+	<string name="highlight_completed_values_summary">Highlight buttons for numbers which has been entered 9 times.</string>
+	<string name="save_to_sdcard">Save to sdcard</string>
+	<string name="send_by_mail">Send by mail</string>
+	<string name="theme">Theme</string>
+	<string name="theme_summary">Select color theme for puzzle board.</string>
+	<string name="select_theme">Select theme</string>
+	<string name="filename">Filename</string>
+	<string name="directory">Directory</string>
+	<string name="sdcard_not_found">SD card not found.</string>
+	<string name="puzzles_have_been_exported">Puzzles have been exported to %s.</string>
+	<string name="file_exists">File already exists, do you want to overwrite it?</string>
+	<!-- localization of default folder names -->
+	<string name="difficulty_hard">Hard</string>
+    <string name="difficulty_medium">Medium</string>
+    <string name="difficulty_easy">Easy</string>
+    
+	<!-- Strings added/changed in 1.1.0 -->
+    <string name="generate_sudoku">Generate new game</string>
+    <string name="select_difficulty">Select difficulty</string>
+    <string name="generating">Generating puzzle...</string>
+    <string name="show_number_totals">Show Number Totals</string>
+    <string name="show_number_totals_summary">Displays count of each number placed.</string>
+    <string name="what_is_new">What\'s new</string>
+    
+   	<!-- Strings added/changed in 1.1.1 -->
+    <string name="fill_in_notes_summary">Enable "Fill in notes" menu item.</string>
+    
+   	<!-- Strings added/changed in 1.1.2 -->
+	<string name="set_checkpoint">Set checkpoint</string>
+	<string name="undo_to_checkpoint">Undo to checkpoint</string>
 </resources>

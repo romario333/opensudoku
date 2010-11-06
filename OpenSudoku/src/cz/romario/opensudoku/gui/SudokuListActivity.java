@@ -55,6 +55,7 @@ import cz.romario.opensudoku.game.FolderInfo;
 import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.SudokuGame;
 import cz.romario.opensudoku.gui.FolderDetailLoader.FolderDetailCallback;
+import cz.romario.opensudoku.utils.AndroidUtils;
 
 /**
  * List of puzzles in folder.
@@ -105,6 +106,9 @@ public class SudokuListActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// theme must be set before setContentView
+		AndroidUtils.setThemeFromPreferences(this);
 		
 		setContentView(R.layout.sudoku_list);
 		mFilterStatus = (TextView)findViewById(R.id.filter_status);
@@ -166,6 +170,14 @@ public class SudokuListActivity extends ListActivity {
 		mResetPuzzleID = state.getLong("mResetPuzzleID");
 		mEditNotePuzzleID = state.getLong("mEditNotePuzzleID");
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// the puzzle list is naturally refreshed when the window
+		// regains focus, so we only need to update the title
+		updateTitle();
+	}
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -194,6 +206,9 @@ public class SudokuListActivity extends ListActivity {
 		.setIcon(android.R.drawable.ic_menu_view);
 		menu.add(0, MENU_ITEM_INSERT, 2, R.string.add_sudoku).setShortcut('3', 'a')
 		.setIcon(android.R.drawable.ic_menu_add);
+		// I'm not sure this one is ready for release
+//		menu.add(0, MENU_ITEM_GENERATE, 3, R.string.generate_sudoku).setShortcut('4', 'g')
+//		.setIcon(android.R.drawable.ic_menu_add);
 
 		// Generate any additional actions that can be performed on the
 		// overall list. In a normal install, there are no additional
@@ -211,6 +226,7 @@ public class SudokuListActivity extends ListActivity {
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
+		final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		switch (id) {
 		case DIALOG_DELETE_PUZZLE:
 			return new AlertDialog.Builder(this).setIcon(
@@ -260,7 +276,6 @@ public class SudokuListActivity extends ListActivity {
 								}
 							}).setNegativeButton(android.R.string.no, null).create();
 		case DIALOG_FILTER:
-			final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 			return new AlertDialog.Builder(this)
 				.setIcon(android.R.drawable.ic_menu_view)
 				.setTitle(R.string.filter_by_gamestate)
@@ -445,7 +460,8 @@ public class SudokuListActivity extends ListActivity {
 		mFolderDetailLoader.loadDetailAsync(mFolderID, new FolderDetailCallback() {
 			@Override
 			public void onLoaded(FolderInfo folderInfo) {
-				setTitle(folderInfo.name + " - " + folderInfo.getDetail(getApplicationContext()));
+				if (folderInfo != null)
+					setTitle(folderInfo.name + " - " + folderInfo.getDetail(getApplicationContext()));
 			}
 		});
 	}
@@ -479,7 +495,13 @@ public class SudokuListActivity extends ListActivity {
 			case R.id.sudoku_board:
 				String data = c.getString(columnIndex);
 				// TODO: still can be faster, I don't have to call initCollection and read notes
-				CellCollection cells = CellCollection.deserialize(data);
+				CellCollection cells = null;;
+				try {
+					cells = CellCollection.deserialize(data);
+				} catch (Exception e) {
+					long id = c.getLong(c.getColumnIndex(SudokuColumns._ID));
+					Log.e(TAG, String.format("Exception occurred when deserializing puzzle with id %s.", id), e);
+				}
 				SudokuBoardView board = (SudokuBoardView) view;
 				board.setReadOnly(true);
 				board.setFocusable(false);

@@ -76,7 +76,6 @@ public abstract class InputMethod {
 			View switchModeView = mInputMethodView.findViewById(R.id.switch_input_mode);
 			Button switchModeButton = (Button) switchModeView;
 			switchModeButton.setText(getAbbrName());
-			// TODO: color from resources
 			switchModeButton.getBackground().setColorFilter(new LightingColorFilter(Color.CYAN, 0));
 			onControlPanelCreated(mInputMethodView);
 		}
