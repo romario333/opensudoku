@@ -316,12 +316,14 @@ public class SudokuPlayActivity extends Activity{
 				menu.findItem(MENU_ITEM_FILL_IN_NOTES).setEnabled(true);
 			}
 			menu.findItem(MENU_ITEM_UNDO).setEnabled(mSudokuGame.hasSomethingToUndo());
+			menu.findItem(MENU_ITEM_UNDO_TO_CHECKPOINT).setEnabled(mSudokuGame.hasUndoCheckpoint());
 		} else {
 			menu.findItem(MENU_ITEM_CLEAR_ALL_NOTES).setEnabled(false);
 			if (mFillInNotesEnabled) {
 				menu.findItem(MENU_ITEM_FILL_IN_NOTES).setEnabled(false);
 			}
 			menu.findItem(MENU_ITEM_UNDO).setEnabled(false);
+			menu.findItem(MENU_ITEM_UNDO_TO_CHECKPOINT).setEnabled(false);
 		}
 		
 		return true;
@@ -350,14 +352,11 @@ public class SudokuPlayActivity extends Activity{
         case MENU_ITEM_HELP:
         	mHintsQueue.showHint(R.string.help, R.string.help_text);
         	return true;
-        // MJA - Set Undo Flag
         case MENU_ITEM_SET_CHECKPOINT:
-        	mSudokuGame.setUndoFlag();
+        	mSudokuGame.setUndoCheckpoint();
         	return true;
-        	
-        // MJA - Rollback to last undo flag
         case MENU_ITEM_UNDO_TO_CHECKPOINT:
-        	mSudokuGame.rollbackToLastUndoFlag();
+        	mSudokuGame.undoToCheckpoint();
         	return true;
         	
         }

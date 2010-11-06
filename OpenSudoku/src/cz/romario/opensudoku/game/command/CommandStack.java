@@ -62,7 +62,15 @@ public class CommandStack {
 		}
 	}
 	
-	public void rollbackToCheckpoint() {
+	public boolean hasCheckpoint() {
+		for (AbstractCommand c : mCommandStack) {
+			if (c.isCheckpoint())
+				return true;
+		}
+		return false;
+	}
+	
+	public void undoToCheckpoint() {
 		/*
 		 * I originally planned to just call undo but this way it doesn't need to 
 		 * validateCells() until the run is complete

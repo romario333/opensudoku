@@ -223,20 +223,22 @@ public class SudokuGame {
 		mCommandStack.undo();
 	}
 	
-	// MJA - Set Undo Flag
-	public void setUndoFlag() {
-		mCommandStack.setCheckpoint();
-	}
-	
-	//MJA - Rollback to Last Undo Flag
-	public void rollbackToLastUndoFlag() {
-		mCommandStack.rollbackToCheckpoint();
-	}
-	
-	
 	public boolean hasSomethingToUndo() {
 		return mCommandStack.hasSomethingToUndo();
 	}
+
+	public void setUndoCheckpoint() {
+		mCommandStack.setCheckpoint();
+	}
+	
+	public void undoToCheckpoint() {
+		mCommandStack.undoToCheckpoint();
+	}
+	
+	public boolean hasUndoCheckpoint() {
+		return mCommandStack.hasCheckpoint();
+	}
+
 	
 	/**
 	 * Start game-play.
