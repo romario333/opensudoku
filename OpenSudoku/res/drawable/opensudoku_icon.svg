@@ -14,7 +14,7 @@
    id="svg5268"
    version="1.1"
    inkscape:version="0.47 r22583"
-   sodipodi:docname="opensudoku.svg">
+   sodipodi:docname="opensudoku-v1.svg">
   <defs
      id="defs5270">
     <inkscape:perspective
@@ -43,7 +43,7 @@
      inkscape:cx="324.28571"
      inkscape:cy="318.57141"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g4485"
      showgrid="false"
      inkscape:window-width="1680"
      inkscape:window-height="999"
@@ -77,10 +77,6 @@
          width="622.71942"
          id="rect3618"
          style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:10.13773155;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none" />
-      <path
-         id="path4130"
-         d="m 65.714286,415.21932 620.000004,2.85714"
-         style="fill:none;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
       <path
          id="path4130-8"
          d="m 64.285713,339.50506 619.999997,2.8571"
