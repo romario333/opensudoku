@@ -62,15 +62,14 @@ public class SudokuPlayActivity extends Activity{
 	public static final int MENU_ITEM_HELP = Menu.FIRST + 4; 
 	public static final int MENU_ITEM_SETTINGS = Menu.FIRST + 5;
 	
-	// MJA - "Set Undo Flag" Menu ID
 	public static final int MENU_ITEM_SET_CHECKPOINT = Menu.FIRST + 6;
 	
-	// MJA - "Go Last Undo Flag" Menu ID
 	public static final int MENU_ITEM_UNDO_TO_CHECKPOINT = Menu.FIRST + 7;
 
 	private static final int DIALOG_RESTART = 1;
 	private static final int DIALOG_WELL_DONE = 2;
 	private static final int DIALOG_CLEAR_NOTES = 3;
+	private static final int DIALOG_UNDO_TO_CHECKPOINT = 4;
 	
 	private static final int REQUEST_SETTINGS = 1;
 	
@@ -356,7 +355,7 @@ public class SudokuPlayActivity extends Activity{
         	mSudokuGame.setUndoCheckpoint();
         	return true;
         case MENU_ITEM_UNDO_TO_CHECKPOINT:
-        	mSudokuGame.undoToCheckpoint();
+        	showDialog(DIALOG_UNDO_TO_CHECKPOINT);
         	return true;
         	
         }
@@ -420,6 +419,19 @@ public class SudokuPlayActivity extends Activity{
             })
             .setNegativeButton(android.R.string.no, null)
             .create();
+    	case DIALOG_UNDO_TO_CHECKPOINT:
+            return new AlertDialog.Builder(this)
+            .setIcon(android.R.drawable.ic_menu_delete)
+            .setTitle(R.string.app_name)
+            .setMessage(R.string.undo_to_checkpoint_confirm)
+            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                	mSudokuGame.undoToCheckpoint();
+                }
+            })
+            .setNegativeButton(android.R.string.no, null)
+            .create();
+    		
     	}
     	return null;
     }

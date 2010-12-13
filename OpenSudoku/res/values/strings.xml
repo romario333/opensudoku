@@ -165,4 +165,5 @@
    	<!-- Strings added/changed in 1.1.2 -->
 	<string name="set_checkpoint">Set checkpoint</string>
 	<string name="undo_to_checkpoint">Undo to checkpoint</string>
+	<string name="undo_to_checkpoint_confirm">Are you sure you want to undo all actions since last checkpoint?</string>
 </resources>

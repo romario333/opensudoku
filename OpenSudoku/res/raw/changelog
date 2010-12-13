@@ -5,6 +5,13 @@
 </style>
 </head>
 <body>
+<b>1.1.3</b>
+<ul>
+<li>Undo checkpoints - press Menu and select "Set checkpoint" while in game. You can later return to 
+this checkpoint by selecting "Undo to checkpoint" (issue #109, thanks to thexbin).</li>
+<li>Some users report problems with install / update, this update hopefully fixes that.</li>
+<li>Fixes bug with undo when under certain circumstances undo information is lost (issue #86).</li>
+</ul>
 <b>1.1.2</b>
 <ul>
 <li>Manual import of puzzles from SD card - just press Menu and select Import (thanks to dracul for this).</li>
