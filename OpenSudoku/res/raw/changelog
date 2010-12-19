@@ -5,6 +5,11 @@
 </style>
 </head>
 <body>
+<b>1.1.4</b>
+<ul>
+<li>New logo (issue #134, thanks to msal.coding).</li>
+<li>Fixes few minor bugs.</li>
+</ul>
 <b>1.1.3</b>
 <ul>
 <li>Undo checkpoints - press Menu and select "Set checkpoint" while in game. You can later return to 

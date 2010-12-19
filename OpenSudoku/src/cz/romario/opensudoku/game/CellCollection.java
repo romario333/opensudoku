@@ -27,9 +27,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 /**
  * Collection of sudoku cells. This class in fact represents one sudoku board (9x9).
  * 

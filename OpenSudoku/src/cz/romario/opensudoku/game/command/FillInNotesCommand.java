@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Bundle;
-import android.util.Log;
-
 import cz.romario.opensudoku.game.Cell;
 import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.CellGroup;

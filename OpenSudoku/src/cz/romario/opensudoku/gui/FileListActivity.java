@@ -41,11 +41,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 import android.widget.SimpleAdapter.ViewBinder;
+import android.widget.TextView;
 import cz.romario.opensudoku.R;
-import cz.romario.opensudoku.game.FolderInfo;
-import cz.romario.opensudoku.gui.FolderDetailLoader.FolderDetailCallback;
 
 /**
  * List folders. 
@@ -62,12 +60,10 @@ public class FileListActivity extends ListActivity {
     public static final String ITEM_KEY_NAME = "name";
     public static final String ITEM_KEY_DETAIL = "detail";
 	
-    private static final String TAG = "FileListActivity";
-    
     // input parameters for dialogs
     private String mDirectory; 
     private File mSelectedFile;
-    private List<Map> mList;
+    private List<Map<String, Object>> mList;
     private Context mContext=this;
     
     @Override
@@ -101,15 +97,15 @@ public class FileListActivity extends ListActivity {
 		Arrays.sort(dirs); 
 		Arrays.sort(files); 
 		
-		mList = new ArrayList<Map>();
+		mList = new ArrayList<Map<String, Object>>();
 		if(selected_dir.getParentFile()!=null){
-			Map map = new HashMap();
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put(ITEM_KEY_FILE, selected_dir.getParentFile());
 			map.put(ITEM_KEY_NAME, "..");
 			mList.add(map);
 		}
 		for (File f: dirs) {
-			Map map = new HashMap();
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put(ITEM_KEY_FILE, f);
 			map.put(ITEM_KEY_NAME, f.getName());
 			mList.add(map);
@@ -117,7 +113,7 @@ public class FileListActivity extends ListActivity {
 		DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(this);
 		DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(this);
 		for (File f: files) {
-			Map map = new HashMap();
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put(ITEM_KEY_FILE, f);
 			map.put(ITEM_KEY_NAME, f.getName());
 			Date date = new Date(f.lastModified());
@@ -158,7 +154,7 @@ public class FileListActivity extends ListActivity {
 
     @Override
     protected Dialog onCreateDialog(final int id) {
-    	LayoutInflater factory = LayoutInflater.from(this);
+    	LayoutInflater.from(this);
     	switch (id) {
     	case DIALOG_IMPORT_FILE:
             return new AlertDialog.Builder(this)

@@ -27,23 +27,22 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.widget.SimpleCursorAdapter.ViewBinder;
+import android.widget.TextView;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.FolderColumns;
 import cz.romario.opensudoku.db.SudokuDatabase;
@@ -216,7 +215,7 @@ public class FolderListActivity extends ListActivity {
             String versionName = AndroidUtils.getAppVersionName(getApplicationContext());
             versionLabel.setText(getString(R.string.version, versionName));
             return new AlertDialog.Builder(this)
-                .setIcon(R.drawable.opensudoku)
+                .setIcon(R.drawable.opensudoku_logo_72)
                 .setTitle(R.string.app_name)
                 .setView(aboutView)
                 .setPositiveButton("OK", null)
