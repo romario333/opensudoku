@@ -79,7 +79,8 @@ public class CommandStack {
 		while (!mCommandStack.empty()) {
 			c = mCommandStack.pop();
 			c.undo();
-			if (mCommandStack.peek().isCheckpoint()) {
+			
+			if (mCommandStack.empty() || mCommandStack.peek().isCheckpoint()) {
 				break;
 			}
 		} 
