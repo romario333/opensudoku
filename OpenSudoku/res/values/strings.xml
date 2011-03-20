@@ -9,7 +9,7 @@
 	<string name="homepage">Homepage: http://opensudoku.eu</string>
 	<string name="email">Email: opensudoku@romanmasek.cz</string>
 	<string name="work_in_progress">Please note that this is still work in progress.</string>
-	<string name="send_me_bugs">If you run into bug which you want to get fixed or have any suggestion, don\'t hesitate to contact me by e-mail or use issue tracker on project\'s homepage.</string>
+	<string name="send_me_bugs">If you run into bug which you want to get fixed, don\'t hesitate to contact me by e-mail or use issue tracker on project\'s homepage.</string>
 	
 	<string name="close">Close</string>
 	<string name="clear">Clear</string>

@@ -182,7 +182,7 @@ public class IMPopupDialog extends Dialog {
 	 * @return
 	 */
 	private TabHost createTabView() {
-		TabHost tabHost = new TabHost(mContext);
+		TabHost tabHost = new TabHost(mContext, null);
         //tabHost.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
         tabHost.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         

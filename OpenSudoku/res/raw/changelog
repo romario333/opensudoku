@@ -5,6 +5,10 @@
 </style>
 </head>
 <body>
+<b>1.1.5</b>
+<ul>
+<li>Fixes crashing on Android 3 (issue #148).</li>
+</ul>
 <b>1.1.4</b>
 <ul>
 <li>New logo (issue #134, thanks to msal.coding).</li>
