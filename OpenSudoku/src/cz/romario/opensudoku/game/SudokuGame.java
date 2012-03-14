@@ -179,6 +179,9 @@ public class SudokuGame {
 		if (value < 0 || value > 9) {
 			throw new IllegalArgumentException("Value must be between 0-9.");
 		}
+		if (mState != GAME_STATE_PLAYING) {
+			return;
+		}
 		
 		if (cell.isEditable()) {
 			executeCommand(new SetCellValueCommand(cell, value));
