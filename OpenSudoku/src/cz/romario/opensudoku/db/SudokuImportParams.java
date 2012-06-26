@@ -9,7 +9,7 @@ public class SudokuImportParams {
 	public long lastPlayed;
 	public String data;
 	public String note;
-	
+
 	public void clear() {
 		created = 0;
 		state = SudokuGame.GAME_STATE_NOT_STARTED;

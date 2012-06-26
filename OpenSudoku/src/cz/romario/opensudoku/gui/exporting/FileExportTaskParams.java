@@ -3,7 +3,7 @@ package cz.romario.opensudoku.gui.exporting;
 import java.io.File;
 
 public class FileExportTaskParams {
-	
+
 	/**
 	 * Id of folder to export. Set to -1, if you want to export all folders.
 	 */
@@ -12,7 +12,7 @@ public class FileExportTaskParams {
 	 * Id of sudoku puzzle to export.
 	 */
 	public Long sudokuID;
-	
+
 	/**
 	 * File where data should be saved.
 	 */

@@ -20,9 +20,8 @@ import cz.romario.opensudoku.game.SudokuGame;
 
 /**
  * Handles import of application/x-opensudoku or .opensudoku files.
- * 
- * @author romario
  *
+ * @author romario
  */
 public class OpenSudokuImportTask extends AbstractImportTask {
 
@@ -45,7 +44,7 @@ public class OpenSudokuImportTask extends AbstractImportTask {
 						.getSchemeSpecificPart(), mUri.getFragment());
 				streamReader = new InputStreamReader(juri.toURL().openStream());
 			}
-			
+
 			try {
 				importXml(streamReader);
 			} finally {
@@ -104,7 +103,7 @@ public class OpenSudokuImportTask extends AbstractImportTask {
 	}
 
 	private void importV2(XmlPullParser parser)
-		throws XmlPullParserException, IOException, SudokuInvalidFormatException {
+			throws XmlPullParserException, IOException, SudokuInvalidFormatException {
 		int eventType = parser.getEventType();
 		String lastTag = "";
 		SudokuImportParams importParams = new SudokuImportParams();
@@ -124,7 +123,7 @@ public class OpenSudokuImportTask extends AbstractImportTask {
 					importParams.lastPlayed = parseLong(parser.getAttributeValue(null, "last_played"), 0);
 					importParams.data = parser.getAttributeValue(null, "data");
 					importParams.note = parser.getAttributeValue(null, "note");
-					
+
 					importGame(importParams);
 				}
 			} else if (eventType == XmlPullParser.END_TAG) {
@@ -137,11 +136,11 @@ public class OpenSudokuImportTask extends AbstractImportTask {
 			eventType = parser.next();
 		}
 	}
-	
+
 	private long parseLong(String string, long defaultValue) {
 		return string != null ? Long.parseLong(string) : defaultValue;
 	}
-	
+
 	private void importV1(XmlPullParser parser)
 			throws XmlPullParserException, IOException, SudokuInvalidFormatException {
 		int eventType = parser.getEventType();
@@ -164,7 +163,7 @@ public class OpenSudokuImportTask extends AbstractImportTask {
 			eventType = parser.next();
 		}
 
-		
+
 	}
 
 }

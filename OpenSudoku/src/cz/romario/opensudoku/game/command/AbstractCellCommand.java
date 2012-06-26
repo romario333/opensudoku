@@ -4,9 +4,8 @@ import cz.romario.opensudoku.game.CellCollection;
 
 /**
  * Generic command acting on one or more cells.
- * 
- * @author romario
  *
+ * @author romario
  */
 public abstract class AbstractCellCommand extends AbstractCommand {
 
@@ -19,5 +18,5 @@ public abstract class AbstractCellCommand extends AbstractCommand {
 	protected void setCells(CellCollection mCells) {
 		this.mCells = mCells;
 	}
-	
+
 }

@@ -8,11 +8,11 @@ import android.os.Bundle;
 
 public class CommandStack {
 	private Stack<AbstractCommand> mCommandStack = new Stack<AbstractCommand>();
-	
+
 	// TODO: I need cells collection, because I have to call validate on it after some
 	//	commands. CellCollection should be able to validate itself on change.
 	private CellCollection mCells;
-	
+
 	public CommandStack(CellCollection cells) {
 		mCells = cells;
 	}
@@ -27,8 +27,8 @@ public class CommandStack {
 			outState.putBundle("cmdStack." + i, commandState);
 		}
 	}
-	
-    public void restoreState(Bundle inState) {
+
+	public void restoreState(Bundle inState) {
 		int stackSize = inState.getInt("cmdStack.size");
 		for (int i = 0; i < stackSize; i++) {
 			Bundle commandState = inState.getBundle("cmdStack." + i);
@@ -36,17 +36,17 @@ public class CommandStack {
 			command.restoreState(commandState);
 			push(command);
 		}
-    }
+	}
 
 	public boolean empty() {
 		return mCommandStack.empty();
 	}
-	
+
 	public void execute(AbstractCommand command) {
 		push(command);
 		command.execute();
 	}
-	
+
 	public void undo() {
 		if (!mCommandStack.empty()) {
 			AbstractCommand c = pop();
@@ -54,14 +54,14 @@ public class CommandStack {
 			validateCells();
 		}
 	}
-	
+
 	public void setCheckpoint() {
 		if (!mCommandStack.empty()) {
 			AbstractCommand c = mCommandStack.peek();
 			c.setCheckpoint(true);
 		}
 	}
-	
+
 	public boolean hasCheckpoint() {
 		for (AbstractCommand c : mCommandStack) {
 			if (c.isCheckpoint())
@@ -69,7 +69,7 @@ public class CommandStack {
 		}
 		return false;
 	}
-	
+
 	public void undoToCheckpoint() {
 		/*
 		 * I originally planned to just call undo but this way it doesn't need to 
@@ -79,33 +79,33 @@ public class CommandStack {
 		while (!mCommandStack.empty()) {
 			c = mCommandStack.pop();
 			c.undo();
-			
+
 			if (mCommandStack.empty() || mCommandStack.peek().isCheckpoint()) {
 				break;
 			}
-		} 
+		}
 		validateCells();
 	}
-	
-	
+
+
 	public boolean hasSomethingToUndo() {
 		return mCommandStack.size() != 0;
 	}
-	
-    private void push(AbstractCommand command) {
+
+	private void push(AbstractCommand command) {
 		if (command instanceof AbstractCellCommand) {
-			((AbstractCellCommand)command).setCells(mCells);
+			((AbstractCellCommand) command).setCells(mCells);
 		}
 		mCommandStack.push(command);
-    }
-    
-    private AbstractCommand pop() {
-    	return mCommandStack.pop();
-    }
-	
+	}
+
+	private AbstractCommand pop() {
+		return mCommandStack.pop();
+	}
+
 	private void validateCells() {
-    	mCells.validate();
-    }
+		mCells.validate();
+	}
 
 
 }

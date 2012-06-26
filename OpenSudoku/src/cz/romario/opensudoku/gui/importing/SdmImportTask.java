@@ -11,18 +11,17 @@ import cz.romario.opensudoku.db.SudokuInvalidFormatException;
 
 /**
  * Handles import of .sdm files (see http://sudocue.net/download.php).
- * 
- * @author romario
  *
+ * @author romario
  */
 public class SdmImportTask extends AbstractImportTask {
 
 	private Uri mUri;
-	
+
 	public SdmImportTask(Uri uri) {
 		mUri = uri;
 	}
-	
+
 	@Override
 	protected void processImport() throws SudokuInvalidFormatException {
 		importFolder(mUri.getLastPathSegment());

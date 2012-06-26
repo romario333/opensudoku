@@ -15,7 +15,7 @@ import cz.romario.opensudoku.utils.Const;
 
 /**
  * To add support for new import source, do following:
- * 
+ * <p/>
  * 1) Subclass this class. Any input parameters specific for your import should be put
  * in constructor of your class.
  * 2) In {@link #processImport()} method process your data source (parse file or maybe download
@@ -25,11 +25,10 @@ import cz.romario.opensudoku.utils.Const;
  * doesn't know where to put puzzles.
  * 3) Add code to {@link ImportSudokuActivity} which creates instance of your new class and
  * passes it input parameters.
- * 
+ * <p/>
  * TODO: add cancel support
- * 
- * @author romario
  *
+ * @author romario
  */
 public abstract class AbstractImportTask extends
 		AsyncTask<Void, Integer, Boolean> {
@@ -37,25 +36,25 @@ public abstract class AbstractImportTask extends
 
 	protected Context mContext;
 	private ProgressBar mProgressBar;
-	
+
 	private OnImportFinishedListener mOnImportFinishedListener;
-	
+
 	private SudokuDatabase mDatabase;
 	private FolderInfo mFolder; // currently processed folder
 	private int mFolderCount; // count of processed folders
 	private int mGameCount; //count of processed puzzles
 	private String mImportError;
 	private boolean mImportSuccessful;
-	
+
 	public void initialize(Context context, ProgressBar progressBar) {
 		mContext = context;
 		mProgressBar = progressBar;
 	}
-	
+
 	public void setOnImportFinishedListener(OnImportFinishedListener listener) {
 		mOnImportFinishedListener = listener;
 	}
-	
+
 	@Override
 	protected Boolean doInBackground(Void... params) {
 
@@ -80,12 +79,12 @@ public abstract class AbstractImportTask extends
 	@Override
 	protected void onPostExecute(Boolean result) {
 		if (result) {
-			
+
 			if (mFolderCount == 1) {
-				Toast.makeText(mContext, mContext.getString(R.string.puzzles_saved, mFolder.name), 
+				Toast.makeText(mContext, mContext.getString(R.string.puzzles_saved, mFolder.name),
 						Toast.LENGTH_LONG).show();
 			} else if (mFolderCount > 1) {
-				Toast.makeText(mContext, mContext.getString(R.string.folders_created, mFolderCount), 
+				Toast.makeText(mContext, mContext.getString(R.string.folders_created, mFolderCount),
 						Toast.LENGTH_LONG).show();
 			}
 
@@ -104,25 +103,25 @@ public abstract class AbstractImportTask extends
 
 	private Boolean processImportInternal() {
 		mImportSuccessful = true;
-		
+
 		long start = System.currentTimeMillis();
 
 		mDatabase = new SudokuDatabase(mContext);
 		try {
 			mDatabase.beginTransaction();
-			
+
 			// let subclass handle the import
 			processImport();
-			
+
 			mDatabase.setTransactionSuccessful();
-		} catch ( SudokuInvalidFormatException e) {
+		} catch (SudokuInvalidFormatException e) {
 			setError(mContext.getString(R.string.invalid_format));
 		} finally {
 			mDatabase.endTransaction();
 			mDatabase.close();
 			mDatabase = null;
 		}
-		
+
 
 		if (mFolderCount == 0 && mGameCount == 0) {
 			setError(mContext.getString(R.string.no_puzzles_found));
@@ -133,13 +132,13 @@ public abstract class AbstractImportTask extends
 
 		Log.i(Const.TAG, String.format("Imported in %f seconds.",
 				(end - start) / 1000f));
-		
+
 		return mImportSuccessful;
 	}
 
 	/**
 	 * Subclasses should do all import work in this method.
-	 * 
+	 *
 	 * @return
 	 */
 	protected abstract void processImport() throws SudokuInvalidFormatException;
@@ -147,17 +146,17 @@ public abstract class AbstractImportTask extends
 
 	/**
 	 * Creates new folder and starts appending puzzles to this folder.
-	 * 
+	 *
 	 * @param name
 	 */
 	protected void importFolder(String name) {
 		importFolder(name, System.currentTimeMillis());
 	}
-	
+
 
 	/**
 	 * Creates new folder and starts appending puzzles to this folder.
-	 * 
+	 *
 	 * @param name
 	 * @param created
 	 */
@@ -165,16 +164,16 @@ public abstract class AbstractImportTask extends
 		if (mDatabase == null) {
 			throw new IllegalStateException("Database is not opened.");
 		}
-		
+
 		mFolderCount++;
-		
+
 		mFolder = mDatabase.insertFolder(name, created);
 	}
-	
+
 	/**
 	 * Starts appending puzzles to the folder with given <code>name</code>. If such folder does
 	 * not exist, this method creates new one.
-	 * 
+	 *
 	 * @param name
 	 */
 	protected void appendToFolder(String name) {
@@ -183,19 +182,20 @@ public abstract class AbstractImportTask extends
 		}
 
 		mFolderCount++;
-		
+
 		mFolder = null;
 		mFolder = mDatabase.findFolder(name);
 		if (mFolder == null) {
 			mFolder = mDatabase.insertFolder(name, System.currentTimeMillis());
 		}
 	}
-	
+
 	private SudokuImportParams mImportParams = new SudokuImportParams();
+
 	/**
-	 * Imports game. Game will be stored in folder, which was set by  
+	 * Imports game. Game will be stored in folder, which was set by
 	 * {@link #importFolder(String, boolean)} or {@link #appendToFolder(String)}.
-	 * 
+	 *
 	 * @param game
 	 * @throws SudokuInvalidFormatException
 	 */
@@ -204,14 +204,14 @@ public abstract class AbstractImportTask extends
 		mImportParams.data = data;
 		importGame(mImportParams);
 	}
-	
+
 	/**
 	 * Imports game with all its fields.
-	 * 
+	 *
 	 * @param game Fields to import (state of game, created, etc.)
 	 * @param data Data to import.
 	 */
-	protected void importGame(SudokuImportParams pars) throws SudokuInvalidFormatException  {
+	protected void importGame(SudokuImportParams pars) throws SudokuInvalidFormatException {
 		if (mDatabase == null) {
 			throw new IllegalStateException("Database is not opened.");
 		}
@@ -223,16 +223,15 @@ public abstract class AbstractImportTask extends
 		mImportError = error;
 		mImportSuccessful = false;
 	}
-	
-	public interface OnImportFinishedListener
-	{
+
+	public interface OnImportFinishedListener {
 		/**
 		 * Occurs when import is finished.
-		 * 
+		 *
 		 * @param importSuccessful Indicates whether import was successful.
-		 * @param folderId Contains id of imported folder, or -1 if multiple folders were imported.
+		 * @param folderId         Contains id of imported folder, or -1 if multiple folders were imported.
 		 */
 		void onImportFinished(boolean importSuccessful, long folderId);
 	}
-	
+
 }

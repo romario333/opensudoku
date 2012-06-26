@@ -24,12 +24,11 @@ import android.os.Bundle;
 
 /**
  * Generic interface for command in application.
- * 
- * @author romario
  *
+ * @author romario
  */
 public abstract class AbstractCommand {
-	
+
 	public static AbstractCommand newInstance(String commandClass) {
 		if (commandClass.equals(ClearAllNotesCommand.class.getSimpleName())) {
 			return new ClearAllNotesCommand();
@@ -43,21 +42,21 @@ public abstract class AbstractCommand {
 			throw new IllegalArgumentException(String.format("Unknown command class '%s'.", commandClass));
 		}
 	}
-	
+
 	private boolean mIsCheckpoint;
 
 	void saveState(Bundle outState) {
 		outState.putBoolean("isCheckpoint", mIsCheckpoint);
 	}
-	
+
 	void restoreState(Bundle inState) {
 		mIsCheckpoint = inState.getBoolean("isCheckpoint");
 	}
-	
+
 	public boolean isCheckpoint() {
 		return mIsCheckpoint;
 	}
-	
+
 	public void setCheckpoint(boolean isCheckpoint) {
 		mIsCheckpoint = isCheckpoint;
 	}
@@ -65,14 +64,15 @@ public abstract class AbstractCommand {
 	public String getCommandClass() {
 		return getClass().getSimpleName();
 	}
-	
+
 	/**
 	 * Executes the command.
 	 */
 	abstract void execute();
+
 	/**
 	 * Undo this command.
 	 */
 	abstract void undo();
-	
+
 }

@@ -24,20 +24,20 @@ import java.util.Formatter;
 
 /**
  * Game time formatter.
- * 
- * @author romario
  *
+ * @author romario
  */
 public class GameTimeFormat {
 	private static final int TIME_99_99 = 99 * 99 * 1000;
-	
-	private StringBuilder mTimeText = new StringBuilder();;
+
+	private StringBuilder mTimeText = new StringBuilder();
+	;
 	private Formatter mGameTimeFormatter = new Formatter(mTimeText);
-	
+
 	/**
 	 * Formats time to format of mm:ss, hours are
-	 * never displayed, only total number of minutes. 
-	 * 
+	 * never displayed, only total number of minutes.
+	 *
 	 * @param time Time in milliseconds.
 	 * @return
 	 */

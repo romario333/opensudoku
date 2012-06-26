@@ -29,17 +29,17 @@ import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.utils.StringUtils;
 
 public class SudokuListFilter {
-	
+
 	private Context mContext;
-	
+
 	public boolean showStateNotStarted = true;
 	public boolean showStatePlaying = true;
 	public boolean showStateCompleted = true;
-	
+
 	public SudokuListFilter(Context context) {
 		mContext = context;
 	}
-	
+
 	@Override
 	public String toString() {
 		List<String> visibleStates = new ArrayList<String>();
@@ -54,7 +54,6 @@ public class SudokuListFilter {
 		}
 		return StringUtils.join(visibleStates, ",");
 	}
-	
 
 
 }

@@ -26,39 +26,39 @@ import cz.romario.opensudoku.gui.exporting.FileExportTaskResult;
 import cz.romario.opensudoku.gui.exporting.FileExportTask.OnExportFinishedListener;
 
 public class SudokuExportActivity extends Activity {
-	
+
 	/**
 	 * Id of folder to export. If -1, all folders will be exported.
 	 */
 	public static final String EXTRA_FOLDER_ID = "FOLDER_ID";
 	/**
-	 * Id of sudoku to export. 
+	 * Id of sudoku to export.
 	 */
 //	public static final String EXTRA_SUDOKU_ID = "SUDOKU_ID";
-	
+
 	public static final long ALL_FOLDERS = -1;
-	
+
 	private static final int DIALOG_FILE_EXISTS = 1;
 	private static final int DIALOG_PROGRESS = 2;
-	
+
 	private static final String TAG = SudokuExportActivity.class.getSimpleName();
-	
+
 	private FileExportTask mFileExportTask;
 	private FileExportTaskParams mExportParams;
-	
+
 	private EditText mFileNameEdit;
 	private EditText mDirectoryEdit;
 	private Button mSaveButton;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.sudoku_export);
-		
-		mFileNameEdit = (EditText)findViewById(R.id.filename);
-		mDirectoryEdit = (EditText)findViewById(R.id.directory);
-		mSaveButton = (Button)findViewById(R.id.save_button);
+
+		mFileNameEdit = (EditText) findViewById(R.id.filename);
+		mDirectoryEdit = (EditText) findViewById(R.id.directory);
+		mSaveButton = (Button) findViewById(R.id.save_button);
 		mSaveButton.setOnClickListener(mOnSaveClickListener);
 
 		mFileExportTask = new FileExportTask(this);
@@ -74,7 +74,7 @@ public class SudokuExportActivity extends Activity {
 			finish();
 			return;
 		}
-		
+
 		String fileName = null;
 		String timestamp = DateFormat.format("yyyy-MM-dd", new Date()).toString();
 		if (mExportParams.folderID == -1) {
@@ -91,12 +91,11 @@ public class SudokuExportActivity extends Activity {
 			database.close();
 		}
 		mFileNameEdit.setText(fileName);
-		
-		
+
 
 		//showDialog(DIALOG_SELECT_EXPORT_METHOD);
 	}
-	
+
 	private OnClickListener mOnSaveClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -104,44 +103,44 @@ public class SudokuExportActivity extends Activity {
 		}
 	};
 
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
-		case DIALOG_FILE_EXISTS:
-	        
-			return new AlertDialog.Builder(this)
-	        .setTitle(R.string.export)
-	        .setMessage(R.string.file_exists)
-	        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					startExportToFileTask();
-				}
-	        })
-	        .setNegativeButton(android.R.string.no, null)
-	        .create();
-		case DIALOG_PROGRESS:
-			ProgressDialog progressDialog = new ProgressDialog(this);
-			progressDialog.setIndeterminate(true);
-			progressDialog.setTitle(R.string.app_name);
-			progressDialog.setMessage(getString(R.string.exporting));
-			return progressDialog;
+			case DIALOG_FILE_EXISTS:
+
+				return new AlertDialog.Builder(this)
+						.setTitle(R.string.export)
+						.setMessage(R.string.file_exists)
+						.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								startExportToFileTask();
+							}
+						})
+						.setNegativeButton(android.R.string.no, null)
+						.create();
+			case DIALOG_PROGRESS:
+				ProgressDialog progressDialog = new ProgressDialog(this);
+				progressDialog.setIndeterminate(true);
+				progressDialog.setTitle(R.string.app_name);
+				progressDialog.setMessage(getString(R.string.exporting));
+				return progressDialog;
 		}
-		
+
 		return null;
 	}
-	
+
 	private void exportToFile() {
 		File sdcard = new File("/sdcard");
 		if (!sdcard.exists()) {
 			Toast.makeText(SudokuExportActivity.this, R.string.sdcard_not_found, Toast.LENGTH_LONG);
 			finish();
 		}
-		
-		String directory = mDirectoryEdit.getText().toString(); 
+
+		String directory = mDirectoryEdit.getText().toString();
 		String filename = mFileNameEdit.getText().toString();
-		
+
 		File file = new File(directory, filename + ".opensudoku");
 		if (file.exists()) {
 			showDialog(DIALOG_FILE_EXISTS);
@@ -149,33 +148,33 @@ public class SudokuExportActivity extends Activity {
 			startExportToFileTask();
 		}
 	}
-	
+
 	private void startExportToFileTask() {
 		mFileExportTask.setOnExportFinishedListener(new OnExportFinishedListener() {
-			
+
 			@Override
 			public void onExportFinished(FileExportTaskResult result) {
 				dismissDialog(DIALOG_PROGRESS);
-				
+
 				if (result.successful) {
-		            Toast.makeText(SudokuExportActivity.this, getString(R.string.puzzles_have_been_exported, result.file), Toast.LENGTH_SHORT).show();
+					Toast.makeText(SudokuExportActivity.this, getString(R.string.puzzles_have_been_exported, result.file), Toast.LENGTH_SHORT).show();
 				} else {
 					Toast.makeText(SudokuExportActivity.this, getString(R.string.unknown_export_error), Toast.LENGTH_LONG).show();
 				}
 				finish();
 			}
 		});
-		
-		String directory = mDirectoryEdit.getText().toString(); 
+
+		String directory = mDirectoryEdit.getText().toString();
 		String filename = mFileNameEdit.getText().toString();
 
 		mExportParams.file = new File(directory, filename + ".opensudoku");
-		
+
 		showDialog(DIALOG_PROGRESS);
 		mFileExportTask.execute(mExportParams);
-		
+
 	}
-	
+
 //	private void exportToMail() {
 //		
 //		mFileExportTask.setOnExportFinishedListener(new OnExportFinishedListener() {
@@ -207,6 +206,6 @@ public class SudokuExportActivity extends Activity {
 //		mProgressDialog.show();
 //		mFileExportTask.execute(mExportParams);
 //	}
-	
-	
+
+
 }

@@ -18,9 +18,8 @@ import cz.romario.opensudoku.utils.Const;
 /**
  * This activity is responsible for importing puzzles from various sources
  * (web, file, .opensudoku, .sdm, extras).
- * 
- * @author romario
  *
+ * @author romario
  */
 public class SudokuImportActivity extends Activity {
 	/**
@@ -37,9 +36,9 @@ public class SudokuImportActivity extends Activity {
 	 * 120001232...0041\n 456000213...1100\n
 	 */
 	public static final String EXTRA_GAMES = "GAMES";
-	
+
 	private static final String TAG = "ImportSudokuActivity";
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,26 +56,26 @@ public class SudokuImportActivity extends Activity {
 		if (dataUri != null) {
 			if (Const.MIME_TYPE_OPENSUDOKU.equals(intent.getType())
 					|| dataUri.toString().endsWith(".opensudoku")) {
-				
+
 				importTask = new OpenSudokuImportTask(dataUri);
-			
+
 			} else if (dataUri.toString().endsWith(".sdm")) {
 
 				importTask = new SdmImportTask(dataUri);
-			
+
 			} else {
-				
+
 				Log.e(
-					TAG,
-					String.format(
-						"Unknown type of data provided (mime-type=%s; uri=%s), exiting.",
-						intent.getType(), dataUri));
+						TAG,
+						String.format(
+								"Unknown type of data provided (mime-type=%s; uri=%s), exiting.",
+								intent.getType(), dataUri));
 				finish();
 				return;
-			
+
 			}
 		} else if (intent.getStringExtra(EXTRA_FOLDER_NAME) != null) {
-			
+
 			String folderName = intent.getStringExtra(EXTRA_FOLDER_NAME);
 			String games = intent.getStringExtra(EXTRA_GAMES);
 			boolean appendToFolder = intent.getBooleanExtra(
@@ -91,10 +90,10 @@ public class SudokuImportActivity extends Activity {
 
 		importTask.initialize(this, progressBar);
 		importTask.setOnImportFinishedListener(mOnImportFinishedListener);
-		
+
 		importTask.execute();
 	}
-	
+
 	private OnImportFinishedListener mOnImportFinishedListener = new OnImportFinishedListener() {
 
 		@Override

@@ -7,9 +7,8 @@ import android.preference.PreferenceManager;
 
 /**
  * This class is responsible for persisting of control panel's state.
- * 
+ *
  * @author romario
- * 
  */
 public class IMControlPanelStatePersister {
 
@@ -26,7 +25,7 @@ public class IMControlPanelStatePersister {
 		StateBundle cpState = new StateBundle(mPreferences, PREFIX + ".", true);
 		cpState.putInt("activeMethodIndex", controlPanel.getActiveMethodIndex());
 		cpState.commit();
-		
+
 		// save state of all input methods
 		for (InputMethod im : controlPanel.getInputMethods()) {
 			StateBundle outState = new StateBundle(mPreferences, PREFIX + "." + im.getInputMethodName(), true);
@@ -42,7 +41,7 @@ public class IMControlPanelStatePersister {
 		if (methodId != -1) {
 			controlPanel.activateInputMethod(methodId);
 		}
-		
+
 		// restore state of all input methods
 		for (InputMethod im : controlPanel.getInputMethods()) {
 			StateBundle savedState = new StateBundle(mPreferences, PREFIX + "." + im.getInputMethodName(), false);
@@ -54,9 +53,8 @@ public class IMControlPanelStatePersister {
 	 * This is basically wrapper around anything which is capable of storing
 	 * state. Instance of this object will be passed to concrete input method's
 	 * to store and retreive their state.
-	 * 
+	 *
 	 * @author romario
-	 * 
 	 */
 	public static class StateBundle {
 
@@ -66,7 +64,7 @@ public class IMControlPanelStatePersister {
 		private final boolean mEditable;
 
 		public StateBundle(SharedPreferences preferences, String prefix,
-				boolean editable) {
+						   boolean editable) {
 			mPreferences = preferences;
 			mPrefix = prefix;
 			mEditable = editable;
@@ -121,7 +119,7 @@ public class IMControlPanelStatePersister {
 			}
 			mPrefEditor.putString(mPrefix + key, value);
 		}
-		
+
 		public void commit() {
 			if (!mEditable) {
 				throw new IllegalStateException("StateBundle is not editable");

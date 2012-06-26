@@ -20,20 +20,19 @@ public class AndroidUtils {
 	 * found, this method returns false.
 	 *
 	 * @param context The application's environment.
-	 * @param action The Intent action to check for availability.
-	 *
+	 * @param action  The Intent action to check for availability.
 	 * @return True if an Intent with the specified action can be sent and
 	 *         responded to, false otherwise.
 	 */
 	public static boolean isIntentAvailable(Context context, String action) {
-	    final PackageManager packageManager = context.getPackageManager();
-	    final Intent intent = new Intent(action);
-	    List<ResolveInfo> list =
-	            packageManager.queryIntentActivities(intent,
-	                    PackageManager.MATCH_DEFAULT_ONLY);
-	    return list.size() > 0;
+		final PackageManager packageManager = context.getPackageManager();
+		final Intent intent = new Intent(action);
+		List<ResolveInfo> list =
+				packageManager.queryIntentActivities(intent,
+						PackageManager.MATCH_DEFAULT_ONLY);
+		return list.size() > 0;
 	}
-	
+
 	public static void setThemeFromPreferences(Context context) {
 		SharedPreferences gameSettings = PreferenceManager.getDefaultSharedPreferences(context);
 		String theme = gameSettings.getString("theme", "default");
@@ -47,9 +46,10 @@ public class AndroidUtils {
 			context.setTheme(R.style.Theme_Default);
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Returns version code of OpenSudoku.
+	 *
 	 * @return
 	 */
 	public static int getAppVersionCode(Context context) {
@@ -60,9 +60,10 @@ public class AndroidUtils {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Returns version name of OpenSudoku.
+	 *
 	 * @return
 	 */
 	public static String getAppVersionName(Context context) {

@@ -44,61 +44,60 @@ import cz.romario.opensudoku.gui.inputmethod.IMControlPanelStatePersister.StateB
 /**
  * This class represents following type of number input workflow: Number buttons are displayed
  * in the sidebar, user selects one number and then fill values by tapping the cells.
- * 
- * @author romario
  *
+ * @author romario
  */
 public class IMSingleNumber extends InputMethod {
 
 	private static final int MODE_EDIT_VALUE = 0;
 	private static final int MODE_EDIT_NOTE = 1;
-	
+
 	private boolean mHighlightCompletedValues = true;
 	private boolean mShowNumberTotals = false;
-	
+
 	private int mSelectedNumber = 1;
 	private int mEditMode = MODE_EDIT_VALUE;
-	
+
 	private Handler mGuiHandler;
-	private Map<Integer,Button> mNumberButtons;
+	private Map<Integer, Button> mNumberButtons;
 	private ImageButton mSwitchNumNoteButton;
-	
+
 	public IMSingleNumber() {
 		super();
-		
+
 		mGuiHandler = new Handler();
 	}
-	
+
 	public boolean getHighlightCompletedValues() {
 		return mHighlightCompletedValues;
 	}
-	
+
 	/**
 	 * If set to true, buttons for numbers, which occur in {@link CellCollection}
 	 * more than {@link CellCollection#SUDOKU_SIZE}-times, will be highlighted.
-	 * 
+	 *
 	 * @param highlightCompletedValues
 	 */
 	public void setHighlightCompletedValues(boolean highlightCompletedValues) {
 		mHighlightCompletedValues = highlightCompletedValues;
 	}
-	
+
 	public boolean getShowNumberTotals() {
 		return mShowNumberTotals;
 	}
-	
+
 	public void setShowNumberTotals(boolean showNumberTotals) {
 		mShowNumberTotals = showNumberTotals;
 	}
-	
+
 	@Override
 	protected void initialize(Context context, IMControlPanel controlPanel,
-			SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
+							  SudokuGame game, SudokuBoardView board, HintsQueue hintsQueue) {
 		super.initialize(context, controlPanel, game, board, hintsQueue);
-		
+
 		game.getCells().addOnChangeListener(mOnCellsChangeListener);
 	}
-	
+
 	@Override
 	public int getNameResID() {
 		return R.string.single_number;
@@ -108,36 +107,36 @@ public class IMSingleNumber extends InputMethod {
 	public int getHelpResID() {
 		return R.string.im_single_number_hint;
 	}
-	
+
 	@Override
 	public String getAbbrName() {
 		return mContext.getString(R.string.single_number_abbr);
 	}
-	
+
 	@Override
 	protected View createControlPanelView() {
-		LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View controlPanel = inflater.inflate(R.layout.im_single_number, null);
-		
-		mNumberButtons = new HashMap<Integer, Button>(); 
-		mNumberButtons.put(1, (Button)controlPanel.findViewById(R.id.button_1));
-		mNumberButtons.put(2, (Button)controlPanel.findViewById(R.id.button_2));
-		mNumberButtons.put(3, (Button)controlPanel.findViewById(R.id.button_3));
-		mNumberButtons.put(4, (Button)controlPanel.findViewById(R.id.button_4));
-		mNumberButtons.put(5, (Button)controlPanel.findViewById(R.id.button_5));
-		mNumberButtons.put(6, (Button)controlPanel.findViewById(R.id.button_6));
-		mNumberButtons.put(7, (Button)controlPanel.findViewById(R.id.button_7));
-		mNumberButtons.put(8, (Button)controlPanel.findViewById(R.id.button_8));
-		mNumberButtons.put(9, (Button)controlPanel.findViewById(R.id.button_9));
-		mNumberButtons.put(0, (Button)controlPanel.findViewById(R.id.button_clear));
-		
+
+		mNumberButtons = new HashMap<Integer, Button>();
+		mNumberButtons.put(1, (Button) controlPanel.findViewById(R.id.button_1));
+		mNumberButtons.put(2, (Button) controlPanel.findViewById(R.id.button_2));
+		mNumberButtons.put(3, (Button) controlPanel.findViewById(R.id.button_3));
+		mNumberButtons.put(4, (Button) controlPanel.findViewById(R.id.button_4));
+		mNumberButtons.put(5, (Button) controlPanel.findViewById(R.id.button_5));
+		mNumberButtons.put(6, (Button) controlPanel.findViewById(R.id.button_6));
+		mNumberButtons.put(7, (Button) controlPanel.findViewById(R.id.button_7));
+		mNumberButtons.put(8, (Button) controlPanel.findViewById(R.id.button_8));
+		mNumberButtons.put(9, (Button) controlPanel.findViewById(R.id.button_9));
+		mNumberButtons.put(0, (Button) controlPanel.findViewById(R.id.button_clear));
+
 		for (Integer num : mNumberButtons.keySet()) {
 			Button b = mNumberButtons.get(num);
 			b.setTag(num);
 			b.setOnClickListener(mNumberButtonClicked);
 		}
-		
-		mSwitchNumNoteButton = (ImageButton)controlPanel.findViewById(R.id.switch_num_note);
+
+		mSwitchNumNoteButton = (ImageButton) controlPanel.findViewById(R.id.switch_num_note);
 		mSwitchNumNoteButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -145,24 +144,24 @@ public class IMSingleNumber extends InputMethod {
 				mEditMode = mEditMode == MODE_EDIT_VALUE ? MODE_EDIT_NOTE : MODE_EDIT_VALUE;
 				update();
 			}
-			
+
 		});
-		
+
 		return controlPanel;
 	}
-	
+
 	private OnClickListener mNumberButtonClicked = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
-			mSelectedNumber = (Integer)v.getTag();
-			
+			mSelectedNumber = (Integer) v.getTag();
+
 			update();
 		}
 	};
 
 	private OnChangeListener mOnCellsChangeListener = new OnChangeListener() {
-		
+
 		@Override
 		public void onChange() {
 			if (mActive) {
@@ -170,17 +169,17 @@ public class IMSingleNumber extends InputMethod {
 			}
 		}
 	};
-	
+
 	private void update() {
 		switch (mEditMode) {
-		case MODE_EDIT_NOTE:
-			mSwitchNumNoteButton.setImageResource(R.drawable.pencil);
-			break;
-		case MODE_EDIT_VALUE:
-			mSwitchNumNoteButton.setImageResource(R.drawable.pencil_disabled);
-			break;
+			case MODE_EDIT_NOTE:
+				mSwitchNumNoteButton.setImageResource(R.drawable.pencil);
+				break;
+			case MODE_EDIT_VALUE:
+				mSwitchNumNoteButton.setImageResource(R.drawable.pencil_disabled);
+				break;
 		}
-		
+
 		// TODO: sometimes I change background too early and button stays in pressed state
 		// this is just ugly workaround
 		mGuiHandler.postDelayed(new Runnable() {
@@ -198,11 +197,11 @@ public class IMSingleNumber extends InputMethod {
 						b.getBackground().setColorFilter(null);
 					}
 				}
-				
-				Map<Integer, Integer> valuesUseCount = null;		
+
+				Map<Integer, Integer> valuesUseCount = null;
 				if (mHighlightCompletedValues || mShowNumberTotals)
 					valuesUseCount = mGame.getCells().getValuesUseCount();
-				
+
 				if (mHighlightCompletedValues) {
 					int completedTextColor = mContext.getResources().getColor(R.color.im_number_button_completed_text);
 					for (Map.Entry<Integer, Integer> entry : valuesUseCount.entrySet()) {
@@ -215,7 +214,7 @@ public class IMSingleNumber extends InputMethod {
 								b.setBackgroundResource(R.drawable.btn_completed_bg);
 							}
 						}
-					}				
+					}
 				}
 
 				if (mShowNumberTotals) {
@@ -226,7 +225,7 @@ public class IMSingleNumber extends InputMethod {
 						else
 							b.setText("" + entry.getKey());
 					}
-				}				
+				}
 			}
 		}, 100);
 	}
@@ -235,47 +234,47 @@ public class IMSingleNumber extends InputMethod {
 	protected void onActivated() {
 		update();
 	}
-	
+
 	@Override
 	protected void onCellTapped(Cell cell) {
 		int selNumber = mSelectedNumber;
-		
+
 		switch (mEditMode) {
-		case MODE_EDIT_NOTE:
-			if (selNumber == 0) {
-				mGame.setCellNote(cell, CellNote.EMPTY);
-			} else if (selNumber > 0 && selNumber <= 9) {
-				mGame.setCellNote(cell, cell.getNote().toggleNumber(selNumber));
-			}
-			break;
-		case MODE_EDIT_VALUE:
-			if (selNumber >= 0 && selNumber <= 9) {
-				if (!mNumberButtons.get(selNumber).isEnabled()) {
-					// Number requested has been disabled but it is still selected. This means that
-					// this number can be no longer entered, however any of the existing fields
-					// with this number can be deleted by repeated touch
-					if (selNumber == cell.getValue()) {
-						mGame.setCellValue(cell, 0);
-					}
-				} else {
-					// Normal flow, just set the value (or clear it if it is repeated touch)
-					if (selNumber == cell.getValue()) {
-						selNumber = 0;
-					}
-					mGame.setCellValue(cell, selNumber);
+			case MODE_EDIT_NOTE:
+				if (selNumber == 0) {
+					mGame.setCellNote(cell, CellNote.EMPTY);
+				} else if (selNumber > 0 && selNumber <= 9) {
+					mGame.setCellNote(cell, cell.getNote().toggleNumber(selNumber));
 				}
-			}
-			break;
+				break;
+			case MODE_EDIT_VALUE:
+				if (selNumber >= 0 && selNumber <= 9) {
+					if (!mNumberButtons.get(selNumber).isEnabled()) {
+						// Number requested has been disabled but it is still selected. This means that
+						// this number can be no longer entered, however any of the existing fields
+						// with this number can be deleted by repeated touch
+						if (selNumber == cell.getValue()) {
+							mGame.setCellValue(cell, 0);
+						}
+					} else {
+						// Normal flow, just set the value (or clear it if it is repeated touch)
+						if (selNumber == cell.getValue()) {
+							selNumber = 0;
+						}
+						mGame.setCellValue(cell, selNumber);
+					}
+				}
+				break;
 		}
-		
+
 	}
-	
+
 	@Override
 	protected void onSaveState(StateBundle outState) {
 		outState.putInt("selectedNumber", mSelectedNumber);
 		outState.putInt("editMode", mEditMode);
 	}
-	
+
 	@Override
 	protected void onRestoreState(StateBundle savedState) {
 		mSelectedNumber = savedState.getInt("selectedNumber", 1);

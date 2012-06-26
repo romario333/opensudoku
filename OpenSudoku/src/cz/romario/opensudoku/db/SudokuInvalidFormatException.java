@@ -30,7 +30,7 @@ public class SudokuInvalidFormatException extends Exception {
 		super("Invalid format of sudoku.");
 		mData = data;
 	}
-	
+
 	public String getData() {
 		return mData;
 	}
