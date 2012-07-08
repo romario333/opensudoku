@@ -280,6 +280,7 @@ public class SudokuPlayActivity extends Activity {
 		if (mFillInNotesEnabled) {
 			menu.add(0, MENU_ITEM_FILL_IN_NOTES, 0, R.string.fill_in_notes)
 					.setIcon(android.R.drawable.ic_menu_edit);
+			mSudokuGame.setNotesOn(false);
 		}
 
 		menu.add(0, MENU_ITEM_HELP, 1, R.string.help)
@@ -338,6 +339,7 @@ public class SudokuPlayActivity extends Activity {
 				showDialog(DIALOG_CLEAR_NOTES);
 				return true;
 			case MENU_ITEM_FILL_IN_NOTES:
+				mSudokuGame.setNotesOn(true);
 				mSudokuGame.fillInNotes();
 				return true;
 			case MENU_ITEM_UNDO:

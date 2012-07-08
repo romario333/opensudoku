@@ -42,6 +42,7 @@ public class SudokuGame {
 	private long mLastPlayed;
 	private String mNote;
 	private CellCollection mCells;
+	private boolean mNotesOn;
 
 	private OnPuzzleSolvedListener mOnPuzzleSolvedListener;
 	private CommandStack mCommandStack;
@@ -60,6 +61,7 @@ public class SudokuGame {
 		mTime = 0;
 		mLastPlayed = 0;
 		mCreated = 0;
+		mNotesOn = false;
 
 		mState = GAME_STATE_NOT_STARTED;
 	}
@@ -72,6 +74,7 @@ public class SudokuGame {
 		outState.putLong("time", mTime);
 		outState.putLong("lastPlayed", mLastPlayed);
 		outState.putString("cells", mCells.serialize());
+		outState.putBoolean("noteson", mNotesOn);
 
 		mCommandStack.saveState(outState);
 	}
@@ -84,7 +87,7 @@ public class SudokuGame {
 		mTime = inState.getLong("time");
 		mLastPlayed = inState.getLong("lastPlayed");
 		mCells = CellCollection.deserialize(inState.getString("cells"));
-
+		mNotesOn = inState.getBoolean("noteson");
 		mCommandStack = new CommandStack(mCells);
 		mCommandStack.restoreState(inState);
 
@@ -168,6 +171,14 @@ public class SudokuGame {
 		return mId;
 	}
 
+	public void setNotesOn(boolean on) {
+		mNotesOn = on;
+	}
+
+	public boolean getNotesOn() {
+		return mNotesOn;
+	}
+
 	/**
 	 * Sets value for the given cell. 0 means empty cell.
 	 *
@@ -190,6 +201,11 @@ public class SudokuGame {
 				finish();
 				if (mOnPuzzleSolvedListener != null) {
 					mOnPuzzleSolvedListener.onPuzzleSolved();
+				}
+			}
+			else {
+				if (mNotesOn) {
+					fillInNotes();
 				}
 			}
 		}

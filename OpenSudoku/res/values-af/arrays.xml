@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="game_states">
+		<item>Nie begin</item>
+		<item>Speel</item>
+		<item>Opgelos</item>
+	</string-array>
+	<string-array name="game_levels">
+		<item>Maklik</item>
+		<item>Medium</item>
+		<item>Moeilik</item>
+	</string-array>
+	<string-array name="theme_names">
+		<item>Standaard</item>
+		<item>Papier I</item>
+		<item>Papier II</item>
+	</string-array>
+</resources>
