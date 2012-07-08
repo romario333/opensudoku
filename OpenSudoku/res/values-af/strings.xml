@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">OpenSudoku</string>
+	<string name="edit_sudoku">Wysig sudoku</string>
+
+	<string name="puzzle_folders">OpenSudoku raaisel folder</string>
+
+	<string name="version">Weergawe: %s</string>
+	<string name="homepage">Tuisblad: http://opensudoku.eu</string>
+	<string name="email">E-pos: opensudoku@romanmasek.cz</string>
+	<string name="work_in_progress">Neem asseblief kennis dat die sagteware voortdurend ontwikkel word.</string>
+	<string name="send_me_bugs">As jy \'n fout vind wat ons kan regstel, of as jy enige voorstelle het,
+		voel asseblief vry om ons per e-pos te kontak of die \'issue tracker\' te gebruik op die projek se tuisblad.
+		Alle navrae asseblief in Engels, baie dankie!
+	</string>
+
+	<string name="close">Maak toe</string>
+	<string name="clear">Begin oor</string>
+	<string name="save">Stoor</string>
+
+	<string name="get_more_puzzles_online">Laai meer Sudoku raaisels af</string>
+
+	<string name="name">Naam:</string>
+	<string name="note">Nota:</string>
+
+	<string name="select_number">Kies \'n nommer</string>
+	<string name="edit_note">Wysig \'n nota</string>
+
+	<string name="add_folder">Voeg folder</string>
+	<string name="import_file">Invoer</string>
+	<string name="import_file_title">Voer %s in</string>
+	<string name="about">Info</string>
+	<string name="rename_folder">Hernoem folder</string>
+	<string name="delete_folder">Vee folder uit</string>
+	<string name="rename_folder_title">Hernoem %s</string>
+	<string name="delete_folder_title">Vee %s uit</string>
+	<string name="delete_folder_confirm">Is jy seker jy wil die folder uitvee?</string>
+
+	<string name="no_puzzles">Geen raaisels</string>
+	<string name="one_puzzle">1 raaisel</string>
+	<string name="n_puzzles">%s raaisels</string>
+	<string name="all_solved">alles opgelos</string>
+	<string name="n_solved">%s opgelos</string>
+	<string name="n_unsolved">%s nie opgelos</string>
+	<string name="n_playing">%s aan die gang</string>
+
+	<string name="solved">Opgelos</string>
+	<string name="playing">Tans besig</string>
+	<string name="not_started">Nie begin</string>
+	<string name="last_played_at">Laas gespeel %s</string>
+	<string name="created_at">Gemaak %s</string>
+	<string name="at_time">op %s</string>
+	<string name="yesterday_at_time">gister %s</string>
+	<string name="on_date">op %s</string>
+	<string name="add_sudoku">Las sudoku by</string>
+	<string name="filter">Filtreer</string>
+	<string name="filter_by_gamestate">Filtreer per spel staat</string>
+	<string name="folders">Folders</string>
+	<string name="delete_puzzle_confirm">Is jy seker jy wil die geselekteerde raaisel uitvee?</string>
+	<string name="reset_puzzle_confirm">Is jy seker jy wil die geselekteerde raaisel oor begin?</string>
+	<string name="play_puzzle">Speel die raaisel</string>
+	<string name="reset_puzzle">Begin raaisel oor</string>
+	<string name="edit_puzzle">Wysig die raaisel</string>
+	<string name="delete_puzzle">Vee die raaisel uit</string>
+	<string name="filter_active">Filter: %s</string>
+
+	<string name="undo">Oeps</string>
+	<string name="clear_all_notes">Verwyder alle notas</string>
+	<string name="fill_in_notes">Sit notas in</string>
+	<string name="restart">Begin oor</string>
+	<string name="congrats">Veels geluk, jy het die Sudoku raaisel opgelos in %s.</string>
+	<string name="restart_confirm">Is jy seker jy wil die raaisel oor begin?</string>
+	<string name="well_done">Goed gedoen!</string>
+	<string name="clear_all_notes_confirm">Is jy seker jy wil al die notas verwyder?</string>
+	<string name="settings">Verstellings</string>
+	<string name="game_settings">Raaisel verstellings</string>
+
+	<string name="game_helpers">Raaisel hulpmiddels</string>
+	<string name="highlight_wrong_values">Merk verkeerde waardes</string>
+	<string name="highlight_wrong_values_summary">Merk die waardes wat die reels van sudoku breek.</string>
+	<string name="input_methods">Invoer metodes</string>
+	<string name="popup">Popup</string>
+	<string name="popup_summary">Wysig die sel se waarde en nota met \'n popup</string>
+	<string name="single_number">Enkel waarde</string>
+	<string name="single_number_summary">Enkel waarde, tik op die sel en stel die waarde of nota.</string>
+	<string name="numpad">Numpad</string>
+	<string name="numpad_summary">Wys die numpad wat sal reageer soos \'n standaard numeriese sleutelbord.</string>
+	<string name="numpad_move_right">Beweeg regs op druk</string>
+	<string name="numpad_move_right_summary">Skyf die sel seleksie een sel regs wanneer die nommer knoppie gedruk word.
+	</string>
+
+	<string name="numpad_abbr">Num\nPad</string>
+	<string name="popup_abbr">Pop</string>
+	<string name="single_number_abbr">SN</string>
+	<string name="welcome">Welkom</string>
+	<string name="hint">Wenk</string>
+	<string name="help">Hulp</string>
+	<string name="that_is_all">Dis al</string>
+
+	<string name="first_run_hint">Daar is verskeie invoer metodes wat jy kan gebruik om die raaisel in te vul.
+		Daar sal verskeie wenke vertoon word om jou te help met die invoer metodes soos jy hulle kies.\n\n
+		Jy kan die wenke in die raaisel verstellings afsit.\n
+	</string>
+	<string name="im_popup_hint">Jy is nou in die
+		<i>Popup</i>
+		invoer metode. Kies enige sel met jou vinger om die inhoud te wysing.\n\n
+		Die knoppie regs onder kan gebruik word om \'n ander invoer metode te kies.\n
+	</string>
+	<string name="im_single_number_hint">Jy is nou in die
+		<i>Enkel waarde</i>
+		invoer metode. Kies eers die waarde en dan die selle waar jy die waarde wil invul.\n\n
+		Druk die
+		<i>Podlood</i>
+		knoppie om te skakel na nota invoering.\n
+	</string>
+	<string name="im_numpad_hint">Jy is nou in die
+		<i>Numpad</i>
+		invoer metode. Die knoppies reageer soos \'n standaard numeriese sleutelbord.\n\n
+		Druk die
+		<i>Podlood</i>
+		knoppie om te skakel na nota invoering.\n
+	</string>
+	<string name="im_disable_modes_hint">Onthou asseblief dat jy nie al die invoer metodes hoef te gebruik nie.
+		Jy kan van hulle in die raaisel verstellings afsit.\n\n
+		Jy kan ook die sleutelbord of trackball gebruik om die spel te beheer.
+		As jy notas met die sleutelbord wil invoer, gebruik alt of shift saam met die waarde.\n
+	</string>
+	<string name="help_text"><b>Sleutelbord beheer</b>\n\n
+		Gebruik die trackball tot by die spesifieke sel te kom. Druk dan \'n nommer op die sleutelbord om diei waarde in te vul.
+		As jy \'n nota wil invul gebruik shift of alt saam met die getal.\n\n
+		<b>Invoer metodes</b>\n\n
+		Jy kan skakel tussen verskeie invoer metodes deur die knoppie regs onder in die hoek te druk.
+		Jy kan ook die invoer metodes afsit in die spel verstellings - dit sal dan die weer verskyn.\n\n
+		<b>Popup invoer metode</b>\n\n
+		\'n Popup dialoog sal wys as jy op die sel druk. Jy kan dan die sel se inhoud verander deur \'n waarde te kies.\n\n
+		<b>Enkel waarde invoer metode</b>\n\n
+		Kies eers die waarde knoppie. Druk dan op die selle waar jy die waarde wil invul.\n\n
+		Gebruik die <i>Podlood</i> knoppie te wissil tussen waarde of nota invoer.\n\n
+		<b>Numpad invoer metode</b>\n\n
+		Knoppies reageer soos \'n standaard numeriese sleutelbord.\n\n
+		Gebruik die <i>Podlood</i> knoppie te wissil tussen waarde of nota invoer.\n\n
+	</string>
+
+	<string name="game">Spel</string>
+	<string name="show_hints">Aanvanklike wenke</string>
+	<string name="show_hints_summary">Wys die wenke wat jou sal lui deur die spel beheer.</string>
+	<string name="show_time">Wys tyd</string>
+	<string name="show_time_summary">Wys die speel tyd tydens spel.</string>
+
+	<string name="puzzle_inserted">Nuwe raaisel is gestoor.</string>
+	<string name="puzzle_updated">Raaisel is opgedateer.</string>
+
+	<string name="puzzles_saved">Raaiseles is gestoor in die \'%s\' folder.</string>
+	<string name="no_puzzles_found">Geen raaisels gevind.</string>
+	<string name="unknown_import_error">Die wiele het afgekom tydens die invoer van raaisels, invoer is gekanseleer.</string>
+	<string name="invalid_format">Ongeldige formaat, invoer is gekanseleer.</string>
+
+	<string name="credits">Krediete:\nRoman Mašek\nVit Hnilica\nMartin Sobola\nMartin Helff\nMorgan Lombard</string>
+
+	<!-- Strings added in 0.7.0 -->
+	<string name="loading">Laai(&#8230;)</string>
+
+	<!-- Strings added/changed in 0.7.1 -->
+	<string name="more_settings">Meer verstellings</string>
+	<string name="screen_border_size">Skerm grens groote</string>
+	<string name="screen_border_size_summary">Sekere skerms reageer nie as jy te na aan die kant van die skerm raak nie.
+		Dit kan dalk die saak regstel.
+	</string>
+	<string name="highlight_touched_cell">Merk sel met aanraking</string>
+	<string name="highlight_touched_cell_summary">Merk ry en kolom van angeraakte sel.</string>
+	<string name="export">Uitvoer</string>
+	<string name="export_folder">Voer folder uit</string>
+	<string name="export_all_folders">Voer alle folders uit</string>
+	<string name="folders_created">%s folders is ingevoer.</string>
+	<string name="importing">Voer raaisels in(&#8230;)</string>
+	<string name="exporting">Voer raaisels uit(&#8230;)</string>
+	<string name="unknown_export_error">Die wiele het afgekom tydens die uitvoer van raaisels.</string>
+	<string name="highlight_completed_values">Merk nommers wat klaar is</string>
+	<string name="highlight_completed_values_summary">Merk die knoppies van nommers wat al 9 keer voorkom.
+	</string>
+	<string name="save_to_sdcard">Stoor na die sdcard</string>
+	<string name="send_by_mail">Stuur \'n e-pos</string>
+	<string name="theme">Tema</string>
+	<string name="theme_summary">Kies \'n kleur tema vir die raaisel bord.</string>
+	<string name="select_theme">Kies tema</string>
+	<string name="filename">Lêername</string>
+	<string name="directory">Directory</string>
+	<string name="sdcard_not_found">SD card nie gevind.</string>
+	<string name="puzzles_have_been_exported">Raaisels is uitgevoer na %s.</string>
+	<string name="file_exists">Lêer bestaan al klaar, wil jy dit oorskryf?</string>
+	<!-- localization of default folder names -->
+	<string name="difficulty_hard">Moelik</string>
+	<string name="difficulty_medium">Medium</string>
+	<string name="difficulty_easy">Maklik</string>
+
+	<!-- Strings added/changed in 1.1.0 -->
+	<string name="generate_sudoku">Genereer \'n new raaisel</string>
+	<string name="select_difficulty">Kies moelikheids graad</string>
+	<string name="generating">Genereer \'n raaisel(&#8230;)</string>
+	<string name="show_number_totals">Wys nommer totale</string>
+	<string name="show_number_totals_summary">Wys hoeveel van elke nommer al voorkom.</string>
+	<string name="what_is_new">Wat is nuut</string>
+
+	<!-- Strings added/changed in 1.1.1 -->
+	<string name="fill_in_notes_summary">Aktiveer "Sit notas in" menu item.</string>
+
+	<!-- Strings added/changed in 1.1.2 -->
+	<string name="set_checkpoint">Stel kontrolepunt</string>
+	<string name="undo_to_checkpoint">Gaan terug tot by kontrolepunt</string>
+	<string name="undo_to_checkpoint_confirm">Is jy seker dat jy wil terug gaan tot by die kontrolepunt?</string>
+</resources>
