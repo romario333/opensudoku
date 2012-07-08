@@ -1,0 +1,8 @@
+Simple and easy-to-use Sudoku.
+OpenSudoku is an open source sudoku game.
+Features:
+- Several input modes (finger-friendly, numpad in the bottom of screen etc.)
+- Puzzles can be downloaded from web or entered by hand
+- Game time and history
+- Export to sdcard
+- Themes
