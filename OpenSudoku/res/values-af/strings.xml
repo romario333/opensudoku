@@ -45,7 +45,7 @@
 	<string name="n_playing">%s aan die gang</string>
 
 	<string name="solved">Opgelos</string>
-	<string name="playing">(&#8230;)Aan die gang</string>
+	<string name="playing">Tans besig</string>
 	<string name="not_started">Nie begin</string>
 	<string name="last_played_at">Laas gespeel %s</string>
 	<string name="created_at">Gemaak %s</string>
