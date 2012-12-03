@@ -56,10 +56,11 @@ public class CommandStack {
 	}
 
 	public void setCheckpoint() {
-		if (!mCommandStack.empty()) {
-			AbstractCommand c = mCommandStack.peek();
-			c.setCheckpoint(true);
+		if (mCommandStack.empty()) {
+			mCommandStack.push(new NoOpCommand());
 		}
+		AbstractCommand c = mCommandStack.peek();
+		c.setCheckpoint(true);
 	}
 
 	public boolean hasCheckpoint() {
