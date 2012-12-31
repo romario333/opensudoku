@@ -43,6 +43,22 @@ public class CommandStack {
 		return mCommandStack.empty();
 	}
 
+	/**
+	 * Increment the nesting depth. Make sure to match with a call to decNestDepth.
+	 * Hopefully a temporary workaround.
+	 */
+	public void incNestDepth() {
+		mNestDepth++;
+	}
+
+	/**
+	 * Decrement the nesting depth. Make sure incNestDepth was called first.
+	 * Hopefully a temporary workaround.
+	 */
+	public void decNestDepth() {
+		mNestDepth--;
+	}
+
 	public void execute(AbstractCommand command) {
 		push(command);
 		int curNestDepth = mNestDepth;
