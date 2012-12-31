@@ -61,14 +61,14 @@ public class SetCellValueCommand extends AbstractCellCommand {
 	}
 
 	@Override
-	void execute() {
+	protected void execute() {
 		Cell cell = getCells().getCell(mCellRow, mCellColumn);
 		mOldValue = cell.getValue();
 		cell.setValue(mValue);
 	}
 
 	@Override
-	void undo() {
+	protected void undo() {
 		Cell cell = getCells().getCell(mCellRow, mCellColumn);
 		cell.setValue(mOldValue);
 	}

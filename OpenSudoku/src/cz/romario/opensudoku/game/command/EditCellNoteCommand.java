@@ -62,14 +62,14 @@ public class EditCellNoteCommand extends AbstractCellCommand {
 	}
 
 	@Override
-	void execute() {
+	protected void execute() {
 		Cell cell = getCells().getCell(mCellRow, mCellColumn);
 		mOldNote = cell.getNote();
 		cell.setNote(mNote);
 	}
 
 	@Override
-	void undo() {
+	protected void undo() {
 		Cell cell = getCells().getCell(mCellRow, mCellColumn);
 		cell.setNote(mOldNote);
 	}

@@ -12,6 +12,7 @@ public class CommandStack {
 	// TODO: I need cells collection, because I have to call validate on it after some
 	//	commands. CellCollection should be able to validate itself on change.
 	private CellCollection mCells;
+	private int mNestDepth = 0;
 
 	public CommandStack(CellCollection cells) {
 		mCells = cells;
@@ -44,15 +45,20 @@ public class CommandStack {
 
 	public void execute(AbstractCommand command) {
 		push(command);
-		command.execute();
+		int curNestDepth = mNestDepth;
+		mNestDepth++;
+		command.execute(curNestDepth);
+		mNestDepth = curNestDepth;
 	}
 
 	public void undo() {
-		if (!mCommandStack.empty()) {
+		while (!mCommandStack.empty()) {
 			AbstractCommand c = pop();
 			c.undo();
-			validateCells();
+			if (c.getNestDepth() == 0)
+				break;
 		}
+		validateCells();
 	}
 
 	public void setCheckpoint() {
