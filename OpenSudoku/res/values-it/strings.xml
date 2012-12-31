@@ -87,8 +87,11 @@
 	<string name="numpad_move_right_summary">Sposta la selezione di una cella a destra quando si preme il pulsante
 		numerico.
 	</string>
+	<string name="highlighter">Highlighter</string>
+	<string name="highlighter_summary">Show highlighter which highlights cells whose notes contain the selected numbers.</string>
 
 	<string name="numpad_abbr">Tast.\nNum</string>
+	<string name="highlighter_abbr">Hi\nLit</string>
 	<string name="popup_abbr">Pop</string>
 	<string name="single_number_abbr">NS</string>
 	<string name="welcome">Benvenuto</string>
@@ -116,6 +119,7 @@
 		<i>Pennello</i>
 		per passare dal valore della cella alla modifica delle note.\n
 	</string>
+	<string name="im_highlighter_hint">You\'re now in the <i>Highlighter</i> input mode. Select numeric buttons to highlight all cells whose notes contain those numbers.\nSelecting a cell will remove the selected numbers from its notes, which can be disabled by pressing the <i>Pencil</i> button.</string>
 	<string name="im_disable_modes_hint">Ricorda che non devi usare tutte le modalità di inserimento. Puoi disabilitare
 		alcune di esse nelle impostazioni di gioco.\n\nPuoi usare anche la tastiera e la trackball per controllare il
 		gioco. Se vuoi inserire note usando la tastiera premi il numero insieme a Shift o Alt.\n

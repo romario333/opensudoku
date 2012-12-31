@@ -119,6 +119,10 @@ public class CellNote {
 		return mNotedNumbers;
 	}
 
+	public boolean contains(int number) {
+		return mNotedNumbers.contains(number);
+	}
+
 	/**
 	 * Toggles noted number: if number is already noted, it will be removed otherwise it will be added.
 	 *

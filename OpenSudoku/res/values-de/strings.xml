@@ -87,8 +87,11 @@
 	<string name="numpad_summary">Zahlenblock anzeigen, der wie eine Tastatur funktioniert.</string>
 	<string name="numpad_move_right">Fokus nach rechts verschieben</string>
 	<string name="numpad_move_right_summary">Nach Eingabe einer Zahl den Fokus nach rechts verschieben.</string>
+	<string name="highlighter">Highlighter</string>
+	<string name="highlighter_summary">Show highlighter which highlights cells whose notes contain the selected numbers.</string>
 
 	<string name="numpad_abbr">ZB</string>
+	<string name="highlighter_abbr">Hi\nLit</string>
 	<string name="popup_abbr">Pop</string>
 	<string name="single_number_abbr">EZ</string>
 	<string name="welcome">Willkommen</string>
@@ -112,6 +115,7 @@
 	<string name="im_numpad_hint">Sie befinden sich nun im<i>Zahlenblock</i>-Modus. Die Zahlen von 1 bis 9 werden als
 		Bildschirm-Tastatur angezeigt.\n\nDrücken Sie die<i>Stift</i>-Schaltfläche um Zellen-Notizen zu bearbeiten.\n
 	</string>
+	<string name="im_highlighter_hint">You\'re now in the <i>Highlighter</i> input mode. Select numeric buttons to highlight all cells whose notes contain those numbers.\nSelecting a cell will remove the selected numbers from its notes, which can be disabled by pressing the <i>Pencil</i> button.</string>
 	<string name="im_disable_modes_hint">Bitte beachten Sie, das Sie nicht alle Eingabe-Modi verwenden müssen. Sie
 		können einzelnen Eingabe-Modi in den Einstellungen deaktivieren.\n\nSie können auch den Trackball oder die
 		Tastatur zur Steuerung des Spiels verwenden. Wenn Sie Notizen über die Tastatur eingeben möchten, drücken "Alt"

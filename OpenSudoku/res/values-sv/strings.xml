@@ -87,8 +87,11 @@
 	<string name="numpad_summary">Visa det numeriska tangentbordet.</string>
 	<string name="numpad_move_right">Flytta automatiskt</string>
 	<string name="numpad_move_right_summary">Flytta till nästa nummer automatiskt.</string>
+	<string name="highlighter">Highlighter</string>
+	<string name="highlighter_summary">Show highlighter which highlights cells whose notes contain the selected numbers.</string>
 
 	<string name="numpad_abbr">Num\ntgb</string>
+	<string name="highlighter_abbr">Hi\nLit</string>
 	<string name="popup_abbr">Pop</string>
 	<string name="single_number_abbr">Enk\nnum</string>
 	<string name="welcome">Välkommen</string>
@@ -113,6 +116,7 @@
 		<i>Penn-knappen</i>
 		för att växla mellan anteckningsläge och skrivläge.\n
 	</string>
+	<string name="im_highlighter_hint">You\'re now in the <i>Highlighter</i> input mode. Select numeric buttons to highlight all cells whose notes contain those numbers.\nSelecting a cell will remove the selected numbers from its notes, which can be disabled by pressing the <i>Pencil</i> button.</string>
 	<string name="im_disable_modes_hint">Kom ihåg att du inte behöver använda alla inmatningssätt, du kan stänga av de
 		du inte vill använda i spelinställningarna.\n\nDu kan också använda tangentbordet och rullhjulet för att styra
 		spelet, om du vill anteckna nummer håller du nere shift- eller alt-knappen samtidigt som du trycker på

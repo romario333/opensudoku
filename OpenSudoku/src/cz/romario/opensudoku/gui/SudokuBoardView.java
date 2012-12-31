@@ -22,12 +22,6 @@ package cz.romario.opensudoku.gui;
 
 import java.util.Collection;
 
-import cz.romario.opensudoku.R;
-import cz.romario.opensudoku.game.Cell;
-import cz.romario.opensudoku.game.CellCollection;
-import cz.romario.opensudoku.game.CellNote;
-import cz.romario.opensudoku.game.SudokuGame;
-import cz.romario.opensudoku.game.CellCollection.OnChangeListener;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -37,6 +31,12 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import cz.romario.opensudoku.R;
+import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.game.CellCollection;
+import cz.romario.opensudoku.game.CellCollection.OnChangeListener;
+import cz.romario.opensudoku.game.CellNote;
+import cz.romario.opensudoku.game.SudokuGame;
 
 /**
  * Sudoku board widget.
@@ -66,6 +66,7 @@ public class SudokuBoardView extends View {
 
 	private SudokuGame mGame;
 	private CellCollection mCells;
+	private int mHighlightedNumber;
 
 	private OnCellTappedListener mOnCellTappedListener;
 	private OnCellSelectedListener mOnCellSelectedListener;
@@ -83,6 +84,7 @@ public class SudokuBoardView extends View {
 	private Paint mBackgroundColorReadOnly;
 	private Paint mBackgroundColorTouched;
 	private Paint mBackgroundColorSelected;
+	private Paint mNotedColorSelected;
 
 	private Paint mCellValueInvalidPaint;
 
@@ -111,7 +113,9 @@ public class SudokuBoardView extends View {
 		mBackgroundColorReadOnly = new Paint();
 		mBackgroundColorTouched = new Paint();
 		mBackgroundColorSelected = new Paint();
-
+		mNotedColorSelected = new Paint();
+		mHighlightedNumber = 0;
+		
 		mCellValuePaint.setAntiAlias(true);
 		mCellValueReadonlyPaint.setAntiAlias(true);
 		mCellValueInvalidPaint.setAntiAlias(true);
@@ -130,6 +134,8 @@ public class SudokuBoardView extends View {
 		setBackgroundColorReadOnly(a.getColor(R.styleable.SudokuBoardView_backgroundColorReadOnly, NO_COLOR));
 		setBackgroundColorTouched(a.getColor(R.styleable.SudokuBoardView_backgroundColorTouched, Color.rgb(50, 50, 255)));
 		setBackgroundColorSelected(a.getColor(R.styleable.SudokuBoardView_backgroundColorSelected, Color.YELLOW));
+		// applicable to the IMHighlighter input method
+		setNotedColorSelected(a.getColor(R.styleable.SudokuBoardView_notedColorSelected, Color.CYAN));
 
 		a.recycle();
 	}
@@ -208,6 +214,15 @@ public class SudokuBoardView extends View {
 		mBackgroundColorSelected.setAlpha(100);
 	}
 
+	public int getNotedColorSelected() {
+		return mNotedColorSelected.getColor();
+	}
+	
+	public void setNotedColorSelected(int color) {
+		mNotedColorSelected.setColor(color);
+		mNotedColorSelected.setAlpha(100);
+	}
+	
 	public void setGame(SudokuGame game) {
 		mGame = game;
 		setCells(game.getCells());
@@ -235,6 +250,20 @@ public class SudokuBoardView extends View {
 
 	public CellCollection getCells() {
 		return mCells;
+	}
+
+	/**
+	 * @return the number to highlight
+	 */
+	public int getHighlightedNumber() {
+		return mHighlightedNumber;
+	}
+
+	/**
+	 * @param highlightedNumber the number to highlight
+	 */
+	public void setHighlightedNumber(int highlightedNumber) {
+		mHighlightedNumber = highlightedNumber;
 	}
 
 	public Cell getSelectedCell() {
@@ -419,6 +448,8 @@ public class SudokuBoardView extends View {
 		if (mCells != null) {
 
 			boolean hasBackgroundColorReadOnly = mBackgroundColorReadOnly.getColor() != NO_COLOR;
+			boolean hasNotedColorSelected = mNotedColorSelected.getColor() != NO_COLOR;
+			boolean hasNotesHighlighted = mHighlightedNumber != 0;
 
 			float numberAscent = mCellValuePaint.ascent();
 			float noteAscent = mCellNotePaint.ascent();
@@ -430,8 +461,17 @@ public class SudokuBoardView extends View {
 					cellLeft = Math.round((col * mCellWidth) + paddingLeft);
 					cellTop = Math.round((row * mCellHeight) + paddingTop);
 
-					// draw read-only field background
-					if (!cell.isEditable() && hasBackgroundColorReadOnly) {
+					CellNote note = cell.getNote();
+					if (hasNotesHighlighted && hasNotedColorSelected &&
+							 ((cell.getValue() == mHighlightedNumber) ||
+							  ((cell.getValue() <= 0) && !note.isEmpty() &&
+							   note.contains(mHighlightedNumber)))) {
+						canvas.drawRect(
+								cellLeft, cellTop, 
+								cellLeft + mCellWidth, cellTop + mCellHeight,
+								mNotedColorSelected);
+					} else if (!cell.isEditable() && hasBackgroundColorReadOnly) {
+						// draw read-only field background
 						if (mBackgroundColorReadOnly.getColor() != NO_COLOR) {
 							canvas.drawRect(
 									cellLeft, cellTop,
