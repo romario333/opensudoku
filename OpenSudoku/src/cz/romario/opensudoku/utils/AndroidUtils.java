@@ -2,7 +2,7 @@ package cz.romario.opensudoku.utils;
 
 import java.util.List;
 
-import cz.romario.opensudoku.R;
+import findix.sudoku.R;
 
 import android.content.Context;
 import android.content.Intent;

@@ -44,11 +44,11 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TextView;
-import cz.romario.opensudoku.R;
+import findix.sudoku.R;
 
 /**
  * List folders.
- *
+ * 
  * @author dracula
  */
 public class FileListActivity extends ListActivity {
@@ -83,14 +83,19 @@ public class FileListActivity extends ListActivity {
 		File[] dirs = selected_dir.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
-				return pathname.isDirectory() && !pathname.isHidden() && pathname.canRead();
+				return pathname.isDirectory() && !pathname.isHidden()
+						&& pathname.canRead();
 			}
 		});
 
 		File[] files = selected_dir.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
-				return pathname.isFile() && !pathname.isHidden() && pathname.canRead() && (pathname.getName().endsWith(".opensudoku") || pathname.getName().endsWith(".sdm"));
+				return pathname.isFile()
+						&& !pathname.isHidden()
+						&& pathname.canRead()
+						&& (pathname.getName().endsWith(".opensudoku") || pathname
+								.getName().endsWith(".sdm"));
 			}
 		});
 
@@ -110,20 +115,25 @@ public class FileListActivity extends ListActivity {
 			map.put(ITEM_KEY_NAME, f.getName());
 			mList.add(map);
 		}
-		DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(this);
-		DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(this);
+		DateFormat dateFormat = android.text.format.DateFormat
+				.getDateFormat(this);
+		DateFormat timeFormat = android.text.format.DateFormat
+				.getTimeFormat(this);
 		for (File f : files) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put(ITEM_KEY_FILE, f);
 			map.put(ITEM_KEY_NAME, f.getName());
 			Date date = new Date(f.lastModified());
-			map.put(ITEM_KEY_DETAIL, dateFormat.format(date) + " " + timeFormat.format(date));
+			map.put(ITEM_KEY_DETAIL,
+					dateFormat.format(date) + " " + timeFormat.format(date));
 			mList.add(map);
 		}
-		String[] from = {ITEM_KEY_NAME, ITEM_KEY_DETAIL};
-		int[] to = {R.id.name, R.id.detail};
+		String[] from = { ITEM_KEY_NAME, ITEM_KEY_DETAIL };
+		int[] to = { R.id.name, R.id.detail };
 
-		SimpleAdapter adapter = new SimpleAdapter(this, (List<? extends Map<String, ?>>) mList, R.layout.folder_list_item, from, to);
+		SimpleAdapter adapter = new SimpleAdapter(this,
+				(List<? extends Map<String, ?>>) mList,
+				R.layout.folder_list_item, from, to);
 		adapter.setViewBinder(new FileListViewBinder());
 		setListAdapter(adapter);
 	}
@@ -156,23 +166,25 @@ public class FileListActivity extends ListActivity {
 	protected Dialog onCreateDialog(final int id) {
 		LayoutInflater.from(this);
 		switch (id) {
-			case DIALOG_IMPORT_FILE:
-				return new AlertDialog.Builder(this)
-						.setIcon(android.R.drawable.ic_menu_upload)
-						.setTitle(R.string.import_file)
-						.setPositiveButton(R.string.import_file, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								//importovani
-								File f = mSelectedFile;
-								Intent i = new Intent(mContext, ImportSudokuActivity.class);
-								Uri u = Uri.fromFile(f);
-								i.setData(u);
-								startActivity(i);
-								//finish();
-							}
-						})
-						.setNegativeButton(android.R.string.cancel, null)
-						.create();
+		case DIALOG_IMPORT_FILE:
+			return new AlertDialog.Builder(this)
+					.setIcon(android.R.drawable.ic_menu_upload)
+					.setTitle(R.string.import_file)
+					.setPositiveButton(R.string.import_file,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									// importovani
+									File f = mSelectedFile;
+									Intent i = new Intent(mContext,
+											ImportSudokuActivity.class);
+									Uri u = Uri.fromFile(f);
+									i.setData(u);
+									startActivity(i);
+									// finish();
+								}
+							}).setNegativeButton(android.R.string.cancel, null)
+					.create();
 		}
 
 		return null;
@@ -183,9 +195,10 @@ public class FileListActivity extends ListActivity {
 		super.onPrepareDialog(id, dialog);
 
 		switch (id) {
-			case DIALOG_IMPORT_FILE:
-				dialog.setTitle(getString(R.string.import_file_title, mSelectedFile.getName()));
-				break;
+		case DIALOG_IMPORT_FILE:
+			dialog.setTitle(getString(R.string.import_file_title,
+					mSelectedFile.getName()));
+			break;
 		}
 	}
 
@@ -198,9 +211,10 @@ public class FileListActivity extends ListActivity {
 		} else if (f.isDirectory()) {
 			Intent intent = new Intent();
 			intent.setClass(this, FileListActivity.class);
-			intent.putExtra(FileListActivity.EXTRA_FOLDER_NAME, f.getAbsolutePath());
+			intent.putExtra(FileListActivity.EXTRA_FOLDER_NAME,
+					f.getAbsolutePath());
 			startActivity(intent);
-			//finish();
+			// finish();
 		}
 	}
 
@@ -208,14 +222,14 @@ public class FileListActivity extends ListActivity {
 
 		@Override
 		public boolean setViewValue(View view, Object data,
-									String textRepresentation) {
+				String textRepresentation) {
 			switch (view.getId()) {
-				case R.id.detail:
-					if (data == null) {
-						final TextView detailView = (TextView) view;
-						detailView.setVisibility(View.INVISIBLE);
-						return true;
-					}
+			case R.id.detail:
+				if (data == null) {
+					final TextView detailView = (TextView) view;
+					detailView.setVisibility(View.INVISIBLE);
+					return true;
+				}
 			}
 			return false;
 		}

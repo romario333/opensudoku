@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
 import android.widget.ProgressBar;
-import cz.romario.opensudoku.R;
+import findix.sudoku.R;
 import cz.romario.opensudoku.gui.importing.AbstractImportTask;
 import cz.romario.opensudoku.gui.importing.ExtrasImportTask;
 import cz.romario.opensudoku.gui.importing.OpenSudokuImportTask;

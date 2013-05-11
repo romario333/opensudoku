@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
 		xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:os="http://schemas.android.com/apk/res/cz.romario.opensudoku">
+		xmlns:os="http://schemas.android.com/apk/res/findix.sudoku">
 	<PreferenceCategory
 			android:title="@string/game_helpers">
 		<CheckBoxPreference

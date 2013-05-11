@@ -23,7 +23,7 @@ package cz.romario.opensudoku.gui;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import cz.romario.opensudoku.R;
+import findix.sudoku.R;
 
 import android.app.AlertDialog;
 import android.content.Context;

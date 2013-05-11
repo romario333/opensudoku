@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">OpenSudoku</string>
-    <string name="edit_sudoku">编辑sudoku</string>
-    <string name="puzzle_folders">OpenSudoku智力游戏文件夹</string>
+    <string name="app_name">数独酷</string>
+    <string name="edit_sudoku">编辑数独</string>
+    <string name="puzzle_folders">数独酷智力游戏文件夹</string>
     <string name="version">版本: %s</string>
     <string name="homepage">主页 : http://opensudoku.eu</string>
     <string name="email">Email: opensudoku@romanmasek.cz</string>
@@ -56,7 +56,7 @@
     <string name="invalid_format">无效格式, 导入已取消.</string>
     <string name="undo">卸载</string>
     <string name="clear_all_notes">清除所有提示</string>
-    <string name="fill_in_notes">Fill in notes</string>
+    <string name="fill_in_notes">填写注释</string>
     <string name="restart">重启</string>
     <string name="congrats">恭喜您已解决所有数独 %s.</string>
     <string name="restart_confirm">您确定要重新启动这个游戏？</string>
@@ -85,13 +85,10 @@
     <string name="that_is_all">结束</string>
     <string name="first_run_hint">这里有几种填补数独的输入方式.为了帮助您熟悉这些模式还将有一些提示为您呈现.可以通过游戏设置停止这些提示.</string>
     <string name="im_popup_hint">您现在在弹出输入模式. 点击任意单元编辑内容.注意右下角的按钮.您可以使用这些按钮转换进入另一种输入模式.</string>
-    <string name="im_single_number_hint">您现在在<i>单一数字</i>输入模式. 按任意键选择.敲击单元格填充选定数字.按<i>铅笔</i>按钮在单元提示编辑键切换.\n
-</string>
+    <string name="im_single_number_hint">您现在在<i>单一数字</i>输入模式. 按任意键选择.敲击单元格填充选定数字.按<i>铅笔</i>按钮在单元提示编辑键切换.\n</string>
     <string name="im_numpad_hint">您现在在数字小键盘输入模式.按钮可做标准数字键盘.按铅笔键切换单元提示编辑.</string>
-    <string name="im_disable_modes_hint">请记住您不必使用所有输入模式.您可以在游戏设置中停止这些模式.您也可以使用键盘和轨迹球控制.您若想使用键盘进入提示，按数字加alt或者shift.\n
-</string>
-    <string name="help_text"><b>键盘控制</b>\n\n使用轨迹球导航到目标单元，而不是按数字填充值. 您若想编辑单元提示，按数字加shift或alt.<b>输入模式</b>		您可以使用屏幕右下角按钮在几种输入模式间切换. 也可以在游戏设置中停止任意输入模式并隐藏.<b>弹出输入模式</b>敲击单元格时弹出对话框.您可以使用对话框编辑单元内容.<b>单一数字输入</b>		首先选择按任意键选择.敲击单元填充您选择的数字.使用<i>Pencil</i>按钮切换单元值并编辑提示.<b>Numpad输入模式</b>作标准数字键盘的按钮.使用<i>Pencil</i>按钮在单元格间切换并编辑提示
-</string>
+    <string name="im_disable_modes_hint">请记住您不必使用所有输入模式.您可以在游戏设置中停止这些模式.您也可以使用键盘和轨迹球控制.您若想使用键盘进入提示，按数字加alt或者shift.\n</string>
+    <string name="help_text"><b>键盘控制</b>\n\n使用轨迹球导航到目标单元，而不是按数字填充值. 您若想编辑单元提示，按数字加shift或alt.<b>输入模式</b>		您可以使用屏幕右下角按钮在几种输入模式间切换. 也可以在游戏设置中停止任意输入模式并隐藏.<b>弹出输入模式</b>敲击单元格时弹出对话框.您可以使用对话框编辑单元内容.<b>单一数字输入</b>		首先选择按任意键选择.敲击单元填充您选择的数字.使用<i>Pencil</i>按钮切换单元值并编辑提示.<b>Numpad输入模式</b>作标准数字键盘的按钮.使用<i>Pencil</i>按钮在单元格间切换并编辑提示</string>
     <string name="game">游戏</string>
     <string name="show_hints">发布第一个提示</string>
     <string name="show_hints_summary">查找通过实用控制引导您的提示.</string>
@@ -107,8 +104,7 @@
     <!-- Strings added/changed in 0.7.1 -->
     <string name="more_settings">更多设置</string>
     <string name="screen_border_size">屏幕边框的大小</string>
-    <string name="screen_border_size_summary">有些设备在点击屏幕边缘的时候没有反应，在这种情况下有用。
-</string>
+    <string name="screen_border_size_summary">有些设备在点击屏幕边缘的时候没有反应，在这种情况下有用。</string>
     <string name="highlight_touched_cell">高亮触摸格子</string>
     <string name="highlight_touched_cell_summary">高亮触摸格子的行列.</string>
     <string name="export">导出</string>
@@ -119,8 +115,7 @@
     <string name="exporting">正在导出数独...</string>
     <string name="unknown_export_error">导出时发生未知错误。</string>
     <string name="highlight_completed_values">高亮完成的数字</string>
-    <string name="highlight_completed_values_summary">高亮已经被输入9次的数字按钮.
-</string>
+    <string name="highlight_completed_values_summary">高亮已经被输入9次的数字按钮.</string>
     <string name="save_to_sdcard">保存到SD卡中</string>
     <string name="send_by_mail">通过电子邮件发送</string>
     <string name="theme">主题</string>
@@ -140,5 +135,16 @@
     <string name="generate_sudoku">生成新的数独</string>
     <string name="select_difficulty">选择难度</string>
     <string name="generating">生成数独谜题...</string>
+    <string name="show_number_totals">显示全部数字</string>
+    <string name="show_number_totals_summary">显示每个填入数字的计数</string>
+    <string name="what_is_new">更新</string>
+
+    <!-- Strings added/changed in 1.1.1 -->
+    <string name="fill_in_notes_summary">启用“填写注释”菜单项.</string>
+
+    <!-- Strings added/changed in 1.1.2 -->
+    <string name="set_checkpoint">设置检查点</string>
+    <string name="undo_to_checkpoint">撤销检查点</string>
+    <string name="undo_to_checkpoint_confirm">你确定要撤销所有检查点，除了最近设置的一个吗？</string>
 
 </resources>
