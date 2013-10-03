@@ -1,2 +1,11 @@
 OpenSudoku/bin/
 OpenSudoku/gen/
+misc
+.gradle
+.idea
+build
+local.properties
+gradle
+gradlew
+gradlew.bat
+*.iml
