@@ -1,26 +1,28 @@
-/* 
+/*
  * Copyright (C) 2009 Roman Masek
- * 
+ *
  * This file is part of OpenSudoku.
- * 
+ *
  * OpenSudoku is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * OpenSudoku is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with OpenSudoku.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package cz.romario.opensudoku.game;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import cz.romario.opensudoku.game.command.ClearAllNotesCommand;
 import cz.romario.opensudoku.game.command.AbstractCommand;
@@ -35,18 +37,23 @@ public class SudokuGame {
 	public static final int GAME_STATE_NOT_STARTED = 1;
 	public static final int GAME_STATE_COMPLETED = 2;
 
+    private static final int MSG_AUTO_PLAY = 1;
+
 	private long mId;
 	private long mCreated;
 	private int mState;
 	private long mTime;
 	private long mLastPlayed;
 	private boolean mAutoFillInNotes;
+    private boolean mAutoPlay;
 	private String mNote;
 	private CellCollection mCells;
 
+    private Handler mHandler;
+
 	private OnPuzzleSolvedListener mOnPuzzleSolvedListener;
 	private CommandStack mCommandStack;
-	// Time when current activity has become active. 
+	// Time when current activity has become active.
 	private long mActiveFromTime = -1;
 
 	public static SudokuGame createEmptyGame() {
@@ -100,7 +107,11 @@ public class SudokuGame {
 	public void setAutoFillInNotes(boolean autoFillInNotes) {
         mAutoFillInNotes = autoFillInNotes;
     }
-	
+
+    public void setAutoPlay(boolean autoPlay) {
+        mAutoPlay = autoPlay;
+    }
+
 	public void setNote(String note) {
 		mNote = note;
 	}
@@ -197,8 +208,9 @@ public class SudokuGame {
 					mOnPuzzleSolvedListener.onPuzzleSolved();
 				}
 			}
-			
+
 			if (mAutoFillInNotes) {
+                // fill in notes will trigger the auto-play as needed
 			    fillInNotes();
 			}
 		}
@@ -219,6 +231,7 @@ public class SudokuGame {
 		}
 
 		if (cell.isEditable()) {
+            stopAutoPlay();
 			executeCommand(new EditCellNoteCommand(cell, note));
 		}
 	}
@@ -231,6 +244,7 @@ public class SudokuGame {
 	 * Undo last command.
 	 */
 	public void undo() {
+        stopAutoPlay();
 		mCommandStack.undo();
 	}
 
@@ -260,6 +274,7 @@ public class SudokuGame {
 	}
 
 	public void resume() {
+        stopAutoPlay();
 		// reset time we have spent playing so far, so time when activity was not active
 		// will not be part of the game play time
 		mActiveFromTime = SystemClock.uptimeMillis();
@@ -269,7 +284,8 @@ public class SudokuGame {
 	 * Pauses game-play (for example if activity pauses).
 	 */
 	public void pause() {
-		// save time we have spent playing so far - it will be reseted after resuming 
+        stopAutoPlay();
+		// save time we have spent playing so far - it will be reseted after resuming
 		mTime += SystemClock.uptimeMillis() - mActiveFromTime;
 		mActiveFromTime = -1;
 
@@ -288,6 +304,7 @@ public class SudokuGame {
 	 * Resets game.
 	 */
 	public void reset() {
+        stopAutoPlay();
 		for (int r = 0; r < CellCollection.SUDOKU_SIZE; r++) {
 			for (int c = 0; c < CellCollection.SUDOKU_SIZE; c++) {
 				Cell cell = mCells.getCell(r, c);
@@ -314,6 +331,7 @@ public class SudokuGame {
 	}
 
 	public void clearAllNotes() {
+        stopAutoPlay();
 		executeCommand(new ClearAllNotesCommand());
 	}
 
@@ -321,7 +339,11 @@ public class SudokuGame {
 	 * Fills in possible values which can be entered in each cell.
 	 */
 	public void fillInNotes() {
+        stopAutoPlay();
 		executeCommand(new FillInNotesCommand());
+        if (mAutoPlay) {
+            startDelayPlay();
+        }
 	}
 
 	public void validate() {
@@ -336,5 +358,34 @@ public class SudokuGame {
 		 */
 		void onPuzzleSolved();
 	}
+
+    private void stopAutoPlay() {
+        if (mHandler != null) {
+            mHandler.removeMessages(MSG_AUTO_PLAY);
+        }
+    }
+
+    private int mDelay = 750;
+    private void startDelayPlay() {
+        if (mHandler == null) {
+            mHandler = new Handler(new HandlerCallback());
+        }
+        mHandler.sendEmptyMessageDelayed(MSG_AUTO_PLAY, mDelay /*ms*/);
+        mDelay -= 7;
+    }
+
+    private class HandlerCallback implements Handler.Callback {
+        @Override
+        public boolean handleMessage(Message msg) {
+            if (msg.what != MSG_AUTO_PLAY) return false;
+
+            AutoPlaySolver c = new AutoPlaySolver();
+            if (c.solveNext(mCells)) {
+                c.getSolvedCell().select();
+                setCellValue(c.getSolvedCell(), c.getSolvedValue());
+            }
+            return true;
+        }
+    }
 
 }

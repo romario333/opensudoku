@@ -30,6 +30,12 @@
                 android:key="fill_in_notes_auto"
                 android:summary="@string/fill_in_notes_auto_summary"
                 android:dependency="fill_in_notes_enabled"/>
+        <CheckBoxPreference
+                android:defaultValue="false"
+                android:title="@string/auto_play"
+                android:key="auto_play"
+                android:summary="@string/auto_play_summary"
+                android:dependency="fill_in_notes_auto"/>
 	</PreferenceCategory>
 	<PreferenceCategory
 			android:title="@string/input_methods">
