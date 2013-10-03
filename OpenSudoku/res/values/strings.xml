@@ -205,4 +205,9 @@
 	<string name="set_checkpoint">Set checkpoint</string>
 	<string name="undo_to_checkpoint">Undo to checkpoint</string>
 	<string name="undo_to_checkpoint_confirm">Are you sure you want to undo all actions since last checkpoint?</string>
+
+    <!-- Strings added/changed in 1.1.6 (ralfoide fork) -->
+    <string name="fill_in_notes_auto">Auto fill in notes</string>
+    <string name="fill_in_notes_auto_summary">Auto fill notes where possible.</string>
+
 </resources>

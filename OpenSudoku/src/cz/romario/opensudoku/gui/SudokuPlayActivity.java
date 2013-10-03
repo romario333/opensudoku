@@ -177,6 +177,9 @@ public class SudokuPlayActivity extends Activity {
 		mRootLayout.setPadding(screenPadding, screenPadding, screenPadding, screenPadding);
 
 		mFillInNotesEnabled = gameSettings.getBoolean("fill_in_notes_enabled", false);
+        boolean autoFillInNotes = mFillInNotesEnabled &&
+                           gameSettings.getBoolean("fill_in_notes_auto", false);
+        mSudokuGame.setAutoFillInNotes(autoFillInNotes);
 
 		mSudokuBoard.setHighlightWrongVals(gameSettings.getBoolean("highlight_wrong_values", true));
 		mSudokuBoard.setHighlightTouchedCell(gameSettings.getBoolean("highlight_touched_cell", true));

@@ -40,6 +40,7 @@ public class SudokuGame {
 	private int mState;
 	private long mTime;
 	private long mLastPlayed;
+	private boolean mAutoFillInNotes;
 	private String mNote;
 	private CellCollection mCells;
 
@@ -96,6 +97,10 @@ public class SudokuGame {
 		mOnPuzzleSolvedListener = l;
 	}
 
+	public void setAutoFillInNotes(boolean autoFillInNotes) {
+        mAutoFillInNotes = autoFillInNotes;
+    }
+	
 	public void setNote(String note) {
 		mNote = note;
 	}
@@ -191,6 +196,10 @@ public class SudokuGame {
 				if (mOnPuzzleSolvedListener != null) {
 					mOnPuzzleSolvedListener.onPuzzleSolved();
 				}
+			}
+			
+			if (mAutoFillInNotes) {
+			    fillInNotes();
 			}
 		}
 	}
