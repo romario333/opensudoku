@@ -40,8 +40,8 @@ public class AutoPlaySolver {
         return mValue;
     }
 
+    /** Returns true if one cell candidate was found. */
     public boolean solveNext(CellCollection cells) {
-
         Cell candidateCell = null;
         int newValue = 0;
 

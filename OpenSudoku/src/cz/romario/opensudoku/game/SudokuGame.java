@@ -253,11 +253,18 @@ public class SudokuGame {
 	}
 
 	public void setUndoCheckpoint() {
-		mCommandStack.setCheckpoint();
-	}
+		if (mCommandStack.setCheckpoint()) {
+            if (mOnPuzzleSolvedListener != null) {
+                mOnPuzzleSolvedListener.onSetCheckpoint();
+            }
+        }
+    }
 
 	public void undoToCheckpoint() {
 		mCommandStack.undoToCheckpoint();
+        if (mOnPuzzleSolvedListener != null) {
+            mOnPuzzleSolvedListener.onRestoreCheckpoint();
+        }
 	}
 
 	public boolean hasUndoCheckpoint() {
@@ -353,11 +360,19 @@ public class SudokuGame {
 	public interface OnPuzzleSolvedListener {
 		/**
 		 * Occurs when puzzle is solved.
-		 *
-		 * @return
 		 */
 		void onPuzzleSolved();
-	}
+
+        /**
+         * Triggered after a checkpoint is created.
+         */
+        void onSetCheckpoint();
+
+        /**
+         * Triggered after a checkpoint is restored.
+         */
+        void onRestoreCheckpoint();
+    }
 
     private void stopAutoPlay() {
         if (mHandler != null) {
@@ -365,13 +380,13 @@ public class SudokuGame {
         }
     }
 
-    private int mDelay = 750;
+    private int mDelay = 300;
     private void startDelayPlay() {
         if (mHandler == null) {
             mHandler = new Handler(new HandlerCallback());
         }
         mHandler.sendEmptyMessageDelayed(MSG_AUTO_PLAY, mDelay /*ms*/);
-        mDelay -= 7;
+        mDelay = mDelay > 50 ? mDelay - 20 : mDelay;
     }
 
     private class HandlerCallback implements Handler.Callback {
@@ -383,6 +398,11 @@ public class SudokuGame {
             if (c.solveNext(mCells)) {
                 c.getSolvedCell().select();
                 setCellValue(c.getSolvedCell(), c.getSolvedValue());
+            } else {
+                // Did not solve. Let's mark a checkpoint if not game finished
+                if (!isCompleted()) {
+                    setUndoCheckpoint();
+                }
             }
             return true;
         }

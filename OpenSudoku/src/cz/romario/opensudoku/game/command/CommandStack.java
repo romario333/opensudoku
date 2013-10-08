@@ -55,11 +55,13 @@ public class CommandStack {
 		}
 	}
 
-	public void setCheckpoint() {
+	public boolean setCheckpoint() {
 		if (!mCommandStack.empty()) {
 			AbstractCommand c = mCommandStack.peek();
 			c.setCheckpoint(true);
+            return true;
 		}
+        return false;
 	}
 
 	public boolean hasCheckpoint() {
@@ -72,7 +74,7 @@ public class CommandStack {
 
 	public void undoToCheckpoint() {
 		/*
-		 * I originally planned to just call undo but this way it doesn't need to 
+		 * I originally planned to just call undo but this way it doesn't need to
 		 * validateCells() until the run is complete
 		 */
 		AbstractCommand c;
