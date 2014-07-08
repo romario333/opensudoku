@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="game_states">
+		<item>Nie zaczęte</item>
+		<item>Rozwiązuję</item>
+		<item>Rozwiązane</item>
+	</string-array>
+	<string-array name="theme_names">
+		<item>Domyślny</item>
+		<item>Papier I</item>
+		<item>Papier II</item>
+	</string-array>
+	<!-- Theme codes should not change, do not translate this! -->
+	<string-array name="theme_codes">
+		<item>default</item>
+		<item>paperi</item>
+		<item>paperii</item>
+	</string-array>
+	<string-array name="game_levels">
+		<item>Łatwe</item>
+		<item>Średnie</item>
+		<item>Trudne</item>
+	</string-array>
+</resources>
