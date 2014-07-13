@@ -63,4 +63,15 @@
 		<item name="backgroundColorTouched">#3232ff</item>
 		<item name="backgroundColorSelected">#ffff00</item>
 	</style>
+    <style name="Theme.Dark">
+        <item name="lineColor">#CCCCCC</item>
+        <item name="sectorLineColor">#CCCCCC</item>
+        <item name="textColor">#AAAAAA</item>
+        <item name="textColorReadOnly">@android:color/white</item>
+        <item name="textColorNote">#BBBBBB</item>
+        <item name="backgroundColor">#444444</item>
+        <item name="backgroundColorSecondary">#222222</item>
+        <item name="backgroundColorTouched">#3232ff</item>
+        <item name="backgroundColorSelected">#ffff00</item>
+    </style>
 </resources>
