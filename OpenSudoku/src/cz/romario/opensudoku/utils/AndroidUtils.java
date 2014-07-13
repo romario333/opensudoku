@@ -43,8 +43,8 @@ public class AndroidUtils {
 		} else if (theme.equals("paperii")) {
 			context.setTheme(R.style.Theme_PaperII);
 		} else {
-            context.setTheme(R.style.Theme_Dark);
-        }
+			context.setTheme(R.style.Theme_Dark);
+		}
 	}
 
 	/**
