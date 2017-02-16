@@ -13,7 +13,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.content.ContentResolver;
 import android.net.Uri;
-import cz.romario.opensudoku.R;
+import findix.sudoku.R;
 import cz.romario.opensudoku.db.SudokuImportParams;
 import cz.romario.opensudoku.db.SudokuInvalidFormatException;
 import cz.romario.opensudoku.game.SudokuGame;

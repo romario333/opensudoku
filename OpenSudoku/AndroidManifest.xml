@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-		  package="cz.romario.opensudoku"
+		  package="findix.sudoku"
 		  android:installLocation="auto" android:versionName="1.1.5" android:versionCode="1105">
 	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="4"/>
 	<application android:icon="@drawable/opensudoku_logo_72" android:label="@string/app_name">
-		<activity android:name=".gui.FolderListActivity"
+		<activity android:name="cz.romario.opensudoku.gui.FolderListActivity"
 				  android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
-		<activity android:name=".gui.SudokuListActivity"
+		<activity android:name="cz.romario.opensudoku.gui.SudokuListActivity"
 				  android:label="@string/app_name">
 		</activity>
-		<activity android:name=".gui.SudokuEditActivity"
+		<activity android:name="cz.romario.opensudoku.gui.SudokuEditActivity"
 				  android:label="@string/edit_sudoku">
 			<intent-filter>
 				<action android:name="android.intent.action.INSERT"/>
@@ -22,7 +22,7 @@
 				<category android:name="android.intent.category.DEFAULT"/>
 			</intent-filter>
 		</activity>
-		<activity android:name=".gui.FileImportActivity"
+		<activity android:name="cz.romario.opensudoku.gui.FileImportActivity"
 				  android:label="@string/app_name"
 				  android:theme="@android:style/Theme.Dialog">
 			<intent-filter>
@@ -36,14 +36,14 @@
 			</intent-filter>
 		</activity>
 		<!-- This activity is here to keep backward compatibility, use SudokuImportActivity instead. -->
-		<activity android:name=".gui.ImportSudokuActivity">
+		<activity android:name="cz.romario.opensudoku.gui.ImportSudokuActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW"></action>
 				<category android:name="android.intent.category.DEFAULT"></category>
 				<category android:name="android.intent.category.BROWSABLE"></category>
 			</intent-filter>
 		</activity>
-		<activity android:name=".gui.SudokuImportActivity"
+		<activity android:name="cz.romario.opensudoku.gui.SudokuImportActivity"
 				  android:label="@string/app_name"
 				  android:theme="@android:style/Theme.Dialog">
 			<intent-filter>
@@ -53,16 +53,16 @@
 				<data android:mimeType="application/x-opensudoku"/>
 			</intent-filter>
 		</activity>
-		<activity android:name=".gui.SudokuExportActivity"
+		<activity android:name="cz.romario.opensudoku.gui.SudokuExportActivity"
 				  android:label="@string/app_name">
 		</activity>
-		<activity android:name=".gui.SudokuPlayActivity"
+		<activity android:name="cz.romario.opensudoku.gui.SudokuPlayActivity"
 				  android:label="@string/app_name">
 		</activity>
-		<activity android:name=".gui.GameSettingsActivity"
+		<activity android:name="cz.romario.opensudoku.gui.GameSettingsActivity"
 				  android:label="@string/game_settings">
 		</activity>
-		<activity android:name=".gui.FileListActivity"
+		<activity android:name="cz.romario.opensudoku.gui.FileListActivity"
 				  android:label="@string/app_name">
 		</activity>
 

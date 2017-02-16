@@ -20,7 +20,7 @@
 
 package cz.romario.opensudoku.game;
 
-import cz.romario.opensudoku.R;
+import findix.sudoku.R;
 import android.content.Context;
 
 /**

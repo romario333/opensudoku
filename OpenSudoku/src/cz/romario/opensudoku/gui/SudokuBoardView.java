@@ -22,7 +22,7 @@ package cz.romario.opensudoku.gui;
 
 import java.util.Collection;
 
-import cz.romario.opensudoku.R;
+import findix.sudoku.R;
 import cz.romario.opensudoku.game.Cell;
 import cz.romario.opensudoku.game.CellCollection;
 import cz.romario.opensudoku.game.CellNote;

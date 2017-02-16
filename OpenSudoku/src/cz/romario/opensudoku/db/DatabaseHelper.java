@@ -24,7 +24,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import cz.romario.opensudoku.R;
+import findix.sudoku.R;
 import cz.romario.opensudoku.game.SudokuGame;
 
 /**

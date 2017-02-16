@@ -20,7 +20,7 @@
 
 package cz.romario.opensudoku.gui;
 
-import cz.romario.opensudoku.R;
+import findix.sudoku.R;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;

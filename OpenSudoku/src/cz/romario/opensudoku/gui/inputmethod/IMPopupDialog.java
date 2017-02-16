@@ -41,7 +41,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout.LayoutParams;
-import cz.romario.opensudoku.R;
+import findix.sudoku.R;
 
 public class IMPopupDialog extends Dialog {
 
