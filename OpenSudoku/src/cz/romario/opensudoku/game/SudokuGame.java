@@ -28,6 +28,8 @@ import cz.romario.opensudoku.game.command.CommandStack;
 import cz.romario.opensudoku.game.command.EditCellNoteCommand;
 import cz.romario.opensudoku.game.command.FillInNotesCommand;
 import cz.romario.opensudoku.game.command.SetCellValueCommand;
+import cz.romario.opensudoku.game.command.RemoveCellNoteCommand.java;
+import java.util.*;
 
 public class SudokuGame {
 
@@ -152,6 +154,7 @@ public class SudokuGame {
 
 	public void setCells(CellCollection cells) {
 		mCells = cells;
+		mCells.CalcAllHint();
 		validate();
 		mCommandStack = new CommandStack(mCells);
 	}
@@ -191,6 +194,10 @@ public class SudokuGame {
 				if (mOnPuzzleSolvedListener != null) {
 					mOnPuzzleSolvedListener.onPuzzleSolved();
 				}
+			}
+			else {
+				removeNotes(cell, value);
+				mCells.CalcAllHint();
 			}
 		}
 	}
@@ -314,7 +321,34 @@ public class SudokuGame {
 	public void fillInNotes() {
 		executeCommand(new FillInNotesCommand());
 	}
+	
+	/**
+	 * Auto Remove notes since value is entered in the cell.
+	 */
+	private void removeNotes(Cell cell, int value) {
+		ArrayList<Cell> cellChanged = new ArrayList<Cell>();
+		ArrayList<CellNote> noteChanged = new ArrayList<CellNote>();
 
+		removeNotes(cell.getRow(), value, cellChanged, noteChanged);
+		removeNotes(cell.getColumn(), value, cellChanged, noteChanged);
+		removeNotes(cell.getSector(), value, cellChanged, noteChanged);
+
+		executeCommand(new RemoveCellNoteCommand(cellChanged, noteChanged));
+	}
+
+	private void removeNotes(CellGroup group, int value, ArrayList<Cell> cellChanged, ArrayList<CellNote> noteChanged) {
+		for (int i = 0; i < CellCollection.SUDOKU_SIZE; i++) {
+			Cell cellNote = group.getCell(i);
+			CellNote note = cellNote.getNote();
+			if (note.getNotedNumbers().contains(value)) {
+				if (!cellChanged.contains(cellNote)) {
+					cellChanged.add(cellNote);
+					noteChanged.add(note.removeNumber(value));
+				}
+			}
+		}
+	}
+	
 	public void validate() {
 		mCells.validate();
 	}

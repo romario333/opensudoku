@@ -254,6 +254,17 @@ public class CellCollection {
 	}
 
 	/**
+	 *
+	 */
+	public void CalcAllHint() {
+		for (int row = 0; row < CellCollection.SUDOKU_SIZE; row++) {
+			for (int col = 0; col < CellCollection.SUDOKU_SIZE; col++) {
+				getCell(row, col).getHint().CalcValueAvailable();
+			}
+		}
+	}
+
+	/**
 	 * Initializes collection, initialization has two steps:
 	 * 1) Groups of cells which must contain unique numbers are created.
 	 * 2) Row and column index for each cell is set.

@@ -41,6 +41,7 @@ public class Cell {
 
 	private int mValue;
 	private CellNote mNote;
+	private CellHint mHint;
 	private boolean mEditable;
 	private boolean mValid;
 
@@ -67,6 +68,7 @@ public class Cell {
 
 		mValue = value;
 		mNote = note;
+		mHint = new CellHint(this);
 		mEditable = editable;
 		mValid = valid;
 	}
@@ -152,6 +154,7 @@ public class Cell {
 			throw new IllegalArgumentException("Value must be between 0-9.");
 		}
 		mValue = value;
+		mHint.isAvailable(value);
 		onChange();
 	}
 
@@ -182,6 +185,15 @@ public class Cell {
 	public void setNote(CellNote note) {
 		mNote = note;
 		onChange();
+	}
+	
+	/**
+	* Gets hints attached to the cell.
+	*
+	* @return Hint attached to the cell.
+	*/
+	public CellHint getHint() {
+		return mHint;
 	}
 
 	/**
