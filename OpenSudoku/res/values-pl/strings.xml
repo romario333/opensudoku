@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">OpenSudoku</string>
+	<string name="edit_sudoku">Edytuj sudoku</string>
+
+	<string name="puzzle_folders">Folder łamigłówek OpenSudoku</string>
+
+	<string name="version">Wersja: %s</string>
+	<string name="homepage">Strona domowa: http://opensudoku.eu</string>
+	<string name="email">Email: opensudoku@romanmasek.cz</string>
+	<string name="work_in_progress">Proszę pamiętać, że aplikacja jest wciąż w trakcie prac.</string>
+	<string name="send_me_bugs">Jeżeli napotkaż błędy, i chcesz, żeby zostały naprawione, skontaktuj się ze mną poprzez email lub użyj narzędzia zgłaszania błędów na stronie domowej projektu.
+	</string>
+
+	<string name="close">Zamknij</string>
+	<string name="clear">Wyczyść</string>
+	<string name="save">Zapisz</string>
+
+	<string name="get_more_puzzles_online">Pobierz więcej łamigłówek z sieci</string>
+
+	<string name="name">Nazwa:</string>
+	<string name="note">Uwagi:</string>
+
+	<string name="select_number">Wybierz liczbę</string>
+	<string name="edit_note">Edytuj notatkę</string>
+
+	<string name="add_folder">Dodaj folder</string>
+	<string name="import_file">Importuj</string>
+	<string name="import_file_title">Importuj plik %s</string>
+	<string name="about">O programie</string>
+	<string name="rename_folder">Zmień nazwę folderu</string>
+	<string name="delete_folder">Usuń folder</string>
+	<string name="rename_folder_title">Zmień nazwę %s</string>
+	<string name="delete_folder_title">Usuń %s</string>
+	<string name="delete_folder_confirm">Czy na pewno chcesz skasować ten folder?</string>
+
+	<string name="no_puzzles">Brak łamigłówek</string>
+	<string name="one_puzzle">1 łamigłówka</string>
+	<string name="n_puzzles">%s łamigłówek</string>
+	<string name="all_solved">wszystkie rozwiązane</string>
+	<string name="n_solved">%s rozwiązanych</string>
+	<string name="n_unsolved">%s nierozwiązanych</string>
+	<string name="n_playing">%s w trakcie rozwiązywania</string>
+
+	<string name="solved">Rozwiązana</string>
+	<string name="playing">Rozwiązujesz</string>
+	<string name="not_started">Nie rozpoczęta</string>
+	<string name="last_played_at">Ostatnio grałeś %s</string>
+	<string name="created_at">Utworzono %s</string>
+	<string name="at_time">o %s</string>
+	<string name="yesterday_at_time">wczoraj o %s</string>
+	<string name="on_date">%s</string>
+	<string name="add_sudoku">Dodaj sudoku</string>
+	<string name="filter">Filtruj</string>
+	<string name="filter_by_gamestate">Filtruj wg. stanu gry</string>
+	<string name="folders">Foldery</string>
+	<string name="delete_puzzle_confirm">Czy na pewno chcesz usunąć wybraną łamigłówkę?</string>
+	<string name="reset_puzzle_confirm">Czy na pewno chcesz wyczyścić wybraną łamigłówkę?</string>
+	<string name="play_puzzle">Rozwiąż tę łamigłówkę</string>
+	<string name="reset_puzzle">Wyczyść łamigłówkę</string>
+	<string name="edit_puzzle">Edytuj łamigłówkę</string>
+	<string name="delete_puzzle">Usuń łamigłówkę</string>
+	<string name="filter_active">Znaleziono: %s</string>
+
+	<string name="undo">Cofnij</string>
+	<string name="clear_all_notes">Wyczyść notatki</string>
+	<string name="fill_in_notes">Wprowadź notatki</string>
+	<string name="restart">Zacznij jeszcze raz</string>
+	<string name="congrats">Gratulacje! Rozwiązałeś to sudoku w %s.</string>
+	<string name="restart_confirm">Czy na pewno wyczyścić tę łamigłówkę?</string>
+	<string name="well_done">Dobra robota!</string>
+	<string name="clear_all_notes_confirm">Czy na pewno usunąć wszystkie notatki?</string>
+	<string name="settings">Ustawienia</string>
+	<string name="game_settings">Ustawienia gry</string>
+
+	<string name="game_helpers">Pomoc w grze</string>
+	<string name="highlight_wrong_values">Podświetl niepoprawne cyfry</string>
+	<string name="highlight_wrong_values_summary">Podświetl cyfry, które łamią zasady sudoku.</string>
+	<string name="input_methods">Tryby wpisywania</string>
+	<string name="popup">Popup</string>
+	<string name="popup_summary">Edytuj wartość komórki oraz notatki w okienku popup.</string>
+	<string name="single_number">Jedna cyfra</string>
+	<string name="single_number_summary">Wybierz cyfrę a potem dotknij komórkę, w której chcesz ją wstawić.</string>
+	<string name="numpad">Blok numeryczny</string>
+	<string name="numpad_summary">Pokaż blok numeryczny, który działa jak zwykła klawiatura numeryczna.</string>
+	<string name="numpad_move_right">Przesuń w prawo po przyciśnięciu</string>
+	<string name="numpad_move_right_summary">Przesuń wybór komórki w o jedną w prawo po wybraniu cyfry.
+	</string>
+
+	<string name="numpad_abbr">Blok\nNum.</string>
+	<string name="popup_abbr">Pop</string>
+	<string name="single_number_abbr">JC</string>
+	<string name="welcome">Witaj</string>
+	<string name="hint">Wskazówka</string>
+	<string name="help">Pomoc</string>
+	<string name="that_is_all">To wszystko</string>
+
+
+	<string name="first_run_hint">
+		Jest kilka trybów wprowadzania, których możesz używać do rozwiązywania łamigłówek. Aby łatwiej było Ci się zapoznać z nimi wyświetlę Ci kilka wskazówek 
+		podczas pracy. Możesz wyłączyć wskazówki w ustawieniach gry.\n
+	</string>
+	<string name="im_popup_hint">Jesteś teraz w trybie wprowadzania 
+		<i>Popup</i>. Dotknij dowolnej komórki aby edytować jej zawartość.\n\nZwróć uwagę na przycisk
+		w dolnym prawym rogu. Możesz go użyć do przełączenia w inny tryb wprowadzania.\n
+	</string>
+	<string name="im_single_number_hint">Jesteś teraz w trybie wprowadzania
+		<i>Jednej cyfry</i>. Najpierw zaznacz dowolny przycisk dotykając go. Następnie dotknij 
+		komórki, do której chcesz wprowadzić tę cyfrę.\n\nDotknij przycisk
+		<i>Ołówka</i>, żeby włączyć edycję notatek.\n
+	</string>
+	<string name="im_numpad_hint">Jesteś w trybie wprowadzania za pomocą
+		<i>bloku numerycznego</i>. Przyciski działają jak zwykła klawiatura numeryczna.\n\nDotknij przycisk 
+		<i>Ołówka</i>, żeby przełączać między wprowadzaniem cyfry i edycją notatek.\n
+	</string>
+	<string name="im_disable_modes_hint">Pamiętaj, że nie musisz używać wszystkich trybów wprowadzania.
+		Możesz wyłączyć nieportzebne w ustawieniach gry.\n\nMożesz także używać klawiatury i wskaźnika, 
+		jeżeli Twoje urządzenie je posiada. Aby wprowadzić notatki z klawiatury wprowadź cyfrę z klawiszem Alt lub Shift..\n
+	</string>
+	<string name="help_text"><b>Klawiatura</b>\n\nUżywaj wskaźnika do nawigowania między komórkami. 
+		Wciśnij cyfrę na klawiaturze aby wpisać wartość. Edytuj notatki przy użyciu klawiszy Shift lub Alt.\n\n<b>
+		Tryby wprowadzania</b>\n\nMożesz przełączać się między trybami wprowadzania przy użyciu przycisku w prawym dolnym rogu ekranu.
+		ożesz wyłączyć nieużywane tryby w ustawieniach gry - będą wtedy ukryte.\n\n<b>Tryb Popup</b>\n\nKiedy dotkniesz komórki 
+		pokaże się okienko, w którym możesz edytować zawartość komórki.\n\n<b>Tryb wprowadzania jednej cyfry</b>\n\nNajpierw 
+		wybierz cyfrę, a potem dotknij komórki, do której chesz ją wpisać.\n\nUżyj<i>Ołówka</i>
+		buttżeby przełączyć się między edycją wartości komórki i notatek.\n\n<b>Blok numeryczny</b>\n\nKlawisze 
+		z cyframi działają jak zwykła klawiatura numeryczna\n\nUżyj<i>Ołówka</i>
+		buttżeby przełączyć się między edycją wartości komórki i notatek.\n
+	</string>
+
+
+	<string name="game">Gra</string>
+	<string name="show_hints">Wskazówki początkowe</string>
+	<string name="show_hints_summary">Pokaż wskazówki, które pomogą Ci rozpocząć korzystanie z gry.</string>
+	<string name="show_time">Pokaż czas</string>
+	<string name="show_time_summary">Pokazuj czas podczas gry.</string>
+
+	<string name="puzzle_inserted">Nowa łamigłówka została zapisana.</string>
+	<string name="puzzle_updated">Łamigłówka uaktualniona.</string>
+
+	<string name="puzzles_saved">Łamigłówki zostały zapisane w folderze \'%s\'.</string>
+	<string name="no_puzzles_found">Nie znaleziono łamigłówek.</string>
+	<string name="unknown_import_error">Wystąpił błąd podczas importu łamigłówek. Nie zaimportowano.</string>
+	<string name="invalid_format">Nieprawidłowy format, import anulowany.</string>
+
+	<string name="credits">Credits:\nRoman Mašek\nVit Hnilica\nMartin Sobola\nMartin Helff</string>
+
+	<!-- Strings added in 0.7.0 -->
+	<string name="loading">Ładowanie...</string>
+
+	<!-- Strings added/changed in 0.7.1 -->
+	<string name="more_settings">Więcej ustawień</string>
+	<string name="screen_border_size">Szerokość krawędzi ekranu</string>
+	<string name="screen_border_size_summary">Niektóre ekrany nie reagują na dotyk przy krawędziach. To ustwaienie może pomóc.
+	</string>
+	<string name="highlight_touched_cell">Podświetl komórkę przy dotknięciu</string>
+	<string name="highlight_touched_cell_summary">Podświetla wiersz i kolumnę dotkniętej komórki.</string>
+	<string name="export">Eksportuj</string>
+	<string name="export_folder">Eksportuj folder</string>
+	<string name="export_all_folders">Eksportuj wszystkie foldery</string>
+	<string name="folders_created">%s folderów zostało zaimportowanych.</string>
+	<string name="importing">Importuję łamigłówki...</string>
+	<string name="exporting">Eksportuję łamigłówki...</string>
+	<string name="unknown_export_error">Wysztąpił błąd przy eksporcie łamigłówek.</string>
+	<string name="highlight_completed_values">Podświetl wykorzystane cyfry</string>
+	<string name="highlight_completed_values_summary">Podświetl przyciski z cyframi, które zostały wprowadzone 9 razy.
+	</string>
+	<string name="save_to_sdcard">Zapisz na kartę SD</string>
+	<string name="send_by_mail">Wyślij mailem</string>
+	<string name="theme">Skórka</string>
+	<string name="theme_summary">Wybierz zestaw kolorów dla planszy łamigłówek.</string>
+	<string name="select_theme">Wybierz skórkę</string>
+	<string name="filename">Nazwa pliku</string>
+	<string name="directory">Katalog</string>
+	<string name="sdcard_not_found">Nie znaleziono karty SD.</string>
+	<string name="puzzles_have_been_exported">Łamigłówki wyeksportowane do %s.</string>
+	<string name="file_exists">Plik istnieje, czy chcesz go zastąpić?</string>
+	<!-- localization of default folder names -->
+	<string name="difficulty_hard">Trudne</string>
+	<string name="difficulty_medium">Średnie</string>
+	<string name="difficulty_easy">Łatwe</string>
+
+	<!-- Strings added/changed in 1.1.0 -->
+	<string name="generate_sudoku">Wygeneruj nową grę</string>
+	<string name="select_difficulty">Wybierz trudność</string>
+	<string name="generating">Tworzenie nowej łamigłówki...</string>
+	<string name="show_number_totals">Pokaż podsumowanie</string>
+	<string name="show_number_totals_summary">Wyświetla liczbę wystąpień każdej cyfry.</string>
+	<string name="what_is_new">Co nowego?</string>
+
+	<!-- Strings added/changed in 1.1.1 -->
+	<string name="fill_in_notes_summary">Włącz "Wypełnij notatki" w menu.</string>
+
+	<!-- Strings added/changed in 1.1.2 -->
+	<string name="set_checkpoint">Punkt kontrolny</string>
+	<string name="undo_to_checkpoint">Cofnij do punktu kontrolnego</string>
+	<string name="undo_to_checkpoint_confirm">Czy na pewno wyczyścić wszystkie zmiany aż do ostatniego punktu kontrolnego?</string>
+</resources>
