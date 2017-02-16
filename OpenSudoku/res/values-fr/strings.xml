@@ -96,9 +96,11 @@
 	<string name="numpad_move_right">Move right on press</string>
 	<string name="numpad_move_right_summary">Moves cell selection by one cell right when number button is pressed.
 	</string>
+	<string name="highlighter">Highlighter</string>
+	<string name="highlighter_summary">Show highlighter which highlights cells whose notes contain the selected numbers.</string>
 
 	<string name="numpad_abbr">Num\nPad</string>
-
+	<string name="highlighter_abbr">Hi\nLit</string>
 	<string name="popup_abbr">Pop</string>
 	<string name="single_number_abbr">SN</string>
 	<string name="welcome">Bienvenue</string>
@@ -123,6 +125,7 @@
 		<i>Stylo</i>
 		bouton pour engager l\'édition de la cellule.\n
 	</string>
+	<string name="im_highlighter_hint">You\'re now in the <i>Highlighter</i> input mode. Select numeric buttons to highlight all cells whose notes contain those numbers.\nSelecting a cell will remove the selected numbers from its notes, which can be disabled by pressing the <i>Pencil</i> button.</string>
 	<string name="im_disable_modes_hint">Rappelez vous que vous n\'êtes pas obliger d\'utiliser tous les modes de
 		saisie. Vous pouvez désactiver chacuns d\'eux dans les paramètres du jeu.\n\nVous pouvez également utiliser le
 		clavier et la trackball pour jouer. Si vous souhaitez entrer les notes au clavier, appuyez le chiffre avec alt

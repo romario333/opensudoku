@@ -20,10 +20,12 @@
 
 package cz.romario.opensudoku.game;
 
+import java.util.List;
+
 import android.os.Bundle;
 import android.os.SystemClock;
-import cz.romario.opensudoku.game.command.ClearAllNotesCommand;
 import cz.romario.opensudoku.game.command.AbstractCommand;
+import cz.romario.opensudoku.game.command.ClearAllNotesCommand;
 import cz.romario.opensudoku.game.command.CommandStack;
 import cz.romario.opensudoku.game.command.EditCellNoteCommand;
 import cz.romario.opensudoku.game.command.FillInNotesCommand;
@@ -185,6 +187,18 @@ public class SudokuGame {
 		if (cell.isEditable()) {
 			executeCommand(new SetCellValueCommand(cell, value));
 
+			if (value != 0) {
+				// find all cells in selected cell's row, column, and sector,
+				// with notes containing number
+				List<Cell> list = getCells().fetchCellsByNote(cell, value);
+				// Nest the following note removal commands under the SetCellValueCommand.
+				mCommandStack.incNestDepth();
+				for (Cell c : list) {
+					setCellNote(c, c.getNote().removeNumber(value));
+				}
+				mCommandStack.decNestDepth();
+			}
+			
 			validate();
 			if (isCompleted()) {
 				finish();

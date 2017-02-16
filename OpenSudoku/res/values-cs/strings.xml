@@ -84,8 +84,11 @@
 	<string name="numpad_summary">Standardní numerická klávesnice.</string>
 	<string name="numpad_move_right">Posun doprava</string>
 	<string name="numpad_move_right_summary">Posune buňku doprava po stisku klávesy.</string>
+	<string name="highlighter">Highlighter</string>
+	<string name="highlighter_summary">Show highlighter which highlights cells whose notes contain the selected numbers.</string>
 
 	<string name="numpad_abbr">Num\nPad</string>
+	<string name="highlighter_abbr">Hi\nLit</string>
 	<string name="popup_abbr">Pop</string>
 	<string name="single_number_abbr">SN</string>
 	<string name="welcome">Vítejte</string>
@@ -110,6 +113,7 @@
 		standardní numerické klávesnici.\n\nStiskněte tlačítko s tužkou k přepnutí do módu, kdy budou vkládány
 		poznámky.\n
 	</string>
+	<string name="im_highlighter_hint">You\'re now in the <i>Highlighter</i> input mode. Select numeric buttons to highlight all cells whose notes contain those numbers.\nSelecting a cell will remove the selected numbers from its notes, which can be disabled by pressing the <i>Pencil</i> button.</string>
 	<string name="im_disable_modes_hint">Pokud nechcete, nemusíte používat všechny vstupní módy. Jakýkoliv ze vstupních
 		módu může být zakázán v nastavení aplikace.\n\nK ovládání hry také můžete používat klávesnici nebo trackball.
 		Pokud chcete zadat poznámku na klávesnici, stiskněte číslo spolu s klávesou alt nebo shift.\n

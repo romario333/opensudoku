@@ -44,13 +44,16 @@ public abstract class AbstractCommand {
 	}
 
 	private boolean mIsCheckpoint;
+	private int mNestDepth;
 
 	void saveState(Bundle outState) {
 		outState.putBoolean("isCheckpoint", mIsCheckpoint);
+		outState.putInt("nestDepth", mNestDepth);
 	}
 
 	void restoreState(Bundle inState) {
 		mIsCheckpoint = inState.getBoolean("isCheckpoint");
+		mNestDepth = inState.getInt("nestDepth");
 	}
 
 	public boolean isCheckpoint() {
@@ -65,14 +68,26 @@ public abstract class AbstractCommand {
 		return getClass().getSimpleName();
 	}
 
+	protected int getNestDepth() {
+		return mNestDepth;
+	}
+
+	/**
+	 * Executes the command after saving the nesting level.
+	 */
+	protected void execute(int nestDepth) {
+		mNestDepth = nestDepth;
+		execute();
+	}
+
 	/**
 	 * Executes the command.
 	 */
-	abstract void execute();
+	protected abstract void execute();
 
 	/**
 	 * Undo this command.
 	 */
-	abstract void undo();
+	protected abstract void undo();
 
 }

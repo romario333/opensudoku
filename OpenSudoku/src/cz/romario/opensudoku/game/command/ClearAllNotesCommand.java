@@ -74,7 +74,7 @@ public class ClearAllNotesCommand extends AbstractCellCommand {
 	}
 
 	@Override
-	void execute() {
+	protected void execute() {
 		CellCollection cells = getCells();
 
 		mOldNotes.clear();
@@ -91,7 +91,7 @@ public class ClearAllNotesCommand extends AbstractCellCommand {
 	}
 
 	@Override
-	void undo() {
+	protected void undo() {
 		CellCollection cells = getCells();
 
 		for (NoteEntry ne : mOldNotes) {

@@ -20,7 +20,9 @@
 
 package cz.romario.opensudoku.game;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -40,6 +42,9 @@ public class CellGroup {
 		mPos++;
 	}
 
+	public Iterator<Cell> getCells() {
+		return Arrays.asList(mCells).iterator();
+	}
 
 	/**
 	 * Validates numbers in given sudoku group - numbers must be unique. Cells with invalid

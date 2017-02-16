@@ -42,6 +42,11 @@
 				android:title="@string/numpad"
 				android:summary="@string/numpad_summary"
 				android:defaultValue="true"/>
+		<CheckBoxPreference
+				android:key="im_highlighter"
+				android:title="@string/highlighter"
+				android:summary="@string/highlighter_summary"
+				android:defaultValue="true"/>
 		<PreferenceScreen
 				android:key="screen_input_methods_advanced"
 				android:title="@string/more_settings">

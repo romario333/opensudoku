@@ -22,6 +22,7 @@ package cz.romario.opensudoku.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -152,6 +153,41 @@ public class CellCollection {
 		}
 		mOnChangeEnabled = true;
 		onChange();
+	}
+
+	/**
+	 * Find all neighboring cells containing the selected number in their notes
+	 * @param selectedCell the cell to check
+	 * @param selectedNumber the number to check for
+	 * @return a list of cells containing selectedNumber
+	 */
+	public List<Cell> fetchCellsByNote(Cell selectedCell, int selectedNumber) {
+		List<Cell> list = new ArrayList<Cell>();
+		if (selectedNumber != 0) {
+			addCellsWithNote(list, selectedCell.getColumn(), selectedNumber);
+			addCellsWithNote(list, selectedCell.getRow(), selectedNumber);
+			addCellsWithNote(list, selectedCell.getSector(), selectedNumber);
+		}
+		return list;
+	}
+
+	/**
+	 * Find the cells in a CellGroup containing the selected number in their notes
+	 * and adds them to the list.
+	 * This is a subfunction of fetchCellsByNote.
+	 * @param list the list of cells
+	 * @param cellGroup the CellGroup to check
+	 * @param selectedNumber the number to check for.  Must be a valid number (not 0).
+	 */
+	private void addCellsWithNote(List<Cell> list, CellGroup cellGroup, int selectedNumber) {
+		for (Iterator<Cell> iter = cellGroup.getCells(); iter.hasNext();) {
+			Cell cell = iter.next();
+			if (cell == null)
+				continue;
+			if ((cell.getValue() == selectedNumber) || (cell.getNote().contains(selectedNumber))) {
+				list.add(cell);
+			}
+		}
 	}
 
 	/**

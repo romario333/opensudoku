@@ -22,6 +22,7 @@ package cz.romario.opensudoku.game.command;
 
 import android.os.Bundle;
 import cz.romario.opensudoku.game.Cell;
+import cz.romario.opensudoku.game.CellNote;
 
 public class SetCellValueCommand extends AbstractCellCommand {
 
@@ -29,6 +30,7 @@ public class SetCellValueCommand extends AbstractCellCommand {
 	private int mCellColumn;
 	private int mValue;
 	private int mOldValue;
+	private CellNote mOldNote;
 
 	public SetCellValueCommand(Cell cell, int value) {
 		mCellRow = cell.getRowIndex();
@@ -48,6 +50,7 @@ public class SetCellValueCommand extends AbstractCellCommand {
 		outState.putInt("cellColumn", mCellColumn);
 		outState.putInt("value", mValue);
 		outState.putInt("oldValue", mOldValue);
+		outState.putString("oldNote", mOldNote.serialize());
 	}
 
 	@Override
@@ -58,19 +61,23 @@ public class SetCellValueCommand extends AbstractCellCommand {
 		mCellColumn = inState.getInt("cellColumn");
 		mValue = inState.getInt("value");
 		mOldValue = inState.getInt("oldValue");
+		mOldNote = CellNote.deserialize(inState.getString("oldNote"));
 	}
 
 	@Override
-	void execute() {
+	protected void execute() {
 		Cell cell = getCells().getCell(mCellRow, mCellColumn);
 		mOldValue = cell.getValue();
+		mOldNote = cell.getNote();
+		cell.setNote(new CellNote());
 		cell.setValue(mValue);
 	}
 
 	@Override
-	void undo() {
+	protected void undo() {
 		Cell cell = getCells().getCell(mCellRow, mCellColumn);
 		cell.setValue(mOldValue);
+		cell.setNote(mOldNote);
 	}
 
 }
