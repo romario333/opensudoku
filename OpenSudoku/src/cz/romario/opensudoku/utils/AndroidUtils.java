@@ -42,6 +42,8 @@ public class AndroidUtils {
 			context.setTheme(R.style.Theme_PaperI);
 		} else if (theme.equals("paperii")) {
 			context.setTheme(R.style.Theme_PaperII);
+		} else if (theme.equals("night")) {
+		    context.setTheme(R.style.Theme_Night);
 		} else {
 			context.setTheme(R.style.Theme_Default);
 		}

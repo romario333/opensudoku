@@ -1,21 +1,21 @@
-/* 
+/*
  * Copyright (C) 2009 Roman Masek
- * 
+ *
  * This file is part of OpenSudoku.
- * 
+ *
  * OpenSudoku is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * OpenSudoku is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with OpenSudoku.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package cz.romario.opensudoku.gui;
@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 import cz.romario.opensudoku.R;
 import cz.romario.opensudoku.db.SudokuDatabase;
 import cz.romario.opensudoku.game.SudokuGame;
@@ -178,6 +179,14 @@ public class SudokuPlayActivity extends Activity {
 
 		mFillInNotesEnabled = gameSettings.getBoolean("fill_in_notes_enabled", false);
 
+		boolean autoFillInNotes =
+		    mFillInNotesEnabled && gameSettings.getBoolean("fill_in_notes_auto", false);
+        mSudokuGame.setAutoFillInNotes(autoFillInNotes);
+
+        boolean autoPlay =
+            autoFillInNotes && gameSettings.getBoolean("auto_play", false);
+        mSudokuGame.setAutoPlay(autoPlay);
+
 		mSudokuBoard.setHighlightWrongVals(gameSettings.getBoolean("highlight_wrong_values", true));
 		mSudokuBoard.setHighlightTouchedCell(gameSettings.getBoolean("highlight_touched_cell", true));
 
@@ -213,7 +222,7 @@ public class SudokuPlayActivity extends Activity {
 		super.onWindowFocusChanged(hasFocus);
 
 		if (hasFocus) {
-			// FIXME: When activity is resumed, title isn't sometimes hidden properly (there is black 
+			// FIXME: When activity is resumed, title isn't sometimes hidden properly (there is black
 			// empty space at the top of the screen). This is desperate workaround.
 			if (mFullScreen) {
 				mGuiHandler.postDelayed(new Runnable() {
@@ -446,6 +455,16 @@ public class SudokuPlayActivity extends Activity {
 			mSudokuBoard.setReadOnly(true);
 			showDialog(DIALOG_WELL_DONE);
 		}
+
+        @Override
+        public void onSetCheckpoint() {
+            Toast.makeText(SudokuPlayActivity.this, "Checkpoint set", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onRestoreCheckpoint() {
+            Toast.makeText(SudokuPlayActivity.this, "Checkpoint restored", Toast.LENGTH_SHORT).show();
+        }
 
 	};
 

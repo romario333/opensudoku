@@ -45,8 +45,7 @@ public class GameSettingsActivity extends PreferenceActivity {
 			HintsQueue hm = new HintsQueue(GameSettingsActivity.this);
 			if (newVal) {
 				hm.resetOneTimeHints();
-			}
-			;
+			};
 			return true;
 		}
 

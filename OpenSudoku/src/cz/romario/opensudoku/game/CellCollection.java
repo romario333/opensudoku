@@ -1,21 +1,21 @@
-/* 
+/*
  * Copyright (C) 2009 Roman Masek
- * 
+ *
  * This file is part of OpenSudoku.
- * 
+ *
  * OpenSudoku is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * OpenSudoku is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with OpenSudoku.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package cz.romario.opensudoku.game;
@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
  *
  * @author romario
  */
+@SuppressWarnings("MalformedRegex")
 public class CellCollection {
 
 	public static final int SUDOKU_SIZE = 9;
@@ -56,6 +57,8 @@ public class CellCollection {
 	private CellGroup[] mSectors;
 	private CellGroup[] mRows;
 	private CellGroup[] mColumns;
+
+    private Cell mSelectedCell;
 
 	private boolean mOnChangeEnabled = true;
 
@@ -134,14 +137,35 @@ public class CellCollection {
 
 	/**
 	 * Gets cell at given position.
-	 *
-	 * @param rowIndex
-	 * @param colIndex
+     * @param rowIndex 0..SUDOKU_SIZE-1
+     * @param colIndex 0..SUDOKU_SIZE-1
 	 * @return
 	 */
 	public Cell getCell(int rowIndex, int colIndex) {
 		return mCells[rowIndex][colIndex];
 	}
+
+    /**
+     * Returns a sector.
+     * @param index 0..SUDOKU_SIZE-1
+     * @return A group of SUDOKU_SIZE cells
+     */
+    public CellGroup getSector(int index) {
+        return mSectors[index];
+    }
+
+    public Cell getSelectedCell() {
+        return mSelectedCell;
+    }
+
+    public void setSelectedCell(Cell cell) {
+        mSelectedCell = cell;
+        onChange();
+    }
+
+    public void selectCell(int rowIndex, int colIndex) {
+        setSelectedCell(getCell(rowIndex, colIndex));
+    }
 
 	public void markAllCellsAsValid() {
 		mOnChangeEnabled = false;
@@ -310,7 +334,7 @@ public class CellCollection {
 	 * created by {@link #serialize(StringBuilder)} or {@link #serialize()} method).
 	 * earlier.
 	 *
-	 * @param note
+	 * @param data
 	 */
 	public static CellCollection deserialize(String data) {
 		// TODO: use DATA_PATTERN_VERSION_1 to validate and extract puzzle data
@@ -441,11 +465,11 @@ public class CellCollection {
 //	public boolean isOnChangeEnabled() {
 //		return mOnChangeEnabled;
 //	}
-//	
+//
 //	/**
 //	 * Enables or disables change notifications, that are distributed to the listeners
 //	 * registered by {@link #addOnChangeListener(OnChangeListener)}.
-//	 * 
+//	 *
 //	 * @param onChangeEnabled
 //	 */
 //	public void setOnChangeEnabled(boolean onChangeEnabled) {

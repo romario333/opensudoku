@@ -35,6 +35,17 @@ public class CellGroup {
 	private Cell[] mCells = new Cell[CellCollection.SUDOKU_SIZE];
 	private int mPos = 0;
 
+    /**
+     * Returns the cell at the given index in the group.
+     * Ordering depends on the semantic of the group (row, column, sector).
+     *
+     * @param index 0..SUDOKU_SIZE-1
+     * @return A given Cell
+     */
+    public Cell getCell(int index) {
+        return mCells[index];
+    }
+
 	public void addCell(Cell cell) {
 		mCells[mPos] = cell;
 		mPos++;

@@ -205,4 +205,11 @@
 	<string name="set_checkpoint">Set checkpoint</string>
 	<string name="undo_to_checkpoint">Undo to checkpoint</string>
 	<string name="undo_to_checkpoint_confirm">Are you sure you want to undo all actions since last checkpoint?</string>
+
+    <!-- Strings added/changed in 1.1.6 (ralfoide fork) -->
+    <string name="fill_in_notes_auto">Auto fill in notes</string>
+    <string name="fill_in_notes_auto_summary">Automatically fill in notes after each move.</string>
+    <string name="auto_play">Auto-play trivial moves.</string>
+    <string name="auto_play_summary">Automatically perform trivial moves (w/ 1 second delay).</string>
+
 </resources>

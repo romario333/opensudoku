@@ -222,6 +222,14 @@ public class Cell {
 		return mValid;
 	}
 
+	public void select() {
+		synchronized (mCellCollectionLock) {
+			if (mCellCollection != null) {
+				mCellCollection.setSelectedCell(this);
+			}
+		}
+	}
+	
 
 	/**
 	 * Creates instance from given <code>StringTokenizer</code>.
