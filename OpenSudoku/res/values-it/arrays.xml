@@ -9,12 +9,14 @@
 		<item>Predefinito</item>
 		<item>Carta I</item>
 		<item>Carta II</item>
+		<item>Dark</item>
 	</string-array>
 	<!-- Theme codes should not change, do not translate this! -->
 	<string-array name="theme_codes">
 		<item>default</item>
 		<item>paperi</item>
 		<item>paperii</item>
+		<item>dark</item>
 	</string-array>
 	<string-array name="game_levels">
 		<item>Facile</item>

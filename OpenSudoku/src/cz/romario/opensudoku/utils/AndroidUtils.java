@@ -1,16 +1,16 @@
 package cz.romario.opensudoku.utils;
 
-import java.util.List;
-
-import cz.romario.opensudoku.R;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.preference.PreferenceManager;
+
+import java.util.List;
+
+import cz.romario.opensudoku.R;
 
 public class AndroidUtils {
 	/**
@@ -42,6 +42,8 @@ public class AndroidUtils {
 			context.setTheme(R.style.Theme_PaperI);
 		} else if (theme.equals("paperii")) {
 			context.setTheme(R.style.Theme_PaperII);
+		} else if ("dark") {
+			context.setTheme(R.style.Theme_Dark);
 		} else {
 			context.setTheme(R.style.Theme_Default);
 		}
